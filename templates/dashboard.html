@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - GMT Reborn{% endblock %}
+
+{% block body %}
+<div class="drawer lg:drawer-open">
+    <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+    
+    <!-- Main Content -->
+    <div class="drawer-content flex flex-col">
+        <!-- Navbar -->
+        <div class="navbar bg-cobalt text-white sticky top-0 z-10">
+            <div class="flex-none lg:hidden">
+                <label for="main-drawer" class="btn btn-square btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </label>
+            </div>
+            <div class="flex-1">
+                <a class="text-xl font-bold">GMT Reborn</a>
+            </div>
+            <div class="flex-none gap-2">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="btn btn-circle btn-ghost">
+                    <svg id="theme-icon-light" class="hidden dark:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                    </svg>
+                    <svg id="theme-icon-dark" class="hidden dark:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                    </svg>
+                </button>
+                
+                <!-- Language Dropdown -->
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-sm gap-1">
+                        <img src="{% static 'assets/img/flags/id.svg' %}" alt="Language" class="flag-icon">
+                        <span>ID</span>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow text-base-content">
+                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/id.svg' %}" class="flag-icon"> Indonesia</a></li>
+                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/en.svg' %}" class="flag-icon"> English</a></li>
+                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/kr.svg' %}" class="flag-icon"> Korea</a></li>
+                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/cn.svg' %}" class="flag-icon"> China</a></li>
+                    </ul>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                        <div class="w-10 rounded-full">
+                            <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0047AB&color=fff" />
+                        </div>
+                    </div>
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                        <li><a class="justify-between">Profile</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="p-6">
+            <!-- Welcome Banner dengan VR46 Yellow -->
+            <div class="alert bg-vr46 text-black mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Welcome back, <strong>{{ request.user.username }}</strong>! You're logged in to GMT Reborn.</span>
+            </div>
+
+            <!-- Module Cards dengan warna-warna khas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- HR Card -->
+                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+                    <div class="card-body">
+                        <h2 class="card-title text-cobalt">HR</h2>
+                        <p>Human Resource Management</p>
+                        <div class="card-actions justify-end">
+                            <a href="#" class="btn bg-cobalt text-white hover:bg-opacity-80">Access</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finance Card -->
+                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+                    <div class="card-body">
+                        <h2 class="card-title text-burnt-orange">Finance</h2>
+                        <p>Accounting & Finance</p>
+                        <div class="card-actions justify-end">
+                            <a href="#" class="btn bg-burnt-orange text-white hover:bg-opacity-80">Access</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warehouse Card -->
+                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+                    <div class="card-body">
+                        <h2 class="card-title text-forest">Warehouse</h2>
+                        <p>Produksi & Warehouse</p>
+                        <div class="card-actions justify-end">
+                            <a href="#" class="btn bg-forest text-white hover:bg-opacity-80">Access</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Card -->
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        <h2 class="card-title text-gray-400">More Modules</h2>
+                        <p class="text-gray-400">Coming Soon</p>
+                        <div class="card-actions justify-end">
+                            <button class="btn bg-gray-400 text-white" disabled>Soon</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar (sama persis kayak sebelumnya) -->
+    <div class="drawer-side">
+        <label for="main-drawer" class="drawer-overlay"></label>
+        <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300">
+            <!-- Logo & Company -->
+            <div class="mb-8 flex items-center gap-3 px-4">
+                <div class="w-10 h-10 bg-cobalt rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                    GMT
+                </div>
+                <div>
+                    <h2 class="font-bold text-lg">GMT Reborn</h2>
+                    <p class="text-xs opacity-70">Enterprise Solution</p>
+                </div>
+            </div>
+
+            <!-- Main Menu -->
+            <ul class="menu menu-lg w-full">
+                <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li>
+                
+                <!-- Dashboard -->
+                <li class="mb-1">
+                    <a href="/" class="flex items-center gap-3 {% if request.path == '/' %}active bg-cobalt text-white{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="menu-title text-xs opacity-50 mb-2 mt-4">MODULES</li>
+
+                <!-- HR Module -->
+                <li class="mb-1">
+                    <a href="#" class="flex items-center gap-3">
+                        <span class="w-5 h-5 flex items-center justify-center text-cobalt">👥</span>
+                        <span class="flex-1">Human Resource</span>
+                        <span class="badge badge-sm bg-cobalt text-white">HR</span>
+                    </a>
+                    <ul class="ml-7">
+                        <li><a class="py-2">Employees</a></li>
+                        <li><a class="py-2">Attendance</a></li>
+                        <li><a class="py-2">Payroll</a></li>
+                        <li><a class="py-2">Recruitment</a></li>
+                    </ul>
+                </li>
+
+                <!-- Finance Module -->
+                <li class="mb-1">
+                    <a href="#" class="flex items-center gap-3">
+                        <span class="w-5 h-5 flex items-center justify-center text-burnt-orange">💰</span>
+                        <span class="flex-1">Finance</span>
+                        <span class="badge badge-sm bg-burnt-orange text-white">ACC</span>
+                    </a>
+                    <ul class="ml-7">
+                        <li><a class="py-2">Chart of Accounts</a></li>
+                        <li><a class="py-2">Journal Entries</a></li>
+                        <li><a class="py-2">General Ledger</a></li>
+                        <li><a class="py-2">Financial Reports</a></li>
+                    </ul>
+                </li>
+
+                <!-- Warehouse Module -->
+                <li class="mb-1">
+                    <a href="#" class="flex items-center gap-3">
+                        <span class="w-5 h-5 flex items-center justify-center text-forest">📦</span>
+                        <span class="flex-1">Warehouse</span>
+                        <span class="badge badge-sm bg-forest text-white">WH</span>
+                    </a>
+                    <ul class="ml-7">
+                        <li><a class="py-2">Inventory</a></li>
+                        <li><a class="py-2">Stock Movement</a></li>
+                        <li><a class="py-2">Production</a></li>
+                        <li><a class="py-2">Quality Control</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Footer Menu -->
+            <div class="mt-auto pt-6 border-t border-base-300">
+                <ul class="menu menu-sm">
+                    <li><a class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.074-.04.147-.083.22-.128.332-.183.582-.495.644-.869l.214-1.28z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Settings
+                    </a></li>
+                    <li><a class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                        </svg>
+                        Privacy
+                    </a></li>
+                </ul>
+                <div class="text-xs opacity-50 text-center mt-4">
+                    © 2024 GMT Reborn v1.0
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
