@@ -9,106 +9,188 @@
     
     <!-- Main Content -->
     <div class="drawer-content flex flex-col">
-        <!-- Navbar -->
-        <div class="navbar bg-cobalt text-white sticky top-0 z-10">
+        <!-- Navbar with Welcome Banner -->
+        <div class="navbar bg-cobalt text-white sticky top-0 z-10 shadow-md">
             <div class="flex-none lg:hidden">
                 <label for="main-drawer" class="btn btn-square btn-ghost">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <i class="fa-solid fa-bars text-xl"></i>
                 </label>
             </div>
             <div class="flex-1">
-                <a class="text-xl font-bold">GMT Reborn</a>
+                <a class="text-xl font-bold flex items-center gap-2">
+                    <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
+                    GMT Reborn
+                </a>
             </div>
-            <div class="flex-none gap-2">
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="btn btn-circle btn-ghost">
-                    <svg id="theme-icon-light" class="hidden dark:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                    </svg>
-                    <svg id="theme-icon-dark" class="hidden dark:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                    </svg>
-                </button>
-                
-                <!-- Language Dropdown -->
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-sm gap-1">
-                        <img src="{% static 'assets/img/flags/id.svg' %}" alt="Language" class="flag-icon">
-                        <span>ID</span>
-                    </div>
-                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow text-base-content">
-                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/id.svg' %}" class="flag-icon"> Indonesia</a></li>
-                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/en.svg' %}" class="flag-icon"> English</a></li>
-                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/kr.svg' %}" class="flag-icon"> Korea</a></li>
-                        <li><a class="flex items-center gap-2"><img src="{% static 'assets/img/flags/cn.svg' %}" class="flag-icon"> China</a></li>
-                    </ul>
-                </div>
-                
-                <!-- User Menu -->
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                        <div class="w-10 rounded-full">
-                            <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0047AB&color=fff" />
-                        </div>
-                    </div>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                        <li><a class="justify-between">Profile</a></li>
-                        <li><a href="{% url 'logout' %}">Logout</a></li>
-                    </ul>
+            <div class="flex-none gap-4">
+                <!-- Welcome Banner di navbar -->
+                <div class="flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full">
+                    <i class="fa-regular fa-hand-peace"></i>
+                    <span class="text-sm font-medium">Welcome back, <strong>{{ request.user.username }}</strong>!</span>
                 </div>
             </div>
         </div>
 
-        <!-- Page Content -->
-        <div class="p-6">
-            <!-- Welcome Banner dengan VR46 Yellow -->
-            <div class="alert bg-vr46 text-black mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>Welcome back, <strong>{{ request.user.username }}</strong>! You're logged in to GMT Reborn.</span>
-            </div>
-
-            <!-- Module Cards dengan warna-warna khas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- HR Card -->
-                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-                    <div class="card-body">
-                        <h2 class="card-title text-cobalt">HR</h2>
-                        <p>Human Resource Management</p>
-                        <div class="card-actions justify-end">
-                            <a href="#" class="btn bg-cobalt text-white hover:bg-opacity-80">Access</a>
+        <!-- Page Content - Dashboard Utama -->
+        <div class="p-6" id="main-content">
+            <!-- Dynamic Content Area untuk masing-masing dept -->
+            <div id="dynamic-content" class="mt-2">
+                <!-- Default Dashboard dengan 4 dept -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- HR Department -->
+                    <div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
+                        <div class="card-body">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-cobalt/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-users text-cobalt text-xl"></i>
+                                </div>
+                                <h2 class="card-title text-cobalt">Human Resource</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Total Employees</div>
+                                    <div class="stat-value text-cobalt text-2xl">156</div>
+                                    <div class="stat-desc text-xs">↑ 8 from last month</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Present Today</div>
+                                    <div class="stat-value text-forest text-2xl">142</div>
+                                    <div class="stat-desc text-xs">91% attendance</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">On Leave</div>
+                                    <div class="stat-value text-burnt-orange text-2xl">8</div>
+                                    <div class="stat-desc text-xs">4 pending</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">New Hires</div>
+                                    <div class="stat-value text-production text-2xl">12</div>
+                                    <div class="stat-desc text-xs">This month</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-actions justify-end mt-4">
+                                <a onclick="loadContent('hr', 'dashboard')" class="btn btn-sm bg-cobalt text-white hover:bg-cobalt/80 border-none">View Details</a>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Finance Card -->
-                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-                    <div class="card-body">
-                        <h2 class="card-title text-burnt-orange">Finance</h2>
-                        <p>Accounting & Finance</p>
-                        <div class="card-actions justify-end">
-                            <a href="#" class="btn bg-burnt-orange text-white hover:bg-opacity-80">Access</a>
+                    <!-- Finance Department -->
+                    <div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
+                        <div class="card-body">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-burnt-orange/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-coins text-burnt-orange text-xl"></i>
+                                </div>
+                                <h2 class="card-title text-burnt-orange">Finance</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Revenue</div>
+                                    <div class="stat-value text-forest text-2xl">Rp 2.4B</div>
+                                    <div class="stat-desc text-xs">↑ 12%</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Expenses</div>
+                                    <div class="stat-value text-burnt-orange text-2xl">Rp 1.2B</div>
+                                    <div class="stat-desc text-xs">Within budget</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Net Profit</div>
+                                    <div class="stat-value text-cobalt text-2xl">Rp 1.2B</div>
+                                    <div class="stat-desc text-xs">↑ 15%</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Outstanding</div>
+                                    <div class="stat-value text-production text-2xl">Rp 450M</div>
+                                    <div class="stat-desc text-xs">Invoices</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-actions justify-end mt-4">
+                                <a onclick="loadContent('finance', 'dashboard')" class="btn btn-sm bg-burnt-orange text-white hover:bg-burnt-orange/80 border-none">View Details</a>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Warehouse Card -->
-                <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-                    <div class="card-body">
-                        <h2 class="card-title text-forest">Warehouse</h2>
-                        <p>Produksi & Warehouse</p>
-                        <div class="card-actions justify-end">
-                            <a href="#" class="btn bg-forest text-white hover:bg-opacity-80">Access</a>
+                    <!-- Production Department -->
+                    <div class="card bg-base-100 shadow-xl border-l-4 border-production">
+                        <div class="card-body">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-production/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-industry text-production text-xl"></i>
+                                </div>
+                                <h2 class="card-title text-production">Production</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Active Orders</div>
+                                    <div class="stat-value text-production text-2xl">24</div>
+                                    <div class="stat-desc text-xs">8 urgent</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Completed</div>
+                                    <div class="stat-value text-forest text-2xl">156</div>
+                                    <div class="stat-desc text-xs">This month</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Efficiency</div>
+                                    <div class="stat-value text-cobalt text-2xl">94%</div>
+                                    <div class="stat-desc text-xs">↑ 2%</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Downtime</div>
+                                    <div class="stat-value text-burnt-orange text-2xl">3.2h</div>
+                                    <div class="stat-desc text-xs">This week</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-actions justify-end mt-4">
+                                <a onclick="loadContent('production', 'dashboard')" class="btn btn-sm bg-production text-white hover:bg-production/80 border-none">View Details</a>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Coming Soon Card -->
-                <div class="card bg-base-100 shadow-xl">
-                    <div class="card-body">
-                        <h2 class="card-title text-gray-400">More Modules</h2>
-                        <p class="text-gray-400">Coming Soon</p>
-                        <div class="card-actions justify-end">
-                            <button class="btn bg-gray-400 text-white" disabled>Soon</button>
+                    <!-- Warehouse Department -->
+                    <div class="card bg-base-100 shadow-xl border-l-4 border-forest">
+                        <div class="card-body">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-forest/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-warehouse text-forest text-xl"></i>
+                                </div>
+                                <h2 class="card-title text-forest">Warehouse</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Total Items</div>
+                                    <div class="stat-value text-cobalt text-2xl">5,432</div>
+                                    <div class="stat-desc text-xs">234 SKUs</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Low Stock</div>
+                                    <div class="stat-value text-burnt-orange text-2xl">12</div>
+                                    <div class="stat-desc text-xs">Need reorder</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Shipments</div>
+                                    <div class="stat-value text-forest text-2xl">45</div>
+                                    <div class="stat-desc text-xs">Today</div>
+                                </div>
+                                <div class="stat bg-base-200 rounded-lg p-3">
+                                    <div class="stat-title text-xs">Receiving</div>
+                                    <div class="stat-value text-production text-2xl">28</div>
+                                    <div class="stat-desc text-xs">Pending</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-actions justify-end mt-4">
+                                <a onclick="loadContent('warehouse', 'dashboard')" class="btn btn-sm bg-forest text-white hover:bg-forest/80 border-none">View Details</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -116,105 +198,598 @@
         </div>
     </div>
 
-    <!-- Sidebar (sama persis kayak sebelumnya) -->
+    <!-- Sidebar (SAME AS BEFORE) -->
     <div class="drawer-side">
         <label for="main-drawer" class="drawer-overlay"></label>
-        <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300">
-            <!-- Logo & Company -->
-            <div class="mb-8 flex items-center gap-3 px-4">
-                <div class="w-10 h-10 bg-cobalt rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                    GMT
-                </div>
+        <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
+            <!-- Logo -->
+            <div class="mb-8 flex items-center gap-3 px-4 flex-shrink-0">
+                <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
                 <div>
                     <h2 class="font-bold text-lg">GMT Reborn</h2>
                     <p class="text-xs opacity-70">Enterprise Solution</p>
                 </div>
             </div>
 
-            <!-- Main Menu -->
-            <ul class="menu menu-lg w-full">
-                <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li>
-                
-                <!-- Dashboard -->
-                <li class="mb-1">
-                    <a href="/" class="flex items-center gap-3 {% if request.path == '/' %}active bg-cobalt text-white{% endif %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-                        </svg>
-                        Dashboard
-                    </a>
-                </li>
+            <!-- Scrollable Menu Container -->
+            <div class="sidebar-menu-container flex-1 overflow-y-auto px-2">
+                <ul class="menu menu-lg w-full">
+                    <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li>
+                    
+                    <!-- Dashboard -->
+                    <li class="mb-1">
+                        <a onclick="loadContent('dashboard', 'main')" class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-5"></i>
+                            Dashboard
+                        </a>
+                    </li>
 
-                <li class="menu-title text-xs opacity-50 mb-2 mt-4">MODULES</li>
+                    <li class="menu-title text-xs opacity-50 mb-2 mt-4">MODULES</li>
 
-                <!-- HR Module -->
-                <li class="mb-1">
-                    <a href="#" class="flex items-center gap-3">
-                        <span class="w-5 h-5 flex items-center justify-center text-cobalt">👥</span>
-                        <span class="flex-1">Human Resource</span>
-                        <span class="badge badge-sm bg-cobalt text-white">HR</span>
-                    </a>
-                    <ul class="ml-7">
-                        <li><a class="py-2">Employees</a></li>
-                        <li><a class="py-2">Attendance</a></li>
-                        <li><a class="py-2">Payroll</a></li>
-                        <li><a class="py-2">Recruitment</a></li>
-                    </ul>
-                </li>
+                    <!-- HR Module -->
+                    <li class="mb-1">
+                        <details class="group" id="hr-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('hr', 'dashboard')">
+                                <i class="fa-solid fa-users text-cobalt w-5"></i>
+                                <span class="flex-1">Human Resource</span>
+                                <!-- <span class="badge badge-cobalt">HR</span> -->
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('hr', 'employees')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
+                                <li><a onclick="loadContent('hr', 'attendance')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
+                                <li><a onclick="loadContent('hr', 'payroll')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
+                                <li><a onclick="loadContent('hr', 'recruitment')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
+                            </ul>
+                        </details>
+                    </li>
 
-                <!-- Finance Module -->
-                <li class="mb-1">
-                    <a href="#" class="flex items-center gap-3">
-                        <span class="w-5 h-5 flex items-center justify-center text-burnt-orange">💰</span>
-                        <span class="flex-1">Finance</span>
-                        <span class="badge badge-sm bg-burnt-orange text-white">ACC</span>
-                    </a>
-                    <ul class="ml-7">
-                        <li><a class="py-2">Chart of Accounts</a></li>
-                        <li><a class="py-2">Journal Entries</a></li>
-                        <li><a class="py-2">General Ledger</a></li>
-                        <li><a class="py-2">Financial Reports</a></li>
-                    </ul>
-                </li>
+                    <!-- Finance Module -->
+                    <li class="mb-1">
+                        <details class="group" id="finance-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('finance', 'dashboard')">
+                                <i class="fa-solid fa-coins text-burnt-orange w-5"></i>
+                                <span class="flex-1">Finance</span>
+                                <!-- <span class="badge badge-burnt-orange">ACC</span> -->
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('finance', 'accounts')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
+                                <li><a onclick="loadContent('finance', 'journal')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
+                                <li><a onclick="loadContent('finance', 'ledger')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
+                                <li><a onclick="loadContent('finance', 'reports')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
+                            </ul>
+                        </details>
+                    </li>
 
-                <!-- Warehouse Module -->
-                <li class="mb-1">
-                    <a href="#" class="flex items-center gap-3">
-                        <span class="w-5 h-5 flex items-center justify-center text-forest">📦</span>
-                        <span class="flex-1">Warehouse</span>
-                        <span class="badge badge-sm bg-forest text-white">WH</span>
-                    </a>
-                    <ul class="ml-7">
-                        <li><a class="py-2">Inventory</a></li>
-                        <li><a class="py-2">Stock Movement</a></li>
-                        <li><a class="py-2">Production</a></li>
-                        <li><a class="py-2">Quality Control</a></li>
-                    </ul>
-                </li>
-            </ul>
+                    <!-- Production Module -->
+                    <li class="mb-1">
+                        <details class="group" id="production-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('production', 'dashboard')">
+                                <i class="fa-solid fa-industry text-production w-5"></i>
+                                <span class="flex-1">Production</span>
+                                <!-- <span class="badge badge-production">PROD</span> -->
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('production', 'orders')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
+                                <li><a onclick="loadContent('production', 'bom')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
+                                <li><a onclick="loadContent('production', 'routing')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
+                                <li><a onclick="loadContent('production', 'quality')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
+                            </ul>
+                        </details>
+                    </li>
 
-            <!-- Footer Menu -->
-            <div class="mt-auto pt-6 border-t border-base-300">
-                <ul class="menu menu-sm">
-                    <li><a class="flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.074-.04.147-.083.22-.128.332-.183.582-.495.644-.869l.214-1.28z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        Settings
-                    </a></li>
-                    <li><a class="flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                        </svg>
-                        Privacy
-                    </a></li>
+                    <!-- Warehouse Module -->
+                    <li class="mb-1">
+                        <details class="group" id="warehouse-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('warehouse', 'dashboard')">
+                                <i class="fa-solid fa-warehouse text-forest w-5"></i>
+                                <span class="flex-1">Warehouse</span>
+                                <!-- <span class="badge badge-forest">WH</span> -->
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('warehouse', 'inventory')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
+                                <li><a onclick="loadContent('warehouse', 'movement')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
+                                <li><a onclick="loadContent('warehouse', 'receiving')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
+                                <li><a onclick="loadContent('warehouse', 'shipping')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
+                            </ul>
+                        </details>
+                    </li>
                 </ul>
-                <div class="text-xs opacity-50 text-center mt-4">
-                    © 2024 GMT Reborn v1.0
+            </div>
+
+            <!-- User Profile - Fixed at bottom -->
+            <div class="sidebar-user-profile w-full">
+                <div class="relative px-2">
+                    <div class="flex items-center gap-3 p-3 hover:bg-base-200 rounded-lg w-full cursor-pointer profile-trigger" onclick="toggleProfileModal()">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full ring-2 ring-cobalt ring-offset-base-100 ring-offset-2">
+                                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0047AB&color=fff&bold=true" />
+                            </div>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="font-semibold">{{ request.user.username }}</div>
+                            <div class="text-xs opacity-70">{{ request.user.email|default:"user@gmt.com" }}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-up text-xs opacity-50" id="profile-arrow"></i>
+                    </div>
+
+                    <!-- Profile Modal -->
+                    <div id="profile-modal" class="absolute bottom-full left-0 right-0 mb-2 hidden bg-base-200 rounded-xl shadow-lg border border-base-300 modal-enter">
+                        <div class="p-4">
+                            <!-- Theme Toggle -->
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-medium">Theme</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="theme-toggle" class="sr-only" onchange="toggleThemeSlider()">
+                                    <div class="toggle-slider light" id="slider"></div>
+                                </label>
+                            </div>
+
+                            <!-- Language Icons -->
+                            <div class="mb-4">
+                                <span class="text-sm font-medium block mb-2">Language</span>
+                                <div class="lang-icons">
+                                    <img src="{% static 'assets/img/flags/id.svg' %}" class="lang-icon" onclick="changeLanguage('id', this)" title="Indonesia">
+                                    <img src="{% static 'assets/img/flags/en.svg' %}" class="lang-icon" onclick="changeLanguage('en', this)" title="English">
+                                    <img src="{% static 'assets/img/flags/kr.svg' %}" class="lang-icon" onclick="changeLanguage('kr', this)" title="Korea">
+                                    <img src="{% static 'assets/img/flags/cn.svg' %}" class="lang-icon" onclick="changeLanguage('cn', this)" title="China">
+                                </div>
+                            </div>
+
+                            <!-- Settings & Privacy -->
+                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                <button onclick="loadContent('settings', 'general')" class="btn btn-sm bg-base-100 hover:bg-base-300 border-none">
+                                    <i class="fa-solid fa-gear"></i> Settings
+                                </button>
+                                <button onclick="loadContent('privacy', 'policy')" class="btn btn-sm bg-base-100 hover:bg-base-300 border-none">
+                                    <i class="fa-solid fa-shield"></i> Privacy
+                                </button>
+                            </div>
+
+                            <!-- Logout -->
+                            <a href="{% url 'logout' %}" class="btn btn-sm bg-burnt-orange hover:bg-burnt-orange/80 text-white w-full border-none">
+                                <i class="fa-solid fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- JavaScript (sama seperti sebelumnya) -->
+<script>
+// Toggle Profile Modal
+function toggleProfileModal() {
+    console.log('toggleProfileModal dipanggil');
+    const modal = document.getElementById('profile-modal');
+    const arrow = document.getElementById('profile-arrow');
+    
+    if (!modal) {
+        console.error('Modal ga ketemu!');
+        return;
+    }
+    
+    modal.classList.toggle('hidden');
+    
+    if (arrow) {
+        arrow.classList.toggle('fa-chevron-up');
+        arrow.classList.toggle('fa-chevron-down');
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('profile-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    
+    const profileDiv = event.target.closest('.sidebar-user-profile');
+    const modalContent = event.target.closest('#profile-modal');
+    
+    if (!profileDiv && !modalContent) {
+        modal.classList.add('hidden');
+        const arrow = document.getElementById('profile-arrow');
+        if (arrow) {
+            arrow.classList.remove('fa-chevron-down');
+            arrow.classList.add('fa-chevron-up');
+        }
+    }
+});
+
+// Theme Toggle
+function toggleThemeSlider() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    const slider = document.getElementById('slider');
+    if (slider) {
+        slider.className = newTheme === 'light' ? 'toggle-slider light' : 'toggle-slider dark';
+    }
+}
+
+// Initialize theme
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    const checkbox = document.getElementById('theme-toggle');
+    const slider = document.getElementById('slider');
+    if (checkbox && slider) {
+        if (savedTheme === 'dark') {
+            checkbox.checked = true;
+            slider.className = 'toggle-slider dark';
+        } else {
+            checkbox.checked = false;
+            slider.className = 'toggle-slider light';
+        }
+    }
+});
+
+// Language change
+function changeLanguage(lang, element) {
+    document.querySelectorAll('.lang-icon').forEach(icon => icon.classList.remove('active'));
+    element.classList.add('active');
+    alert(`Language changed to ${lang.toUpperCase()}`);
+}
+
+// Close other details tags
+function closeOtherDetails(exceptId) {
+    const detailsIds = ['hr-details', 'finance-details', 'production-details', 'warehouse-details'];
+    detailsIds.forEach(id => {
+        if (id !== exceptId) {
+            const details = document.getElementById(id);
+            if (details) details.removeAttribute('open');
+        }
+    });
+}
+
+// Load content function
+function loadContent(module, section) {
+    // Close other details
+    if (module === 'hr') closeOtherDetails('hr-details');
+    else if (module === 'finance') closeOtherDetails('finance-details');
+    else if (module === 'production') closeOtherDetails('production-details');
+    else if (module === 'warehouse') closeOtherDetails('warehouse-details');
+    
+    const contentDiv = document.getElementById('dynamic-content');
+    let html = '';
+    
+    // Dashboard content (balikin ke default)
+    if (module === 'dashboard') {
+        html = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- HR Department -->
+                <div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
+                    <div class="card-body">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-cobalt/10 flex items-center justify-center">
+                                <i class="fa-solid fa-users text-cobalt text-xl"></i>
+                            </div>
+                            <h2 class="card-title text-cobalt">Human Resource</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Total Employees</div>
+                                <div class="stat-value text-cobalt text-2xl">156</div>
+                                <div class="stat-desc text-xs">↑ 8 from last month</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Present Today</div>
+                                <div class="stat-value text-forest text-2xl">142</div>
+                                <div class="stat-desc text-xs">91% attendance</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">On Leave</div>
+                                <div class="stat-value text-burnt-orange text-2xl">8</div>
+                                <div class="stat-desc text-xs">4 pending</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">New Hires</div>
+                                <div class="stat-value text-production text-2xl">12</div>
+                                <div class="stat-desc text-xs">This month</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions justify-end mt-4">
+                            <a onclick="loadContent('hr', 'dashboard')" class="btn btn-sm bg-cobalt text-white hover:bg-cobalt/80 border-none">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finance Department -->
+                <div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
+                    <div class="card-body">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-burnt-orange/10 flex items-center justify-center">
+                                <i class="fa-solid fa-coins text-burnt-orange text-xl"></i>
+                            </div>
+                            <h2 class="card-title text-burnt-orange">Finance</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Revenue</div>
+                                <div class="stat-value text-forest text-2xl">Rp 2.4B</div>
+                                <div class="stat-desc text-xs">↑ 12%</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Expenses</div>
+                                <div class="stat-value text-burnt-orange text-2xl">Rp 1.2B</div>
+                                <div class="stat-desc text-xs">Within budget</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Net Profit</div>
+                                <div class="stat-value text-cobalt text-2xl">Rp 1.2B</div>
+                                <div class="stat-desc text-xs">↑ 15%</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Outstanding</div>
+                                <div class="stat-value text-production text-2xl">Rp 450M</div>
+                                <div class="stat-desc text-xs">Invoices</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions justify-end mt-4">
+                            <a onclick="loadContent('finance', 'dashboard')" class="btn btn-sm bg-burnt-orange text-white hover:bg-burnt-orange/80 border-none">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Production Department -->
+                <div class="card bg-base-100 shadow-xl border-l-4 border-production">
+                    <div class="card-body">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-production/10 flex items-center justify-center">
+                                <i class="fa-solid fa-industry text-production text-xl"></i>
+                            </div>
+                            <h2 class="card-title text-production">Production</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Active Orders</div>
+                                <div class="stat-value text-production text-2xl">24</div>
+                                <div class="stat-desc text-xs">8 urgent</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Completed</div>
+                                <div class="stat-value text-forest text-2xl">156</div>
+                                <div class="stat-desc text-xs">This month</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Efficiency</div>
+                                <div class="stat-value text-cobalt text-2xl">94%</div>
+                                <div class="stat-desc text-xs">↑ 2%</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Downtime</div>
+                                <div class="stat-value text-burnt-orange text-2xl">3.2h</div>
+                                <div class="stat-desc text-xs">This week</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions justify-end mt-4">
+                            <a onclick="loadContent('production', 'dashboard')" class="btn btn-sm bg-production text-white hover:bg-production/80 border-none">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warehouse Department -->
+                <div class="card bg-base-100 shadow-xl border-l-4 border-forest">
+                    <div class="card-body">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-forest/10 flex items-center justify-center">
+                                <i class="fa-solid fa-warehouse text-forest text-xl"></i>
+                            </div>
+                            <h2 class="card-title text-forest">Warehouse</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Total Items</div>
+                                <div class="stat-value text-cobalt text-2xl">5,432</div>
+                                <div class="stat-desc text-xs">234 SKUs</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Low Stock</div>
+                                <div class="stat-value text-burnt-orange text-2xl">12</div>
+                                <div class="stat-desc text-xs">Need reorder</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Shipments</div>
+                                <div class="stat-value text-forest text-2xl">45</div>
+                                <div class="stat-desc text-xs">Today</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-lg p-3">
+                                <div class="stat-title text-xs">Receiving</div>
+                                <div class="stat-value text-production text-2xl">28</div>
+                                <div class="stat-desc text-xs">Pending</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions justify-end mt-4">
+                            <a onclick="loadContent('warehouse', 'dashboard')" class="btn btn-sm bg-forest text-white hover:bg-forest/80 border-none">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // HR Content (detail page)
+    else if (module === 'hr') {
+        if (section === 'dashboard') {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-cobalt">
+                    <h2 class="text-2xl font-bold text-cobalt mb-4">Human Resource Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Total Employees</div>
+                            <div class="stat-value text-cobalt">156</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Present Today</div>
+                            <div class="stat-value text-forest">142</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">On Leave</div>
+                            <div class="stat-value text-burnt-orange">8</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-cobalt">
+                    <h2 class="text-2xl font-bold text-cobalt mb-4">HR - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
+                    <p class="text-gray-600">This is the ${section} section.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Finance Content (detail page)
+    else if (module === 'finance') {
+        if (section === 'dashboard') {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-burnt-orange">
+                    <h2 class="text-2xl font-bold text-burnt-orange mb-4">Finance Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Revenue</div>
+                            <div class="stat-value text-forest">Rp 2.4B</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Expenses</div>
+                            <div class="stat-value text-burnt-orange">Rp 1.2B</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Net Profit</div>
+                            <div class="stat-value text-cobalt">Rp 1.2B</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-burnt-orange">
+                    <h2 class="text-2xl font-bold text-burnt-orange mb-4">Finance - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
+                    <p class="text-gray-600">This is the ${section} section.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Production Content (detail page)
+    else if (module === 'production') {
+        if (section === 'dashboard') {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-production">
+                    <h2 class="text-2xl font-bold text-production mb-4">Production Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Active Orders</div>
+                            <div class="stat-value text-production">24</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Completed</div>
+                            <div class="stat-value text-forest">156</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Efficiency</div>
+                            <div class="stat-value text-cobalt">94%</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-production">
+                    <h2 class="text-2xl font-bold text-production mb-4">Production - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
+                    <p class="text-gray-600">This is the ${section} section.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Warehouse Content (detail page)
+    else if (module === 'warehouse') {
+        if (section === 'dashboard') {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-forest">
+                    <h2 class="text-2xl font-bold text-forest mb-4">Warehouse Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Total Items</div>
+                            <div class="stat-value text-cobalt">5,432</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Low Stock</div>
+                            <div class="stat-value text-burnt-orange">12</div>
+                        </div>
+                        <div class="stat bg-base-200 rounded-lg p-4">
+                            <div class="stat-title">Shipments</div>
+                            <div class="stat-value text-forest">45</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            html = `
+                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-forest">
+                    <h2 class="text-2xl font-bold text-forest mb-4">Warehouse - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
+                    <p class="text-gray-600">This is the ${section} section.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Settings & Privacy
+    else if (module === 'settings') {
+        html = `
+            <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-gray-400">
+                <h2 class="text-2xl font-bold text-gray-600 mb-4">Settings</h2>
+                <p class="text-gray-600">Settings content would appear here.</p>
+            </div>
+        `;
+    } else if (module === 'privacy') {
+        html = `
+            <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-gray-400">
+                <h2 class="text-2xl font-bold text-gray-600 mb-4">Privacy Policy</h2>
+                <p class="text-gray-600">Privacy policy content would appear here.</p>
+            </div>
+        `;
+    }
+    
+    contentDiv.innerHTML = html;
+    
+    // Close profile modal
+    const modal = document.getElementById('profile-modal');
+    const arrow = document.getElementById('profile-arrow');
+    if (modal) modal.classList.add('hidden');
+    if (arrow) {
+        arrow.classList.remove('fa-chevron-down');
+        arrow.classList.add('fa-chevron-up');
+    }
+}
+
+// Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('profile-modal');
+        const arrow = document.getElementById('profile-arrow');
+        if (modal && !modal.classList.contains('hidden')) {
+            modal.classList.add('hidden');
+            if (arrow) {
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-up');
+            }
+        }
+    }
+});
+</script>
 {% endblock %}

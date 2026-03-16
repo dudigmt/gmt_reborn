@@ -1,0 +1,69 @@
+/* CSS Custom Properties untuk GMT Reborn */
+:root {
+    /* Warna utama brand */
+    --cobalt: #0047AB;
+    --burnt-orange: #CC5500;
+    --forest: #228B22;
+    --vr46: #FFFF00;
+    
+    /* Warna tambahan */
+    --production: #8B5CF6;
+    
+    /* Warna semantic */
+    --primary: var(--cobalt);
+    --success: var(--forest);
+    --warning: var(--burnt-orange);
+    --alert: var(--vr46);
+    --info: var(--production);
+    
+    /* Warna dark mode variants */
+    --cobalt-dark: #003380;
+    --burnt-orange-dark: #b34d00;
+    --forest-dark: #1e7b1e;
+    --vr46-dark: #e6e600;
+    --production-dark: #7c3aed;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Border radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 2rem;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    /* Transitions */
+    --transition-fast: 150ms;
+    --transition-normal: 250ms;
+    --transition-slow: 350ms;
+    --transition-slowest: 500ms;
+    
+    /* Z-index layers */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-modal: 300;
+    --z-popover: 400;
+    --z-tooltip: 500;
+}
+
+/* Dark mode overrides - bisa dipakai nanti */
+[data-theme="dark"] {
+    --cobalt: #1a5fc9;
+    --burnt-orange: #e65f00;
+    --forest: #2a9d2a;
+    --vr46: #ffff33;
+    --production: #9b6ef3;
+}

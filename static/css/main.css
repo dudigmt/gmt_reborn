@@ -1,0 +1,235 @@
+/* Import base variables */
+@import './base/variables.css';
+
+/* Warna utama GMT Reborn */
+:root {
+    --cobalt: #0047AB;
+    --burnt-orange: #CC5500;
+    --forest: #228B22;
+    --vr46: #FFFF00;
+    --production: #8B5CF6;
+    --cobalt-dark: #003380;
+}
+
+/* Text colors */
+.text-cobalt { color: var(--cobalt) !important; }
+.text-burnt-orange { color: var(--burnt-orange) !important; }
+.text-forest { color: var(--forest) !important; }
+.text-vr46 { color: var(--vr46) !important; }
+.text-production { color: var(--production) !important; }
+
+/* Background colors */
+.bg-cobalt { background-color: var(--cobalt) !important; }
+.bg-burnt-orange { background-color: var(--burnt-orange) !important; }
+.bg-forest { background-color: var(--forest) !important; }
+.bg-vr46 { background-color: var(--vr46) !important; }
+.bg-production { background-color: var(--production) !important; }
+
+/* Border colors */
+.border-cobalt { border-color: var(--cobalt) !important; }
+.border-burnt-orange { border-color: var(--burnt-orange) !important; }
+.border-forest { border-color: var(--forest) !important; }
+.border-production { border-color: var(--production) !important; }
+
+/* Hover states */
+.hover\:bg-cobalt:hover { background-color: var(--cobalt) !important; }
+.hover\:bg-burnt-orange:hover { background-color: var(--burnt-orange) !important; }
+.hover\:bg-forest:hover { background-color: var(--forest) !important; }
+.hover\:bg-production:hover { background-color: var(--production) !important; }
+
+/* Badge colors */
+.badge-cobalt {
+    background-color: var(--cobalt) !important;
+    color: white !important;
+}
+.badge-burnt-orange {
+    background-color: var(--burnt-orange) !important;
+    color: white !important;
+}
+.badge-forest {
+    background-color: var(--forest) !important;
+    color: white !important;
+}
+.badge-production {
+    background-color: var(--production) !important;
+    color: white !important;
+}
+
+/* Toggle slider */
+.toggle-slider {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: .4s;
+    cursor: pointer;
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+}
+input:checked + .toggle-slider {
+    background-color: var(--cobalt);
+}
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+.toggle-slider.light:before {
+    content: "☀️";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+.toggle-slider.dark:before {
+    content: "🌙";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+/* Language icons */
+.lang-icons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    padding: 8px 0;
+}
+.lang-icon {
+    width: 32px;
+    height: 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+}
+.lang-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.lang-icon.active {
+    border-color: var(--cobalt);
+    box-shadow: 0 0 0 2px rgba(0,71,171,0.3);
+}
+
+/* Modal animation */
+.modal-enter {
+    animation: slideUp 0.3s ease-out;
+}
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== SIDEBAR LAYOUT ===== */
+.drawer-side {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Menu container - scrollable dengan hidden scrollbar default */
+.sidebar-menu-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Chrome/Safari: hidden scrollbar */
+.sidebar-menu-container::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+    display: none;
+}
+.sidebar-menu-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar-menu-container::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* Show scrollbar on hover */
+.sidebar-menu-container:hover {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cobalt) #f1f1f1;
+}
+.sidebar-menu-container:hover::-webkit-scrollbar {
+    display: block;
+}
+.sidebar-menu-container:hover::-webkit-scrollbar-thumb {
+    background: var(--cobalt);
+    border-radius: 3px;
+}
+.sidebar-menu-container:hover::-webkit-scrollbar-thumb:hover {
+    background: var(--cobalt-dark);
+}
+.sidebar-menu-container:hover::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Dark mode scrollbar hover */
+[data-theme="dark"] .sidebar-menu-container:hover {
+    scrollbar-color: var(--cobalt) #2a2a2a;
+}
+[data-theme="dark"] .sidebar-menu-container:hover::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+/* User profile section - sticky di bottom */
+.sidebar-user-profile {
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    background-color: var(--fallback-b1, oklch(var(--b1)));
+    border-top: 1px solid var(--fallback-bc, oklch(var(--bc)/0.1));
+    padding-top: 1rem;
+    margin-top: auto;
+    z-index: 50; /* Naikin z-index */
+}
+
+/* Profile modal - pastikan muncul di atas */
+#profile-modal {
+    z-index: 100 !important;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Profile trigger hover */
+.sidebar-user-profile .profile-trigger:hover {
+    background-color: var(--fallback-b2, oklch(var(--b2)/0.5));
+    border-radius: 0.5rem;
+}
+
+/* Animasi chevron */
+.fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+/* Module header hover */
+.module-header:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+[data-theme="dark"] .module-header:hover {
+    background-color: rgba(255,255,255,0.1);
+}
