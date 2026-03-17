@@ -16,19 +16,9 @@
                 </div>
                 <!-- Session Expired Notification - Premium Version -->
                 {% if expired_time %}
-                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg shadow-md animate-slideDown">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fa-solid fa-hourglass-end text-amber-500 text-xl"></i>
-                        </div>
-                        <div class="ml-3 flex-1">
-                            <h3 class="text-sm font-medium text-amber-800">Session Expired</h3>
-                            <div class="mt-1 text-sm text-amber-700">
-                                <p>Your session has ended at: <strong>{{ expired_time }}</strong></p>
-                                <p class="text-xs mt-1">Please sign in again to continue.</p>
-                            </div>
-                        </div>
-                    </div>
+                <div style="background:#fff3cd; border-left:4px solid #ffc107; padding:15px; margin-bottom:20px; border-radius:5px;">
+                    <strong>Session Expired</strong>
+                    <p>Sesi Anda berakhir pada: {{ expired_time }}</p>
                 </div>
                 {% endif %}
 

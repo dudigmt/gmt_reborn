@@ -1,152 +1,136 @@
-// Custom Modal for Session Warning
-const SessionModal = {
-    modal: null,
-    
-    init() {
-        // Only initialize if we're not on login page
-        if (window.location.pathname === '/login/') return;
-        
-        // Create modal element
-        this.modal = document.createElement('div');
-        this.modal.id = 'session-modal';
-        this.modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden';
-        this.modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
-                <div class="p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <i class="fa-solid fa-triangle-exclamation text-yellow-600 text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">Session akan berakhir</h3>
-                    </div>
-                    
-                    <p class="text-gray-600 mb-6">
-                        Sesi Anda akan berakhir dalam <span id="session-countdown" class="font-bold text-yellow-600">30</span> detik.
-                        <br>Apakah Anda ingin melanjutkan?
-                    </p>
-                    
-                    <div class="flex gap-3">
-                        <button id="extend-session" class="flex-1 bg-cobalt hover:bg-cobalt/80 text-white py-2.5 rounded-lg font-medium transition-colors">
-                            Lanjutkan Sesi
-                        </button>
-                        <button id="logout-now" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 rounded-lg font-medium transition-colors">
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(this.modal);
-        
-        // Bind events
-        document.getElementById('extend-session').addEventListener('click', () => this.extend());
-        document.getElementById('logout-now').addEventListener('click', () => this.logout());
-        
-        // Start timers only on dashboard
-        if (window.location.pathname !== '/login/') {
-            resetTimers();
-        }
-    },
-    
-    show(countdown = 30) {
-        this.modal.classList.remove('hidden');
-        this.startCountdown(countdown);
-    },
-    
-    hide() {
-        this.modal.classList.add('hidden');
-        if (this.countdownInterval) {
-            clearInterval(this.countdownInterval);
-        }
-    },
-    
-    startCountdown(seconds) {
-        const counter = document.getElementById('session-countdown');
-        let remaining = seconds;
-        
-        this.countdownInterval = setInterval(() => {
-            remaining--;
-            counter.textContent = remaining;
+// ====== MODAL CANTIK ======
+const modal = document.createElement('div');
+modal.id = 'session-modal';
+modal.innerHTML = `
+    <div id="modal-overlay" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(4px);">
+        <div style="background:white; padding:24px; border-radius:16px; max-width:400px; width:90%; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); animation:slideUp 0.3s ease-out;">
             
-            if (remaining <= 0) {
-                clearInterval(this.countdownInterval);
-                this.logout();
-            }
-        }, 1000);
-    },
-    
-    extend() {
-        fetch('/api/extend-session/')
-            .then(() => {
-                this.hide();
-                resetTimers();
-            });
-    },
-    
-    logout() {
-    // Set flag expired di session storage
-    sessionStorage.setItem('session_expired', 'true');
-    window.location.href = '/login/?expired=1';
-}
-};
+            <!-- Header dengan icon -->
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                <div style="width:48px; height:48px; background:#FEF3C7; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <h3 style="font-size:20px; font-weight:600; color:#1F2937; margin:0;">Session Akan Berakhir</h3>
+            </div>
+            
+            <!-- Countdown -->
+            <p style="color:#4B5563; margin-bottom:24px; font-size:16px;">
+                Sesi Anda akan berakhir dalam 
+                <span id="countdown" style="font-weight:700; color:#D97706; font-size:24px; display:block; text-align:center; margin:10px 0;">5</span>
+                detik
+            </p>
+            
+            <!-- Tombol -->
+            <div style="display:flex; gap:12px;">
+                <button id="extendBtn" style="flex:1; background:#0047AB; color:white; padding:12px; border:none; border-radius:8px; font-weight:500; cursor:pointer; transition:background 0.2s;">
+                    Lanjutkan Sesi
+                </button>
+                <button id="logoutBtn" style="flex:1; background:#E5E7EB; color:#374151; padding:12px; border:none; border-radius:8px; font-weight:500; cursor:pointer; transition:background 0.2s;">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+`;
 
-// Session check with heartbeat - ONLY ON DASHBOARD
-function checkSession() {
-    // Skip if on login page
-    if (window.location.pathname === '/login/') return;
-    
-    fetch('/api/check-session/')
-        .then(response => {
-            if (response.status === 401) {
-                window.location.href = '/login/';
-            }
-        })
-        .catch(() => {
-            window.location.href = '/login/';
-        });
-}
+// Tambah animasi
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    #extendBtn:hover { background: #003380; }
+    #logoutBtn:hover { background: #D1D5DB; }
+`;
+document.head.appendChild(style);
 
-// Auto logout warning
-let warningTimer;
-let logoutTimer;
+modal.style.display = 'none';
+document.body.appendChild(modal);
 
-function resetTimers() {
-    // Skip if on login page
+// ====== TIMER ======
+let warningTimer, logoutTimer;
+
+function startTimers() {
     if (window.location.pathname === '/login/') return;
     
     clearTimeout(warningTimer);
     clearTimeout(logoutTimer);
     
-    // Show warning after 1770 seconds (29.5 minutes)
-    warningTimer = setTimeout(() => {
-        SessionModal.show(30);
-    }, 1770000);
+    const sessionMenit = 1; // 1 menit buat test
+    const warningDetik = 5;
     
-    // Force logout after 1800 seconds (30 minutes)
+    const warningTime = (sessionMenit * 60 - warningDetik) * 1000;
+    const logoutTime = sessionMenit * 60 * 1000;
+    
+    warningTimer = setTimeout(() => {
+        console.log('⚠️ WARNING MUNCUL');
+        modal.style.display = 'block';
+        
+        let detik = warningDetik;
+        const counter = document.getElementById('countdown');
+        
+        // HENTIKAN INTERVAL LAMA KALAU ADA
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        
+        countdownInterval = setInterval(() => {  // <-- SIMPAN KE VARIABLE GLOBAL
+            detik--;
+            if (counter) counter.textContent = detik;
+            
+            if (detik <= 0) {
+                clearInterval(countdownInterval);
+                modal.style.display = 'none';
+                window.location.href = '/login/?expired=1';
+            }
+        }, 1000);
+        
+    }, warningTime);
+    
     logoutTimer = setTimeout(() => {
-    sessionStorage.setItem('session_expired', 'true');
-    window.location.href = '/login/?expired=1';
-    }, 1800000);
+        console.log('🔄 LOGOUT OTOMATIS');
+        window.location.href = '/login/?expired=1';
+    }, logoutTime);
 }
 
-// Initialize modal
-document.addEventListener('DOMContentLoaded', () => {
-    SessionModal.init();
-});
+// ====== EVENT LISTENER ======
+document.addEventListener('DOMContentLoaded', startTimers);
 
-// Reset timers on user activity - ONLY ON DASHBOARD
-['click', 'keypress', 'scroll', 'mousemove'].forEach(event => {
-    document.addEventListener(event, () => {
-        if (window.location.pathname !== '/login/') {
-            resetTimers();
+// Extend session
+let countdownInterval; // <-- TAMBAHKAN VARIABLE GLOBAL
+
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'extendBtn') {
+        // HENTIKAN COUNTDOWN
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
         }
-    });
+        
+        modal.style.display = 'none';
+        fetch('/api/extend-session/');
+        startTimers();
+    }
 });
 
-// Check session every 60 seconds - ONLY ON DASHBOARD
-setInterval(() => {
-    if (window.location.pathname !== '/login/') {
-        checkSession();
+// Logout manual
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'logoutBtn') {
+        window.location.href = '/login/?expired=1';
     }
-}, 60000);
+});
+
+// Reset timer setiap aktivitas
+['click', 'keypress', 'mousemove', 'scroll'].forEach(event => {
+    document.addEventListener(event, startTimers);
+});

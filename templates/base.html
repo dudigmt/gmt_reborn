@@ -20,6 +20,13 @@
     
     <!-- Favicon / Site Icon -->
     <link rel="icon" type="image/png" href="{% static 'assets/logo/gmtround.png' %}">
+
+    <script>
+    // PALING SEDERHANA - paksa 1 menit buat test
+        var SESSION_TIMEOUT = 1;
+        console.log('SISTEM SIAP:', SESSION_TIMEOUT);
+    </script>
+
 </head>
 <body class="bg-base-200 min-h-screen">
     {% block body %}{% endblock %}

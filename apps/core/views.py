@@ -5,26 +5,21 @@ from django.utils import timezone
 from django.http import HttpResponse
 
 def login_view(request):
-    # Cek apakah ini redirect karena session expired
-    expired = request.GET.get('expired', False)
     expired_time = None
     
-    if expired:
-        # Ambil waktu expired dari session (kalo ada)
-        expired_time = request.session.get('expired_time', timezone.now())
-        # Format waktu
-        expired_time = expired_time.strftime('%d %B %Y, %H:%M:%S')
+    if request.GET.get('expired'):
+        from django.utils import timezone
+        import datetime
+        now = timezone.localtime(timezone.now())
+        expired_time = now.strftime('%d %B %Y, %H:%M:%S')
+        print('EXPIRED:', expired_time)  # Buat debug
     
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
+        from django.contrib.auth import authenticate, login
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user:
             login(request, user)
             return redirect('/')
-        else:
-            messages.error(request, 'Invalid username or password')
     
     return render(request, 'login.html', {'expired_time': expired_time})
 
