@@ -5,7 +5,6 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 
-
 def login_view(request):
     expired_time = None
     
@@ -63,76 +62,81 @@ def settings_view(request):
     
     return render(request, 'settings.html', {'settings': settings})
 
+# ===== SYSADMIN DASHBOARD =====
+def sysadmin_dashboard(request):
+    if not request.user.is_staff:
+        return redirect('/')
+    return render(request, 'admin_dashboard.html', {'active_tab': 'users'})
+
 # ===== USER MANAGEMENT =====
 @staff_member_required
-def admin_users(request):
+def sysadmin_users(request):
     return render(request, 'admin_dummy.html', {'title': 'User Management', 'section': 'users'})
 
 @staff_member_required
-def admin_groups(request):
+def sysadmin_groups(request):
     return render(request, 'admin_dummy.html', {'title': 'Groups', 'section': 'groups'})
 
 @staff_member_required
-def admin_permissions(request):
+def sysadmin_permissions(request):
     return render(request, 'admin_dummy.html', {'title': 'Permissions', 'section': 'permissions'})
 
 @staff_member_required
-def admin_login_logs(request):
+def sysadmin_login_logs(request):
     return render(request, 'admin_dummy.html', {'title': 'Login Logs', 'section': 'login_logs'})
 
 # ===== COMPANY SETTINGS =====
 @staff_member_required
-def admin_company_profile(request):
+def sysadmin_company_profile(request):
     return render(request, 'admin_dummy.html', {'title': 'Company Profile', 'section': 'company_profile'})
 
 @staff_member_required
-def admin_fiscal_year(request):
+def sysadmin_fiscal_year(request):
     return render(request, 'admin_dummy.html', {'title': 'Fiscal Year', 'section': 'fiscal_year'})
 
 @staff_member_required
-def admin_system_settings(request):
+def sysadmin_system_settings(request):
     return render(request, 'admin_dummy.html', {'title': 'System Settings', 'section': 'system_settings'})
 
 # ===== MODULE CONFIG =====
 @staff_member_required
-def admin_modules(request):
+def sysadmin_modules(request):
     return render(request, 'admin_dummy.html', {'title': 'Module Management', 'section': 'modules'})
 
 @staff_member_required
-def admin_module_settings(request):
+def sysadmin_module_settings(request):
     return render(request, 'admin_dummy.html', {'title': 'Module Settings', 'section': 'module_settings'})
 
 @staff_member_required
-def admin_ui_customization(request):
+def sysadmin_ui_customization(request):
     return render(request, 'admin_dummy.html', {'title': 'UI Customization', 'section': 'ui_customization'})
 
 # ===== SYSTEM ADMIN =====
 @staff_member_required
-def admin_backup(request):
+def sysadmin_backup(request):
     return render(request, 'admin_dummy.html', {'title': 'Database Backup', 'section': 'backup'})
 
 @staff_member_required
-def admin_system_logs(request):
+def sysadmin_system_logs(request):
     return render(request, 'admin_dummy.html', {'title': 'System Logs', 'section': 'system_logs'})
 
 @staff_member_required
-def admin_cache(request):
+def sysadmin_cache(request):
     return render(request, 'admin_dummy.html', {'title': 'Cache Management', 'section': 'cache'})
 
 @staff_member_required
-def admin_email_config(request):
+def sysadmin_email_config(request):
     return render(request, 'admin_dummy.html', {'title': 'Email Configuration', 'section': 'email_config'})
 
 # ===== AUDIT & COMPLIANCE =====
 @staff_member_required
-def admin_audit_trail(request):
+def sysadmin_audit_trail(request):
     return render(request, 'admin_dummy.html', {'title': 'Audit Trail', 'section': 'audit_trail'})
 
 @staff_member_required
-def admin_report_templates(request):
+def sysadmin_report_templates(request):
     return render(request, 'admin_dummy.html', {'title': 'Report Templates', 'section': 'report_templates'})
 
 @staff_member_required
-def admin_security_settings(request):
+def sysadmin_security_settings(request):
     return render(request, 'admin_dummy.html', {'title': 'Security Settings', 'section': 'security_settings'})
-
