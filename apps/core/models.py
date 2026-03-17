@@ -1,3 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+class GMTSettings(models.Model):
+    session_timeout = models.IntegerField(default=30)
+    updated_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "GMT Setting"
+        verbose_name_plural = "GMT Settings"
+    
+    def __str__(self):
+        return f"GMT Settings (session: {self.session_timeout} minutes)"
+    
+    @classmethod
+    def get_settings(cls):
+        settings, created = cls.objects.get_or_create(id=1)
+        return settings

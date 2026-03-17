@@ -67,8 +67,8 @@ function startTimers() {
     clearTimeout(warningTimer);
     clearTimeout(logoutTimer);
     
-    const sessionMenit = 1; // 1 menit buat test
-    const warningDetik = 5;
+    const sessionMenit = 30; // 1 menit buat test
+    const warningDetik = 10;
     
     const warningTime = (sessionMenit * 60 - warningDetik) * 1000;
     const logoutTime = sessionMenit * 60 * 1000;

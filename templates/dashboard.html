@@ -12,12 +12,9 @@
         <!-- Navbar with Welcome Banner -->
         <div class="navbar bg-cobalt text-white sticky top-0 z-10 shadow-md">
             <div class="flex-none flex items-center gap-2">
-                <!-- Tombol untuk mobile (hamburger) -->
                 <label for="main-drawer" class="btn btn-square btn-ghost lg:hidden">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </label>
-                
-                <!-- Tombol hide/show sidebar untuk desktop -->
                 <button onclick="toggleSidebar()" class="btn btn-square btn-ghost hidden lg:flex">
                     <i class="fa-solid fa-chevron-left text-xl" id="sidebar-toggle-icon"></i>
                 </button>
@@ -31,7 +28,6 @@
             </div>
             
             <div class="flex-none gap-4">
-                <!-- Welcome Banner di navbar -->
                 <div class="flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full">
                     <i class="fa-regular fa-hand-peace"></i>
                     <span class="text-sm font-medium">Welcome back, <strong>{{ request.user.username }}</strong>!</span>
@@ -39,9 +35,9 @@
             </div>
         </div>
 
-        <!-- Page Content - Dashboard Utama -->
+        <!-- Page Content -->
         <div class="p-6" id="main-content">
-            <!-- Dynamic Content Area untuk masing-masing dept -->
+            <!-- Dynamic Content Area -->
             <div id="dynamic-content" class="mt-2">
                 <!-- Default Dashboard dengan 4 dept -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -78,10 +74,6 @@
                                     <div class="stat-desc text-xs">This month</div>
                                 </div>
                             </div>
-                            
-                            <div class="card-actions justify-end mt-4">
-                                <a onclick="loadContent('hr', 'dashboard')" class="btn btn-sm bg-cobalt text-white hover:bg-cobalt/80 border-none">View Details</a>
-                            </div>
                         </div>
                     </div>
 
@@ -116,10 +108,6 @@
                                     <div class="stat-value text-production text-2xl">Rp 450M</div>
                                     <div class="stat-desc text-xs">Invoices</div>
                                 </div>
-                            </div>
-                            
-                            <div class="card-actions justify-end mt-4">
-                                <a onclick="loadContent('finance', 'dashboard')" class="btn btn-sm bg-burnt-orange text-white hover:bg-burnt-orange/80 border-none">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -156,10 +144,6 @@
                                     <div class="stat-desc text-xs">This week</div>
                                 </div>
                             </div>
-                            
-                            <div class="card-actions justify-end mt-4">
-                                <a onclick="loadContent('production', 'dashboard')" class="btn btn-sm bg-production text-white hover:bg-production/80 border-none">View Details</a>
-                            </div>
                         </div>
                     </div>
 
@@ -195,10 +179,6 @@
                                     <div class="stat-desc text-xs">Pending</div>
                                 </div>
                             </div>
-                            
-                            <div class="card-actions justify-end mt-4">
-                                <a onclick="loadContent('warehouse', 'dashboard')" class="btn btn-sm bg-forest text-white hover:bg-forest/80 border-none">View Details</a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -206,7 +186,7 @@
         </div>
     </div>
 
-    <!-- Sidebar (SAME AS BEFORE) -->
+    <!-- Sidebar -->
     <div class="drawer-side">
         <label for="main-drawer" class="drawer-overlay"></label>
         <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
@@ -226,7 +206,7 @@
                     
                     <!-- Dashboard -->
                     <li class="mb-1">
-                        <a onclick="loadContent('dashboard', 'main')" class="flex items-center gap-3">
+                        <a href="/" class="flex items-center gap-3">
                             <i class="fa-solid fa-chart-pie w-5"></i>
                             Dashboard
                         </a>
@@ -237,16 +217,16 @@
                     <!-- HR Module -->
                     <li class="mb-1">
                         <details class="group" id="hr-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('hr', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-users text-cobalt w-5"></i>
                                 <span class="flex-1">Human Resource</span>
-                                <!-- <span class="badge badge-cobalt">HR</span> -->
+                                <span class="badge badge-cobalt">HR</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('hr', 'employees')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
-                                <li><a onclick="loadContent('hr', 'attendance')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
-                                <li><a onclick="loadContent('hr', 'payroll')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
-                                <li><a onclick="loadContent('hr', 'recruitment')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
                             </ul>
                         </details>
                     </li>
@@ -254,16 +234,16 @@
                     <!-- Finance Module -->
                     <li class="mb-1">
                         <details class="group" id="finance-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('finance', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-coins text-burnt-orange w-5"></i>
                                 <span class="flex-1">Finance</span>
-                                <!-- <span class="badge badge-burnt-orange">ACC</span> -->
+                                <span class="badge badge-burnt-orange">ACC</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('finance', 'accounts')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
-                                <li><a onclick="loadContent('finance', 'journal')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
-                                <li><a onclick="loadContent('finance', 'ledger')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
-                                <li><a onclick="loadContent('finance', 'reports')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
                             </ul>
                         </details>
                     </li>
@@ -271,16 +251,16 @@
                     <!-- Production Module -->
                     <li class="mb-1">
                         <details class="group" id="production-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('production', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-industry text-production w-5"></i>
                                 <span class="flex-1">Production</span>
-                                <!-- <span class="badge badge-production">PROD</span> -->
+                                <span class="badge badge-production">PROD</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('production', 'orders')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
-                                <li><a onclick="loadContent('production', 'bom')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
-                                <li><a onclick="loadContent('production', 'routing')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
-                                <li><a onclick="loadContent('production', 'quality')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
                             </ul>
                         </details>
                     </li>
@@ -288,23 +268,109 @@
                     <!-- Warehouse Module -->
                     <li class="mb-1">
                         <details class="group" id="warehouse-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('warehouse', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-warehouse text-forest w-5"></i>
                                 <span class="flex-1">Warehouse</span>
-                                <!-- <span class="badge badge-forest">WH</span> -->
+                                <span class="badge badge-forest">WH</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('warehouse', 'inventory')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
-                                <li><a onclick="loadContent('warehouse', 'movement')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
-                                <li><a onclick="loadContent('warehouse', 'receiving')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
-                                <li><a onclick="loadContent('warehouse', 'shipping')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
                             </ul>
                         </details>
                     </li>
-                </ul>
+
+                    <!-- ===== ADMIN MENU - 5 BAGIAN LENGKAP ===== -->
+                    {% if request.user.is_staff %}
+                    <li class="menu-title text-xs opacity-50 mb-2 mt-4">ADMINISTRATION</li>
+
+                    <!-- 1. USER MANAGEMENT -->
+                    <li class="mb-1">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
+                                <i class="fa-solid fa-users-cog text-purple-500 w-5"></i>
+                                <span class="flex-1">User Management</span>
+                                <span class="badge badge-ghost">5</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a href="{% url 'admin_users' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-user w-5"></i> Users</a></li>
+                                <li><a href="{% url 'admin_groups' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-layer-group w-5"></i> Groups</a></li>
+                                <li><a href="{% url 'admin_permissions' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-key w-5"></i> Permissions</a></li>
+                                <li><a href="{% url 'admin_login_logs' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clock-rotate-left w-5"></i> Login Logs</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- 2. COMPANY SETTINGS -->
+                    <li class="mb-1">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
+                                <i class="fa-solid fa-building text-purple-500 w-5"></i>
+                                <span class="flex-1">Company Settings</span>
+                                <span class="badge badge-ghost">3</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a href="{% url 'admin_company_profile' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-address-card w-5"></i> Company Profile</a></li>
+                                <li><a href="{% url 'admin_fiscal_year' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-calendar w-5"></i> Fiscal Year</a></li>
+                                <li><a href="{% url 'admin_system_settings' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-sliders w-5"></i> System Settings</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- 3. MODULE CONFIGURATION -->
+                    <li class="mb-1">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
+                                <i class="fa-solid fa-puzzle-piece text-purple-500 w-5"></i>
+                                <span class="flex-1">Module Config</span>
+                                <span class="badge badge-ghost">3</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a href="{% url 'admin_modules' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-cubes w-5"></i> Module Management</a></li>
+                                <li><a href="{% url 'admin_module_settings' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-gear w-5"></i> Module Settings</a></li>
+                                <li><a href="{% url 'admin_ui_customization' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-paint-brush w-5"></i> UI Customization</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- 4. SYSTEM ADMIN -->
+                    <li class="mb-1">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
+                                <i class="fa-solid fa-server text-purple-500 w-5"></i>
+                                <span class="flex-1">System Admin</span>
+                                <span class="badge badge-ghost">4</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a href="{% url 'admin_backup' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-database w-5"></i> Database Backup</a></li>
+                                <li><a href="{% url 'admin_system_logs' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> System Logs</a></li>
+                                <li><a href="{% url 'admin_cache' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-bolt w-5"></i> Cache Management</a></li>
+                                <li><a href="{% url 'admin_email_config' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-envelope w-5"></i> Email Config</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- 5. AUDIT & COMPLIANCE -->
+                    <li class="mb-1">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
+                                <i class="fa-solid fa-shield-halved text-purple-500 w-5"></i>
+                                <span class="flex-1">Audit & Compliance</span>
+                                <span class="badge badge-ghost">3</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a href="{% url 'admin_audit_trail' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clock-rotate-left w-5"></i> Audit Trail</a></li>
+                                <li><a href="{% url 'admin_report_templates' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-file-pdf w-5"></i> Report Templates</a></li>
+                                <li><a href="{% url 'admin_security_settings' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-lock w-5"></i> Security Settings</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    {% endif %}
             </div>
 
-            <!-- User Profile - Fixed at bottom -->
+            <!-- User Profile -->
             <div class="sidebar-user-profile w-full">
                 <div class="relative px-2">
                     <div class="flex items-center gap-3 p-3 hover:bg-base-200 rounded-lg w-full cursor-pointer profile-trigger" onclick="toggleProfileModal()">
@@ -345,8 +411,9 @@
 
                             <!-- Settings & Privacy -->
                             <div class="grid grid-cols-2 gap-2 mb-4">
-                                <button onclick="loadContent('settings', 'general')" class="btn btn-sm bg-base-100 hover:bg-base-300 border-none">
-                                    <i class="fa-solid fa-gear"></i> Settings
+                                <!-- SETTINGS BUTTON - DI-NONAKTIFKAN SEMENTARA -->
+                                <button class="btn btn-sm bg-base-100 hover:bg-base-300 border-none opacity-50 cursor-not-allowed" disabled>
+                                    <i class="fa-solid fa-gear"></i> Settings (Soon)
                                 </button>
                                 <button onclick="loadContent('privacy', 'policy')" class="btn btn-sm bg-base-100 hover:bg-base-300 border-none">
                                     <i class="fa-solid fa-shield"></i> Privacy
@@ -365,42 +432,55 @@
     </div>
 </div>
 
-<!-- JavaScript (sama seperti sebelumnya) -->
 <script>
+// Toggle sidebar
+function toggleSidebar() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    drawer.classList.toggle('lg:drawer-open');
+    if (drawer.classList.contains('lg:drawer-open')) {
+        toggleIcon.classList.remove('fa-chevron-right');
+        toggleIcon.classList.add('fa-chevron-left');
+    } else {
+        toggleIcon.classList.remove('fa-chevron-left');
+        toggleIcon.classList.add('fa-chevron-right');
+    }
+    localStorage.setItem('sidebar_collapsed', !drawer.classList.contains('lg:drawer-open'));
+}
+
+// Load sidebar state
+document.addEventListener('DOMContentLoaded', function() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const sidebarCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    if (sidebarCollapsed) {
+        drawer.classList.remove('lg:drawer-open');
+        if (toggleIcon) {
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-chevron-right');
+        }
+    }
+});
+
 // Toggle Profile Modal
 function toggleProfileModal() {
-    console.log('toggleProfileModal dipanggil');
     const modal = document.getElementById('profile-modal');
     const arrow = document.getElementById('profile-arrow');
-    
-    if (!modal) {
-        console.error('Modal ga ketemu!');
-        return;
-    }
-    
     modal.classList.toggle('hidden');
-    
-    if (arrow) {
-        arrow.classList.toggle('fa-chevron-up');
-        arrow.classList.toggle('fa-chevron-down');
-    }
+    arrow.classList.toggle('fa-chevron-up');
+    arrow.classList.toggle('fa-chevron-down');
 }
 
 // Close modal when clicking outside
 document.addEventListener('click', function(event) {
     const modal = document.getElementById('profile-modal');
-    if (!modal || modal.classList.contains('hidden')) return;
-    
     const profileDiv = event.target.closest('.sidebar-user-profile');
     const modalContent = event.target.closest('#profile-modal');
     
-    if (!profileDiv && !modalContent) {
+    if (!profileDiv && !modalContent && !modal.classList.contains('hidden')) {
         modal.classList.add('hidden');
-        const arrow = document.getElementById('profile-arrow');
-        if (arrow) {
-            arrow.classList.remove('fa-chevron-down');
-            arrow.classList.add('fa-chevron-up');
-        }
+        document.getElementById('profile-arrow').classList.remove('fa-chevron-down');
+        document.getElementById('profile-arrow').classList.add('fa-chevron-up');
     }
 });
 
@@ -413,9 +493,7 @@ function toggleThemeSlider() {
     localStorage.setItem('theme', newTheme);
     
     const slider = document.getElementById('slider');
-    if (slider) {
-        slider.className = newTheme === 'light' ? 'toggle-slider light' : 'toggle-slider dark';
-    }
+    slider.className = newTheme === 'light' ? 'toggle-slider light' : 'toggle-slider dark';
 }
 
 // Initialize theme
@@ -425,14 +503,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const checkbox = document.getElementById('theme-toggle');
     const slider = document.getElementById('slider');
-    if (checkbox && slider) {
-        if (savedTheme === 'dark') {
-            checkbox.checked = true;
-            slider.className = 'toggle-slider dark';
-        } else {
-            checkbox.checked = false;
-            slider.className = 'toggle-slider light';
-        }
+    if (savedTheme === 'dark') {
+        checkbox.checked = true;
+        slider.className = 'toggle-slider dark';
+    } else {
+        checkbox.checked = false;
+        slider.className = 'toggle-slider light';
     }
 });
 
@@ -443,398 +519,16 @@ function changeLanguage(lang, element) {
     alert(`Language changed to ${lang.toUpperCase()}`);
 }
 
-// Close other details tags
-function closeOtherDetails(exceptId) {
-    const detailsIds = ['hr-details', 'finance-details', 'production-details', 'warehouse-details'];
-    detailsIds.forEach(id => {
-        if (id !== exceptId) {
-            const details = document.getElementById(id);
-            if (details) details.removeAttribute('open');
-        }
-    });
-}
-
-// Load content function
-function loadContent(module, section) {
-    // Close other details
-    if (module === 'hr') closeOtherDetails('hr-details');
-    else if (module === 'finance') closeOtherDetails('finance-details');
-    else if (module === 'production') closeOtherDetails('production-details');
-    else if (module === 'warehouse') closeOtherDetails('warehouse-details');
-    
-    const contentDiv = document.getElementById('dynamic-content');
-    let html = '';
-    
-    // Dashboard content (balikin ke default)
-    if (module === 'dashboard') {
-        html = `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- HR Department -->
-                <div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
-                    <div class="card-body">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-cobalt/10 flex items-center justify-center">
-                                <i class="fa-solid fa-users text-cobalt text-xl"></i>
-                            </div>
-                            <h2 class="card-title text-cobalt">Human Resource</h2>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Total Employees</div>
-                                <div class="stat-value text-cobalt text-2xl">156</div>
-                                <div class="stat-desc text-xs">↑ 8 from last month</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Present Today</div>
-                                <div class="stat-value text-forest text-2xl">142</div>
-                                <div class="stat-desc text-xs">91% attendance</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">On Leave</div>
-                                <div class="stat-value text-burnt-orange text-2xl">8</div>
-                                <div class="stat-desc text-xs">4 pending</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">New Hires</div>
-                                <div class="stat-value text-production text-2xl">12</div>
-                                <div class="stat-desc text-xs">This month</div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-actions justify-end mt-4">
-                            <a onclick="loadContent('hr', 'dashboard')" class="btn btn-sm bg-cobalt text-white hover:bg-cobalt/80 border-none">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Finance Department -->
-                <div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
-                    <div class="card-body">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-burnt-orange/10 flex items-center justify-center">
-                                <i class="fa-solid fa-coins text-burnt-orange text-xl"></i>
-                            </div>
-                            <h2 class="card-title text-burnt-orange">Finance</h2>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Revenue</div>
-                                <div class="stat-value text-forest text-2xl">Rp 2.4B</div>
-                                <div class="stat-desc text-xs">↑ 12%</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Expenses</div>
-                                <div class="stat-value text-burnt-orange text-2xl">Rp 1.2B</div>
-                                <div class="stat-desc text-xs">Within budget</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Net Profit</div>
-                                <div class="stat-value text-cobalt text-2xl">Rp 1.2B</div>
-                                <div class="stat-desc text-xs">↑ 15%</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Outstanding</div>
-                                <div class="stat-value text-production text-2xl">Rp 450M</div>
-                                <div class="stat-desc text-xs">Invoices</div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-actions justify-end mt-4">
-                            <a onclick="loadContent('finance', 'dashboard')" class="btn btn-sm bg-burnt-orange text-white hover:bg-burnt-orange/80 border-none">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Production Department -->
-                <div class="card bg-base-100 shadow-xl border-l-4 border-production">
-                    <div class="card-body">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-production/10 flex items-center justify-center">
-                                <i class="fa-solid fa-industry text-production text-xl"></i>
-                            </div>
-                            <h2 class="card-title text-production">Production</h2>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Active Orders</div>
-                                <div class="stat-value text-production text-2xl">24</div>
-                                <div class="stat-desc text-xs">8 urgent</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Completed</div>
-                                <div class="stat-value text-forest text-2xl">156</div>
-                                <div class="stat-desc text-xs">This month</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Efficiency</div>
-                                <div class="stat-value text-cobalt text-2xl">94%</div>
-                                <div class="stat-desc text-xs">↑ 2%</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Downtime</div>
-                                <div class="stat-value text-burnt-orange text-2xl">3.2h</div>
-                                <div class="stat-desc text-xs">This week</div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-actions justify-end mt-4">
-                            <a onclick="loadContent('production', 'dashboard')" class="btn btn-sm bg-production text-white hover:bg-production/80 border-none">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Warehouse Department -->
-                <div class="card bg-base-100 shadow-xl border-l-4 border-forest">
-                    <div class="card-body">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-forest/10 flex items-center justify-center">
-                                <i class="fa-solid fa-warehouse text-forest text-xl"></i>
-                            </div>
-                            <h2 class="card-title text-forest">Warehouse</h2>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Total Items</div>
-                                <div class="stat-value text-cobalt text-2xl">5,432</div>
-                                <div class="stat-desc text-xs">234 SKUs</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Low Stock</div>
-                                <div class="stat-value text-burnt-orange text-2xl">12</div>
-                                <div class="stat-desc text-xs">Need reorder</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Shipments</div>
-                                <div class="stat-value text-forest text-2xl">45</div>
-                                <div class="stat-desc text-xs">Today</div>
-                            </div>
-                            <div class="stat bg-base-200 rounded-lg p-3">
-                                <div class="stat-title text-xs">Receiving</div>
-                                <div class="stat-value text-production text-2xl">28</div>
-                                <div class="stat-desc text-xs">Pending</div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-actions justify-end mt-4">
-                            <a onclick="loadContent('warehouse', 'dashboard')" class="btn btn-sm bg-forest text-white hover:bg-forest/80 border-none">View Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    
-    // HR Content (detail page)
-    else if (module === 'hr') {
-        if (section === 'dashboard') {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-cobalt">
-                    <h2 class="text-2xl font-bold text-cobalt mb-4">Human Resource Dashboard</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Total Employees</div>
-                            <div class="stat-value text-cobalt">156</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Present Today</div>
-                            <div class="stat-value text-forest">142</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">On Leave</div>
-                            <div class="stat-value text-burnt-orange">8</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-cobalt">
-                    <h2 class="text-2xl font-bold text-cobalt mb-4">HR - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
-                    <p class="text-gray-600">This is the ${section} section.</p>
-                </div>
-            `;
-        }
-    }
-    
-    // Finance Content (detail page)
-    else if (module === 'finance') {
-        if (section === 'dashboard') {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-burnt-orange">
-                    <h2 class="text-2xl font-bold text-burnt-orange mb-4">Finance Dashboard</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Revenue</div>
-                            <div class="stat-value text-forest">Rp 2.4B</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Expenses</div>
-                            <div class="stat-value text-burnt-orange">Rp 1.2B</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Net Profit</div>
-                            <div class="stat-value text-cobalt">Rp 1.2B</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-burnt-orange">
-                    <h2 class="text-2xl font-bold text-burnt-orange mb-4">Finance - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
-                    <p class="text-gray-600">This is the ${section} section.</p>
-                </div>
-            `;
-        }
-    }
-    
-    // Production Content (detail page)
-    else if (module === 'production') {
-        if (section === 'dashboard') {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-production">
-                    <h2 class="text-2xl font-bold text-production mb-4">Production Dashboard</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Active Orders</div>
-                            <div class="stat-value text-production">24</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Completed</div>
-                            <div class="stat-value text-forest">156</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Efficiency</div>
-                            <div class="stat-value text-cobalt">94%</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-production">
-                    <h2 class="text-2xl font-bold text-production mb-4">Production - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
-                    <p class="text-gray-600">This is the ${section} section.</p>
-                </div>
-            `;
-        }
-    }
-    
-    // Warehouse Content (detail page)
-    else if (module === 'warehouse') {
-        if (section === 'dashboard') {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-forest">
-                    <h2 class="text-2xl font-bold text-forest mb-4">Warehouse Dashboard</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Total Items</div>
-                            <div class="stat-value text-cobalt">5,432</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Low Stock</div>
-                            <div class="stat-value text-burnt-orange">12</div>
-                        </div>
-                        <div class="stat bg-base-200 rounded-lg p-4">
-                            <div class="stat-title">Shipments</div>
-                            <div class="stat-value text-forest">45</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            html = `
-                <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-forest">
-                    <h2 class="text-2xl font-bold text-forest mb-4">Warehouse - ${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
-                    <p class="text-gray-600">This is the ${section} section.</p>
-                </div>
-            `;
-        }
-    }
-    
-    // Settings & Privacy
-    else if (module === 'settings') {
-        html = `
-            <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-gray-400">
-                <h2 class="text-2xl font-bold text-gray-600 mb-4">Settings</h2>
-                <p class="text-gray-600">Settings content would appear here.</p>
-            </div>
-        `;
-    } else if (module === 'privacy') {
-        html = `
-            <div class="p-6 bg-base-100 rounded-xl shadow-lg border-l-4 border-gray-400">
-                <h2 class="text-2xl font-bold text-gray-600 mb-4">Privacy Policy</h2>
-                <p class="text-gray-600">Privacy policy content would appear here.</p>
-            </div>
-        `;
-    }
-    
-    contentDiv.innerHTML = html;
-    
-    // Close profile modal
-    const modal = document.getElementById('profile-modal');
-    const arrow = document.getElementById('profile-arrow');
-    if (modal) modal.classList.add('hidden');
-    if (arrow) {
-        arrow.classList.remove('fa-chevron-down');
-        arrow.classList.add('fa-chevron-up');
-    }
-}
-
 // Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('profile-modal');
-        const arrow = document.getElementById('profile-arrow');
-        if (modal && !modal.classList.contains('hidden')) {
+        if (!modal.classList.contains('hidden')) {
             modal.classList.add('hidden');
-            if (arrow) {
-                arrow.classList.remove('fa-chevron-down');
-                arrow.classList.add('fa-chevron-up');
-            }
+            document.getElementById('profile-arrow').classList.remove('fa-chevron-down');
+            document.getElementById('profile-arrow').classList.add('fa-chevron-up');
         }
     }
 });
-
-
-// Toggle sidebar function
-function toggleSidebar() {
-    const drawer = document.querySelector('.drawer');
-    const toggleIcon = document.getElementById('sidebar-toggle-icon');
-    
-    drawer.classList.toggle('lg:drawer-open');
-    
-    // Ganti icon chevron
-    if (drawer.classList.contains('lg:drawer-open')) {
-        toggleIcon.classList.remove('fa-chevron-right');
-        toggleIcon.classList.add('fa-chevron-left');
-    } else {
-        toggleIcon.classList.remove('fa-chevron-left');
-        toggleIcon.classList.add('fa-chevron-right');
-    }
-    
-    // Simpan preferensi user di localStorage
-    localStorage.setItem('sidebar_collapsed', !drawer.classList.contains('lg:drawer-open'));
-}
-
-// Load preferensi sidebar saat halaman dimuat
-document.addEventListener('DOMContentLoaded', function() {
-    const drawer = document.querySelector('.drawer');
-    const toggleIcon = document.getElementById('sidebar-toggle-icon');
-    const sidebarCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
-    
-    if (sidebarCollapsed) {
-        drawer.classList.remove('lg:drawer-open');
-        if (toggleIcon) {
-            toggleIcon.classList.remove('fa-chevron-left');
-            toggleIcon.classList.add('fa-chevron-right');
-        }
-    }
-});
-
 </script>
 {% endblock %}
