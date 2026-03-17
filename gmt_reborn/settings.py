@@ -13,7 +13,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 import sys
 from pathlib import Path
-from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -89,11 +92,11 @@ WSGI_APPLICATION = 'gmt_reborn.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gmt_reborn_db',
-        'USER': 'adung',
-        'PASSWORD': '1312',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'gmt_reborn_db'),
+        'USER': os.getenv('DB_USER', 'adung'),
+        'PASSWORD': os.getenv('DB_PASSWORD', '1312'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
