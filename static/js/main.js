@@ -85,8 +85,10 @@ const SessionModal = {
     },
     
     logout() {
-        window.location.href = '/login/';
-    }
+    // Set flag expired di session storage
+    sessionStorage.setItem('session_expired', 'true');
+    window.location.href = '/login/?expired=1';
+}
 };
 
 // Session check with heartbeat - ONLY ON DASHBOARD
@@ -123,7 +125,8 @@ function resetTimers() {
     
     // Force logout after 1800 seconds (30 minutes)
     logoutTimer = setTimeout(() => {
-        window.location.href = '/login/';
+    sessionStorage.setItem('session_expired', 'true');
+    window.location.href = '/login/?expired=1';
     }, 1800000);
 }
 

@@ -11,17 +11,25 @@
     <div class="drawer-content flex flex-col">
         <!-- Navbar with Welcome Banner -->
         <div class="navbar bg-cobalt text-white sticky top-0 z-10 shadow-md">
-            <div class="flex-none lg:hidden">
-                <label for="main-drawer" class="btn btn-square btn-ghost">
+            <div class="flex-none flex items-center gap-2">
+                <!-- Tombol untuk mobile (hamburger) -->
+                <label for="main-drawer" class="btn btn-square btn-ghost lg:hidden">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </label>
+                
+                <!-- Tombol hide/show sidebar untuk desktop -->
+                <button onclick="toggleSidebar()" class="btn btn-square btn-ghost hidden lg:flex">
+                    <i class="fa-solid fa-chevron-left text-xl" id="sidebar-toggle-icon"></i>
+                </button>
             </div>
+            
             <div class="flex-1">
                 <a class="text-xl font-bold flex items-center gap-2">
                     <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
                     GMT Reborn
                 </a>
             </div>
+            
             <div class="flex-none gap-4">
                 <!-- Welcome Banner di navbar -->
                 <div class="flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full">
@@ -791,5 +799,42 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
+
+// Toggle sidebar function
+function toggleSidebar() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    
+    drawer.classList.toggle('lg:drawer-open');
+    
+    // Ganti icon chevron
+    if (drawer.classList.contains('lg:drawer-open')) {
+        toggleIcon.classList.remove('fa-chevron-right');
+        toggleIcon.classList.add('fa-chevron-left');
+    } else {
+        toggleIcon.classList.remove('fa-chevron-left');
+        toggleIcon.classList.add('fa-chevron-right');
+    }
+    
+    // Simpan preferensi user di localStorage
+    localStorage.setItem('sidebar_collapsed', !drawer.classList.contains('lg:drawer-open'));
+}
+
+// Load preferensi sidebar saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const sidebarCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    
+    if (sidebarCollapsed) {
+        drawer.classList.remove('lg:drawer-open');
+        if (toggleIcon) {
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-chevron-right');
+        }
+    }
+});
+
 </script>
 {% endblock %}

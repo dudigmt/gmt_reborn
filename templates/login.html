@@ -14,6 +14,23 @@
                 <div class="flex justify-center mb-8">
                     <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-16 w-auto">
                 </div>
+                <!-- Session Expired Notification - Premium Version -->
+                {% if expired_time %}
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg shadow-md animate-slideDown">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fa-solid fa-hourglass-end text-amber-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h3 class="text-sm font-medium text-amber-800">Session Expired</h3>
+                            <div class="mt-1 text-sm text-amber-700">
+                                <p>Your session has ended at: <strong>{{ expired_time }}</strong></p>
+                                <p class="text-xs mt-1">Please sign in again to continue.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Title -->
                 <div class="text-center mb-8">
