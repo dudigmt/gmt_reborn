@@ -28,6 +28,7 @@ urlpatterns = [
     
     # SYSADMIN MENU - COMPANY SETTINGS
     path('sysadmin/company-profile/', views.sysadmin_company_profile, name='sysadmin_company_profile'),
+    path('sysadmin/company/', views.sysadmin_company, name='sysadmin_company'),
     path('sysadmin/fiscal-year/', views.sysadmin_fiscal_year, name='sysadmin_fiscal_year'),
     path('sysadmin/system-settings/', views.sysadmin_system_settings, name='sysadmin_system_settings'),
     

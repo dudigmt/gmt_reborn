@@ -1,6 +1,77 @@
 <div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
     <div class="card-body">
-        <h2 class="card-title text-burnt-orange">Company Settings</h2>
-        <p>This feature is coming soon.</p>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="card-title text-burnt-orange">Company Settings</h2>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Company Name -->
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Company Name</span></label>
+                    <input type="text" name="name" value="{{ profile.name }}" class="input input-bordered">
+                </div>
+
+                <!-- Tax ID (NPWP) -->
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Tax ID (NPWP)</span></label>
+                    <input type="text" name="tax_id" value="{{ profile.tax_id }}" class="input input-bordered">
+                </div>
+
+                <!-- Phone -->
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Phone</span></label>
+                    <input type="text" name="phone" value="{{ profile.phone }}" class="input input-bordered">
+                </div>
+
+                <!-- Email -->
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Email</span></label>
+                    <input type="email" name="email" value="{{ profile.email }}" class="input input-bordered">
+                </div>
+
+                <!-- Address (full width) -->
+                <div class="form-control md:col-span-2">
+                    <label class="label"><span class="label-text">Address</span></label>
+                    <textarea name="address" rows="3" class="textarea textarea-bordered">{{ profile.address }}</textarea>
+                </div>
+
+                <!-- Currency -->
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Currency</span></label>
+                    <select name="currency" class="select select-bordered">
+                        <option value="IDR" {% if profile.currency == 'IDR' %}selected{% endif %}>IDR - Indonesian Rupiah</option>
+                        <option value="USD" {% if profile.currency == 'USD' %}selected{% endif %}>USD - US Dollar</option>
+                    </select>
+                </div>
+
+                <!-- Date Format -->
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Date Format</span></label>
+                    <select name="date_format" class="select select-bordered">
+                        <option value="d/m/Y" {% if profile.date_format == 'd/m/Y' %}selected{% endif %}>DD/MM/YYYY</option>
+                        <option value="m/d/Y" {% if profile.date_format == 'm/d/Y' %}selected{% endif %}>MM/DD/YYYY</option>
+                        <option value="Y-m-d" {% if profile.date_format == 'Y-m-d' %}selected{% endif %}>YYYY-MM-DD</option>
+                    </select>
+                </div>
+
+                <!-- Logo Upload -->
+                <div class="form-control md:col-span-2">
+                    <label class="label"><span class="label-text">Company Logo</span></label>
+                    {% if profile.logo %}
+                    <div class="mb-2">
+                        <img src="{{ profile.logo.url }}" class="h-16 w-auto">
+                    </div>
+                    {% endif %}
+                    <input type="file" name="logo" class="file-input file-input-bordered">
+                </div>
+            </div>
+
+            <div class="card-actions justify-end mt-6">
+                <button type="submit" class="btn bg-burnt-orange text-white">Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>

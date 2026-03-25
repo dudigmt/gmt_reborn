@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import LoginHistory
+from .models import CompanyProfile
 
 def login_view(request):
     expired_time = None
@@ -275,3 +276,30 @@ def login_view(request):
             messages.error(request, 'Invalid username or password')
     
     return render(request, 'login.html', {'expired_time': expired_time})
+
+
+def sysadmin_company(request):
+    if not request.user.is_staff:
+        return redirect('/')
+    
+    profile = CompanyProfile.get_profile()
+    
+    if request.method == 'POST':
+        profile.name = request.POST.get('name', 'GMT Reborn')
+        profile.address = request.POST.get('address', '')
+        profile.phone = request.POST.get('phone', '')
+        profile.email = request.POST.get('email', '')
+        profile.tax_id = request.POST.get('tax_id', '')
+        profile.currency = request.POST.get('currency', 'IDR')
+        profile.date_format = request.POST.get('date_format', 'd/m/Y')
+        
+        # Handle logo upload
+        if request.FILES.get('logo'):
+            profile.logo = request.FILES['logo']
+        
+        profile.updated_by = request.user
+        profile.save()
+        
+        return redirect('sysadmin_company')
+    
+    return render(request, 'admin/company.html', {'profile': profile})
