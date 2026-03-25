@@ -1,0 +1,66 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}HR Dashboard - GMT Reborn{% endblock %}
+
+{% block content %}
+<div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
+    <div class="card-body">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-lg bg-cobalt/10 flex items-center justify-center">
+                <i class="fa-solid fa-users text-cobalt text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-cobalt">Human Resource Dashboard</h2>
+                <p class="text-gray-500">Manage employees, attendance, payroll, and recruitment</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Total Employees</div>
+                <div class="stat-value text-cobalt text-3xl">156</div>
+                <div class="stat-desc">↑ 8 from last month</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Present Today</div>
+                <div class="stat-value text-forest text-3xl">142</div>
+                <div class="stat-desc">91% attendance rate</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">On Leave</div>
+                <div class="stat-value text-burnt-orange text-3xl">8</div>
+                <div class="stat-desc">4 pending requests</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">New Hires (MTD)</div>
+                <div class="stat-value text-production text-3xl">12</div>
+                <div class="stat-desc">This month</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="card-title">Recent Employees</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>Budi Santoso</span><span class="badge">IT Dept</span></div>
+                        <div class="flex justify-between"><span>Siti Rahayu</span><span class="badge">HR Dept</span></div>
+                        <div class="flex justify-between"><span>Ahmad Fauzi</span><span class="badge">Finance</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="card-title">Upcoming Birthdays</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>Dewi Lestari</span><span class="badge">25 Mar</span></div>
+                        <div class="flex justify-between"><span>Rizky Pratama</span><span class="badge">28 Mar</span></div>
+                        <div class="flex justify-between"><span>Andi Wijaya</span><span class="badge">30 Mar</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

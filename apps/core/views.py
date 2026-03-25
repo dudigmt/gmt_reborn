@@ -66,7 +66,7 @@ def settings_view(request):
 def sysadmin_dashboard(request):
     if not request.user.is_staff:
         return redirect('/')
-    return render(request, 'admin_dashboard.html', {'active_tab': 'users'})
+    return render(request, 'sysadmin_dashboard.html', {'active_tab': 'users'})
 
 # ===== USER MANAGEMENT =====
 @staff_member_required
@@ -140,3 +140,15 @@ def sysadmin_report_templates(request):
 @staff_member_required
 def sysadmin_security_settings(request):
     return render(request, 'admin_dummy.html', {'title': 'Security Settings', 'section': 'security_settings'})
+
+def hr_dashboard(request):
+    return render(request, 'hr_dashboard.html')
+
+def finance_dashboard(request):
+    return render(request, 'finance_dashboard.html')
+
+def production_dashboard(request):
+    return render(request, 'production_dashboard.html')
+
+def warehouse_dashboard(request):
+    return render(request, 'warehouse_dashboard.html')

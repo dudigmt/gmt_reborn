@@ -8,6 +8,10 @@ urlpatterns = [
     path('api/check-session/', views.check_session, name='check-session'),
     path('api/extend-session/', views.extend_session, name='extend-session'),
     path('settings/', views.settings_view, name='settings'),
+    path('hr/', views.hr_dashboard, name='hr_dashboard'),
+    path('finance/', views.finance_dashboard, name='finance_dashboard'),
+    path('production/', views.production_dashboard, name='production_dashboard'),
+    path('warehouse/', views.warehouse_dashboard, name='warehouse_dashboard'),
     
     # SYSADMIN MENU - SEMUA PAKAI PREFIX 'sysadmin/' (bukan 'admin/')
     # Ini biar ga bentrok dengan Django Admin di /admin/

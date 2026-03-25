@@ -1,0 +1,66 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Warehouse Dashboard - GMT Reborn{% endblock %}
+
+{% block content %}
+<div class="card bg-base-100 shadow-xl border-l-4 border-forest">
+    <div class="card-body">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-lg bg-forest/10 flex items-center justify-center">
+                <i class="fa-solid fa-warehouse text-forest text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-forest">Warehouse Dashboard</h2>
+                <p class="text-gray-500">Inventory management, stock movement, and logistics</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Total Items</div>
+                <div class="stat-value text-cobalt text-3xl">5,432</div>
+                <div class="stat-desc">234 SKUs</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Low Stock</div>
+                <div class="stat-value text-burnt-orange text-3xl">12</div>
+                <div class="stat-desc">Need reorder</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Shipments</div>
+                <div class="stat-value text-forest text-3xl">45</div>
+                <div class="stat-desc">Today</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Receiving</div>
+                <div class="stat-value text-production text-3xl">28</div>
+                <div class="stat-desc">Pending</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="card-title">Top Stock Items</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>Raw Material A</span><span>1,250 units</span></div>
+                        <div class="flex justify-between"><span>Finished Goods B</span><span>890 units</span></div>
+                        <div class="flex justify-between"><span>Packaging C</span><span>2,100 units</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="card-title">Recent Shipments</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>SHP-001</span><span class="badge badge-success">Delivered</span></div>
+                        <div class="flex justify-between"><span>SHP-002</span><span class="badge badge-warning">In Transit</span></div>
+                        <div class="flex justify-between"><span>SHP-003</span><span class="badge">Processing</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

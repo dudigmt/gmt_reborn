@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="drawer lg:drawer-open">
+    <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+    
+    <!-- Main Content -->
+    <div class="drawer-content flex flex-col">
+        <!-- Navbar -->
+        <div class="navbar bg-cobalt text-white sticky top-0 z-10 shadow-md">
+            <div class="flex-none flex items-center gap-2">
+                <label for="main-drawer" class="btn btn-square btn-ghost lg:hidden">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </label>
+                <button onclick="toggleSidebar()" class="btn btn-square btn-ghost hidden lg:flex">
+                    <i class="fa-solid fa-chevron-left text-xl" id="sidebar-toggle-icon"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1">
+                <a class="text-xl font-bold flex items-center gap-2">
+                    <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
+                    GMT Reborn
+                </a>
+            </div>
+            
+            <div class="flex-none gap-4">
+                <div class="flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full">
+                    <i class="fa-regular fa-hand-peace"></i>
+                    <span class="text-sm font-medium">Welcome back, <strong>{{ request.user.username }}</strong>!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="p-6">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="drawer-side">
+        <label for="main-drawer" class="drawer-overlay"></label>
+        <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
+            <!-- Logo -->
+            <div class="mb-8 flex items-center gap-3 px-4 flex-shrink-0">
+                <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
+                <div>
+                    <h2 class="font-bold text-lg">GMT Reborn</h2>
+                    <p class="text-xs opacity-70">Enterprise Solution</p>
+                </div>
+            </div>
+
+            <!-- Scrollable Menu Container -->
+            <div class="sidebar-menu-container flex-1 overflow-y-auto px-2">
+                <ul class="menu menu-lg w-full">
+                    <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li>
+                    
+                    <!-- Dashboard -->
+                    <li class="mb-1">
+                        <a href="/" class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-5"></i>
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="menu-title text-xs opacity-50 mb-2 mt-4">MODULES</li>
+
+                    <!-- HR Module -->
+                    <li class="mb-1">
+                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="hr" data-url="{% url 'hr_dashboard' %}">
+                            <i class="fa-solid fa-users text-cobalt w-5"></i>
+                            <span class="flex-1">Human Resource</span>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-hr"></i>
+                        </div>
+                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-hr">
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Finance Module -->
+                    <li class="mb-1">
+                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="finance" data-url="{% url 'finance_dashboard' %}">
+                            <i class="fa-solid fa-coins text-burnt-orange w-5"></i>
+                            <span class="flex-1">Finance</span>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-finance"></i>
+                        </div>
+                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-finance">
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Production Module -->
+                    <li class="mb-1">
+                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="production" data-url="{% url 'production_dashboard' %}">
+                            <i class="fa-solid fa-industry text-production w-5"></i>
+                            <span class="flex-1">Production</span>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-production"></i>
+                        </div>
+                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-production">
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Warehouse Module -->
+                    <li class="mb-1">
+                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="warehouse" data-url="{% url 'warehouse_dashboard' %}">
+                            <i class="fa-solid fa-warehouse text-forest w-5"></i>
+                            <span class="flex-1">Warehouse</span>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-warehouse"></i>
+                        </div>
+                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-warehouse">
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
+                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Administration - Single Menu -->
+                    {% if request.user.is_staff %}
+                    <li class="mt-2">
+                        <a href="{% url 'sysadmin_dashboard' %}" class="flex items-center gap-3 hover:bg-base-200 rounded-lg p-2">
+                            <i class="fa-solid fa-user-shield text-purple-500 w-5"></i>
+                            <span class="flex-1">Administration</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- User Profile -->
+            <div class="sidebar-user-profile w-full">
+                <div class="relative px-2">
+                    <div class="flex items-center gap-3 p-3 hover:bg-base-200 rounded-lg w-full cursor-pointer profile-trigger" onclick="toggleProfileModal()">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full ring-2 ring-cobalt ring-offset-base-100 ring-offset-2">
+                                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0047AB&color=fff&bold=true" />
+                            </div>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="font-semibold">{{ request.user.username }}</div>
+                            <div class="text-xs opacity-70">{{ request.user.email|default:"user@gmt.com" }}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-up text-xs opacity-50" id="profile-arrow"></i>
+                    </div>
+
+                    <!-- Profile Modal -->
+                    <div id="profile-modal" class="absolute bottom-full left-0 right-0 mb-2 hidden bg-base-200 rounded-xl shadow-lg border border-base-300 modal-enter">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-medium">Theme</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="theme-toggle" class="sr-only" onchange="toggleThemeSlider()">
+                                    <div class="toggle-slider light" id="slider"></div>
+                                </label>
+                            </div>
+                            <div class="mb-4">
+                                <span class="text-sm font-medium block mb-2">Language</span>
+                                <div class="lang-icons">
+                                    <img src="{% static 'assets/img/flags/id.svg' %}" class="lang-icon" onclick="changeLanguage('id', this)" title="Indonesia">
+                                    <img src="{% static 'assets/img/flags/en.svg' %}" class="lang-icon" onclick="changeLanguage('en', this)" title="English">
+                                    <img src="{% static 'assets/img/flags/kr.svg' %}" class="lang-icon" onclick="changeLanguage('kr', this)" title="Korea">
+                                    <img src="{% static 'assets/img/flags/cn.svg' %}" class="lang-icon" onclick="changeLanguage('cn', this)" title="China">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                <button class="btn btn-sm bg-base-100 hover:bg-base-300 border-none opacity-50 cursor-not-allowed" disabled>
+                                    <i class="fa-solid fa-gear"></i> Settings (Soon)
+                                </button>
+                                <button onclick="loadContent('privacy', 'policy')" class="btn btn-sm bg-base-100 hover:bg-base-300 border-none">
+                                    <i class="fa-solid fa-shield"></i> Privacy
+                                </button>
+                            </div>
+                            <a href="{% url 'logout' %}" class="btn btn-sm bg-burnt-orange hover:bg-burnt-orange/80 text-white w-full border-none">
+                                <i class="fa-solid fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleSidebar() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    drawer.classList.toggle('lg:drawer-open');
+    if (drawer.classList.contains('lg:drawer-open')) {
+        toggleIcon.classList.remove('fa-chevron-right');
+        toggleIcon.classList.add('fa-chevron-left');
+    } else {
+        toggleIcon.classList.remove('fa-chevron-left');
+        toggleIcon.classList.add('fa-chevron-right');
+    }
+    localStorage.setItem('sidebar_collapsed', !drawer.classList.contains('lg:drawer-open'));
+}
+
+// Open a specific submenu and close others
+function openSubmenu(module) {
+    // Close all submenus
+    document.querySelectorAll('.submenu').forEach(menu => {
+        menu.classList.add('hidden');
+    });
+    document.querySelectorAll('[id^="chevron-"]').forEach(ch => {
+        ch.style.transform = 'rotate(0deg)';
+    });
+    // Open the requested one
+    const submenu = document.getElementById(`submenu-${module}`);
+    const chevron = document.getElementById(`chevron-${module}`);
+    if (submenu && chevron) {
+        submenu.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+    }
+}
+
+// Toggle submenu (used by click handler)
+function toggleSubmenu(module) {
+    const submenu = document.getElementById(`submenu-${module}`);
+    const chevron = document.getElementById(`chevron-${module}`);
+    if (submenu.classList.contains('hidden')) {
+        openSubmenu(module);
+    } else {
+        submenu.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+// On page load, restore the last opened module from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const sidebarCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    if (sidebarCollapsed) {
+        drawer.classList.remove('lg:drawer-open');
+        if (toggleIcon) {
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-chevron-right');
+        }
+    }
+    
+    // Restore last opened module
+    const lastModule = localStorage.getItem('last_module');
+    if (lastModule && ['hr', 'finance', 'production', 'warehouse'].includes(lastModule)) {
+        openSubmenu(lastModule);
+    }
+});
+
+// Handle clicks on module headers
+document.querySelectorAll('.module-header').forEach(header => {
+    header.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const module = this.dataset.module;
+        const url = this.dataset.url;
+        
+        // Save this module as the last opened
+        localStorage.setItem('last_module', module);
+        
+        // Toggle the submenu visually
+        toggleSubmenu(module);
+        
+        // Navigate to the dashboard
+        window.location.href = url;
+    });
+});
+
+function toggleProfileModal() {
+    const modal = document.getElementById('profile-modal');
+    const arrow = document.getElementById('profile-arrow');
+    modal.classList.toggle('hidden');
+    arrow.classList.toggle('fa-chevron-up');
+    arrow.classList.toggle('fa-chevron-down');
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('profile-modal');
+    const profileDiv = event.target.closest('.sidebar-user-profile');
+    const modalContent = event.target.closest('#profile-modal');
+    if (!profileDiv && !modalContent && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+        document.getElementById('profile-arrow').classList.remove('fa-chevron-down');
+        document.getElementById('profile-arrow').classList.add('fa-chevron-up');
+    }
+});
+
+function toggleThemeSlider() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    const slider = document.getElementById('slider');
+    slider.className = newTheme === 'light' ? 'toggle-slider light' : 'toggle-slider dark';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const checkbox = document.getElementById('theme-toggle');
+    const slider = document.getElementById('slider');
+    if (savedTheme === 'dark') {
+        checkbox.checked = true;
+        slider.className = 'toggle-slider dark';
+    } else {
+        checkbox.checked = false;
+        slider.className = 'toggle-slider light';
+    }
+});
+
+function changeLanguage(lang, element) {
+    document.querySelectorAll('.lang-icon').forEach(icon => icon.classList.remove('active'));
+    element.classList.add('active');
+    alert(`Language changed to ${lang.toUpperCase()}`);
+}
+
+function loadContent(module, section) {
+    console.log('load content', module, section);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('profile-modal');
+        if (!modal.classList.contains('hidden')) {
+            modal.classList.add('hidden');
+            document.getElementById('profile-arrow').classList.remove('fa-chevron-down');
+            document.getElementById('profile-arrow').classList.add('fa-chevron-up');
+        }
+    }
+});
+</script>
+{% endblock %}

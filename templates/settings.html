@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - GMT Reborn{% endblock %}
+
+{% block body %}
+<div class="drawer lg:drawer-open">
+    <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+    
+    <!-- Main Content -->
+    <div class="drawer-content flex flex-col">
+        <!-- Navbar -->
+        <div class="navbar bg-cobalt text-white sticky top-0 z-10 shadow-md">
+            <div class="flex-none lg:hidden">
+                <label for="main-drawer" class="btn btn-square btn-ghost">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </label>
+            </div>
+            <div class="flex-1">
+                <a class="text-xl font-bold flex items-center gap-2">
+                    <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
+                    GMT Reborn
+                </a>
+            </div>
+            <div class="flex-none gap-4">
+                <div class="flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full">
+                    <i class="fa-regular fa-gear"></i>
+                    <span class="text-sm font-medium">Settings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="p-6">
+            <div class="max-w-2xl">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-cobalt">GMT Reborn Settings</h1>
+                    <p class="text-gray-500">Configure global application settings</p>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        <!-- Messages -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} shadow-lg mb-4">
+                                    <div>
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span>{{ message }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Session Timeout Setting -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Session Timeout</span>
+                                    <span class="label-text-alt">in minutes</span>
+                                </label>
+                                
+                                <div class="flex items-center gap-4">
+                                    <input type="number" 
+                                           name="session_timeout" 
+                                           id="session_timeout"
+                                           value="{{ settings.session_timeout }}"
+                                           min="1"
+                                           max="1440"
+                                           class="input input-bordered w-32 text-center"
+                                           required>
+                                    <span class="text-gray-500">minutes</span>
+                                </div>
+                                
+                                <label class="label">
+                                    <span class="label-text-alt text-gray-400">
+                                        <i class="fa-regular fa-clock"></i>
+                                        Current setting: {{ settings.session_timeout }} minutes
+                                    </span>
+                                    <span class="label-text-alt text-gray-400">
+                                        Last updated: {{ settings.updated_at|date:"d M Y H:i" }}
+                                        {% if settings.updated_by %}
+                                            by {{ settings.updated_by.username }}
+                                        {% endif %}
+                                    </span>
+                                </label>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="card-actions justify-end mt-6">
+                                <button type="submit" class="btn bg-cobalt text-white hover:bg-cobalt/80">
+                                    <i class="fa-solid fa-save"></i>
+                                    Save Settings
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Info Box -->
+                        <div class="alert alert-info bg-blue-50 border-blue-200 text-blue-700 mt-4">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>
+                                Changes will take effect for all users on their next login.
+                                Current active sessions will continue using previous timeout.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar (copy dari dashboard.html, tambah menu Admin) -->
+    <div class="drawer-side">
+        <label for="main-drawer" class="drawer-overlay"></label>
+        <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
+            <!-- Logo -->
+            <div class="mb-8 flex items-center gap-3 px-4 flex-shrink-0">
+                <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
+                <div>
+                    <h2 class="font-bold text-lg">GMT Reborn</h2>
+                    <p class="text-xs opacity-70">Enterprise Solution</p>
+                </div>
+            </div>
+
+            <!-- Scrollable Menu -->
+            <div class="sidebar-menu-container flex-1 overflow-y-auto px-2">
+                <ul class="menu menu-lg w-full">
+                    <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li>
+                    
+                    <!-- Dashboard -->
+                    <li class="mb-1">
+                        <a onclick="loadContent('dashboard', 'main')" class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-5"></i>
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="menu-title text-xs opacity-50 mb-2 mt-4">MODULES</li>
+
+                    <!-- HR Module -->
+                    <li class="mb-1">
+                        <details class="group" id="hr-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('hr', 'dashboard')">
+                                <i class="fa-solid fa-users text-cobalt w-5"></i>
+                                <span class="flex-1">Human Resource</span>
+                                <span class="badge badge-cobalt">HR</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('hr', 'employees')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
+                                <li><a onclick="loadContent('hr', 'attendance')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
+                                <li><a onclick="loadContent('hr', 'payroll')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
+                                <li><a onclick="loadContent('hr', 'recruitment')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- Finance Module -->
+                    <li class="mb-1">
+                        <details class="group" id="finance-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('finance', 'dashboard')">
+                                <i class="fa-solid fa-coins text-burnt-orange w-5"></i>
+                                <span class="flex-1">Finance</span>
+                                <span class="badge badge-burnt-orange">ACC</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('finance', 'accounts')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
+                                <li><a onclick="loadContent('finance', 'journal')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
+                                <li><a onclick="loadContent('finance', 'ledger')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
+                                <li><a onclick="loadContent('finance', 'reports')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- Production Module -->
+                    <li class="mb-1">
+                        <details class="group" id="production-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('production', 'dashboard')">
+                                <i class="fa-solid fa-industry text-production w-5"></i>
+                                <span class="flex-1">Production</span>
+                                <span class="badge badge-production">PROD</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('production', 'orders')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
+                                <li><a onclick="loadContent('production', 'bom')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
+                                <li><a onclick="loadContent('production', 'routing')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
+                                <li><a onclick="loadContent('production', 'quality')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- Warehouse Module -->
+                    <li class="mb-1">
+                        <details class="group" id="warehouse-details">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('warehouse', 'dashboard')">
+                                <i class="fa-solid fa-warehouse text-forest w-5"></i>
+                                <span class="flex-1">Warehouse</span>
+                                <span class="badge badge-forest">WH</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a onclick="loadContent('warehouse', 'inventory')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
+                                <li><a onclick="loadContent('warehouse', 'movement')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
+                                <li><a onclick="loadContent('warehouse', 'receiving')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
+                                <li><a onclick="loadContent('warehouse', 'shipping')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- Admin Menu (NEW) - Cuma muncul untuk staff -->
+                    {% if request.user.is_staff %}
+                    <li class="menu-title text-xs opacity-50 mb-2 mt-4">ADMIN</li>
+                    <li class="mb-1">
+                        <details class="group" id="admin-menu">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
+                                <i class="fa-solid fa-user-shield text-purple-500 w-5"></i>
+                                <span class="flex-1">Administration</span>
+                                <span class="badge badge-ghost">ADMIN</span>
+                            </summary>
+                            <ul class="ml-7 mt-2 space-y-1">
+                                <li><a href="{% url 'admin:index' %}" target="_blank" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
+                                    <i class="fa-solid fa-database w-5"></i> Django Admin
+                                </a></li>
+                                <li><a href="{% url 'settings' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
+                                    <i class="fa-solid fa-gear w-5"></i> GMT Settings
+                                </a></li>
+                                <li><a onclick="loadContent('users', 'list')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
+                                    <i class="fa-solid fa-users-cog w-5"></i> User Management
+                                </a></li>
+                                <li><a onclick="loadContent('logs', 'system')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
+                                    <i class="fa-solid fa-history w-5"></i> System Logs
+                                </a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- User Profile (sama seperti sebelumnya) -->
+            <div class="sidebar-user-profile w-full">
+                <!-- ... same as before ... -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

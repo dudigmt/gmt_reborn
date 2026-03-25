@@ -1,0 +1,66 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Finance Dashboard - GMT Reborn{% endblock %}
+
+{% block content %}
+<div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
+    <div class="card-body">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-lg bg-burnt-orange/10 flex items-center justify-center">
+                <i class="fa-solid fa-coins text-burnt-orange text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-burnt-orange">Finance Dashboard</h2>
+                <p class="text-gray-500">Accounting, budgeting, and financial reporting</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Revenue</div>
+                <div class="stat-value text-forest text-3xl">Rp 2.4B</div>
+                <div class="stat-desc">↑ 12% from last month</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Expenses</div>
+                <div class="stat-value text-burnt-orange text-3xl">Rp 1.2B</div>
+                <div class="stat-desc">Within budget</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Net Profit</div>
+                <div class="stat-value text-cobalt text-3xl">Rp 1.2B</div>
+                <div class="stat-desc">↑ 15%</div>
+            </div>
+            <div class="stat bg-base-200 rounded-lg p-4">
+                <div class="stat-title">Outstanding</div>
+                <div class="stat-value text-production text-3xl">Rp 450M</div>
+                <div class="stat-desc">Invoices pending</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="card-title">Recent Transactions</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>Sales Invoice #INV-001</span><span class="badge badge-success">Rp 25M</span></div>
+                        <div class="flex justify-between"><span>Purchase Order #PO-045</span><span class="badge badge-warning">Rp 12M</span></div>
+                        <div class="flex justify-between"><span>Salary Payment</span><span class="badge">Rp 89M</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="card-title">Budget vs Actual</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>Marketing</span><span>85%</span></div>
+                        <div class="flex justify-between"><span>Operations</span><span>92%</span></div>
+                        <div class="flex justify-between"><span>R&D</span><span>67%</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
