@@ -1,0 +1,57 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Add User - Administration{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
+        <div class="card-body">
+            <h2 class="card-title text-cobalt">Add New User</h2>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Username *</span></label>
+                    <input type="text" name="username" required class="input input-bordered w-full">
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Email</span></label>
+                    <input type="email" name="email" class="input input-bordered w-full">
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Password *</span></label>
+                    <input type="password" name="password1" required class="input input-bordered w-full">
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Confirm Password *</span></label>
+                    <input type="password" name="password2" required class="input input-bordered w-full">
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="cursor-pointer label justify-start gap-4">
+                        <input type="checkbox" name="is_staff" class="checkbox checkbox-primary">
+                        <span class="label-text">Staff status (can access admin)</span>
+                    </label>
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="cursor-pointer label justify-start gap-4">
+                        <input type="checkbox" name="is_active" class="checkbox checkbox-primary" checked>
+                        <span class="label-text">Active</span>
+                    </label>
+                </div>
+
+                <div class="card-actions justify-end">
+                    <a href="{% url 'sysadmin_dashboard' %}?tab=users" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn bg-cobalt text-white">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

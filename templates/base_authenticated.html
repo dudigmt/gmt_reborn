@@ -56,7 +56,7 @@
             <!-- Scrollable Menu Container -->
             <div class="sidebar-menu-container flex-1 overflow-y-auto px-2">
                 <ul class="menu menu-lg w-full">
-                    <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li>
+                    <!-- <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li> -->
                     
                     <!-- Dashboard -->
                     <li class="mb-1">
@@ -131,7 +131,7 @@
                     <!-- Administration - Single Menu -->
                     {% if request.user.is_staff %}
                     <li class="mt-2">
-                        <a href="{% url 'sysadmin_dashboard' %}" class="flex items-center gap-3 hover:bg-base-200 rounded-lg p-2">
+                        <a href="{% url 'sysadmin_users' %}" class="flex items-center gap-3 hover:bg-base-200 rounded-lg p-2">
                             <i class="fa-solid fa-user-shield text-purple-500 w-5"></i>
                             <span class="flex-1">Administration</span>
                         </a>
@@ -227,15 +227,26 @@ function openSubmenu(module) {
     }
 }
 
+// Close a specific submenu
+function closeSubmenu(module) {
+    const submenu = document.getElementById(`submenu-${module}`);
+    const chevron = document.getElementById(`chevron-${module}`);
+    if (submenu && chevron) {
+        submenu.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
 // Toggle submenu (used by click handler)
 function toggleSubmenu(module) {
     const submenu = document.getElementById(`submenu-${module}`);
     const chevron = document.getElementById(`chevron-${module}`);
     if (submenu.classList.contains('hidden')) {
         openSubmenu(module);
+        return true; // opened
     } else {
-        submenu.classList.add('hidden');
-        chevron.style.transform = 'rotate(0deg)';
+        closeSubmenu(module);
+        return false; // closed
     }
 }
 
@@ -264,16 +275,27 @@ document.querySelectorAll('.module-header').forEach(header => {
     header.addEventListener('click', function(e) {
         e.stopPropagation();
         const module = this.dataset.module;
-        const url = this.dataset.url;
+        const targetUrl = this.dataset.url;
+        const currentPath = window.location.pathname;
         
-        // Save this module as the last opened
-        localStorage.setItem('last_module', module);
+        // Check if we are already on this module's dashboard
+        const isCurrent = (currentPath === targetUrl);
         
-        // Toggle the submenu visually
-        toggleSubmenu(module);
-        
-        // Navigate to the dashboard
-        window.location.href = url;
+        if (isCurrent) {
+            // Just toggle the submenu (open/close)
+            const opened = toggleSubmenu(module);
+            if (opened) {
+                // If opened, save this module as last opened
+                localStorage.setItem('last_module', module);
+            } else {
+                // If closed, remove last_module so it stays closed on refresh
+                localStorage.removeItem('last_module');
+            }
+        } else {
+            // Different module: save to localStorage and redirect
+            localStorage.setItem('last_module', module);
+            window.location.href = targetUrl;
+        }
     });
 });
 

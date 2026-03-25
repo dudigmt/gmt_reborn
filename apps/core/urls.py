@@ -19,6 +19,9 @@ urlpatterns = [
     
     # SYSADMIN MENU - USER MANAGEMENT
     path('sysadmin/users/', views.sysadmin_users, name='sysadmin_users'),
+    path('sysadmin/users/add/', views.sysadmin_users_add, name='sysadmin_users_add'),
+    path('sysadmin/users/<int:user_id>/edit/', views.sysadmin_users_edit, name='sysadmin_users_edit'),
+    path('sysadmin/users/<int:user_id>/delete/', views.sysadmin_users_delete, name='sysadmin_users_delete'),
     path('sysadmin/groups/', views.sysadmin_groups, name='sysadmin_groups'),
     path('sysadmin/permissions/', views.sysadmin_permissions, name='sysadmin_permissions'),
     path('sysadmin/login-logs/', views.sysadmin_login_logs, name='sysadmin_login_logs'),
