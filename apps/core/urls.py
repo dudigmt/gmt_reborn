@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.dashboard_view, name='dashboard'),
     path('api/check-session/', views.check_session, name='check-session'),
     path('api/extend-session/', views.extend_session, name='extend-session'),
-    path('settings/', views.settings_view, name='settings'),
+ #   path('settings/', views.settings_view, name='settings'),
     
     # Module Dashboards
     path('hr/', views.hr_dashboard, name='hr_dashboard'),

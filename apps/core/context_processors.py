@@ -1,5 +1,3 @@
-from .models import GMTSettings
-
 def gmt_settings(request):
     try:
         settings = GMTSettings.get_settings()
@@ -10,3 +8,11 @@ def gmt_settings(request):
         return {
             'session_timeout': 30,
         }
+
+def company_profile(request):
+    from .models import CompanyProfile
+    try:
+        profile = CompanyProfile.get_profile()
+        return {'company': profile}
+    except:
+        return {'company': None}

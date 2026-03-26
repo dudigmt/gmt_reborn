@@ -12,7 +12,11 @@
             <div class="p-8">
                 <!-- Logo -->
                 <div class="flex justify-center mb-8">
-                    <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-16 w-auto">
+                    {% if company and company.logo %}
+                        <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="h-16 w-auto">
+                    {% else %}
+                        <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-16 w-auto">
+                    {% endif %}
                 </div>
                 <!-- Session Expired Notification - Premium Version -->
                 {% if expired_time %}

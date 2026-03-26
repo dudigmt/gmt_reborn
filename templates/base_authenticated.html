@@ -20,8 +20,12 @@
             
             <div class="flex-1">
                 <a class="text-xl font-bold flex items-center gap-2">
-                    <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
-                    GMT Reborn
+                    {% if company and company.logo %}
+                        <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="h-8 w-8">
+                    {% else %}
+                        <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
+                    {% endif %}
+                    <h2 class="font-bold text-lg">{{ company.name|default:"GMT Reborn" }}</h2>
                 </a>
             </div>
             
@@ -44,11 +48,21 @@
     <div class="drawer-side">
         <label for="main-drawer" class="drawer-overlay"></label>
         <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
+            <!-- DEBUG: Tampilkan company info
+            {% if company %}
+                <p style="color:red;">Company found: {{ company.name }}, Logo: {{ company.logo }}</p>
+            {% else %}
+                <p style="color:red;">Company NOT found in context!</p>
+            {% endif %} -->
             <!-- Logo -->
             <div class="mb-8 flex items-center gap-3 px-4 flex-shrink-0">
-                <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
+                {% if company and company.logo %}
+                    <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="h-10 w-auto">
+                {% else %}
+                    <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
+                {% endif %}
                 <div>
-                    <h2 class="font-bold text-lg">GMT Reborn</h2>
+                    <h2 class="font-bold text-lg">{{ company.name|default:"GMT Reborn" }}</h2>
                     <p class="text-xs opacity-70">Enterprise Solution</p>
                 </div>
             </div>

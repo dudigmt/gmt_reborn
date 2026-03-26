@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
 from django.db.models import Q
-from .models import LoginHistory, CompanyProfile, GMTSettings
+from .models import LoginHistory, CompanyProfile 
 
 
 def login_view(request):
@@ -69,20 +69,20 @@ def extend_session(request):
     return HttpResponse('Unauthorized', status=401)
 
 
-def settings_view(request):
-    settings = GMTSettings.get_settings()
-    
-    if request.method == 'POST':
-        session_timeout = request.POST.get('session_timeout')
-        if session_timeout and session_timeout.isdigit():
-            settings.session_timeout = int(session_timeout)
-            settings.updated_by = request.user
-            settings.save()
-            messages.success(request, 'Settings updated successfully')
-        else:
-            messages.error(request, 'Invalid session timeout value')
-    
-    return render(request, 'settings.html', {'settings': settings})
+#def settings_view(request):
+#    settings = GMTSettings.get_settings()
+#    
+#    if request.method == 'POST':
+#        session_timeout = request.POST.get('session_timeout')
+#        if session_timeout and session_timeout.isdigit():
+#            settings.session_timeout = int(session_timeout)
+#            settings.updated_by = request.user
+#            settings.save()
+#            messages.success(request, 'Settings updated successfully')
+#        else:
+#            messages.error(request, 'Invalid session timeout value')
+#    
+#    return render(request, 'settings.html', {'settings': settings})
 
 
 # ===== MODULE DASHBOARDS =====

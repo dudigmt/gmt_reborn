@@ -18,7 +18,11 @@
             </div>
             <div class="flex-1">
                 <a class="text-xl font-bold flex items-center gap-2">
-                    <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
+                    {% if company and company.logo %}
+                        <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="h-8 w-8">
+                    {% else %}
+                        <img src="{% static 'assets/logo/gmtround.png' %}" alt="GMT" class="h-8 w-8">
+                    {% endif %}
                     GMT Reborn
                 </a>
             </div>
@@ -113,15 +117,19 @@
         </div>
     </div>
 
-    <!-- Sidebar (copy dari dashboard.html, tambah menu Admin) -->
+    <!-- Sidebar -->
     <div class="drawer-side">
         <label for="main-drawer" class="drawer-overlay"></label>
         <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
             <!-- Logo -->
             <div class="mb-8 flex items-center gap-3 px-4 flex-shrink-0">
-                <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
+                {% if company and company.logo %}
+                    <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="h-10 w-auto">
+                {% else %}
+                    <img src="{% static 'assets/logo/gmt-logo.png' %}" alt="GMT Logo" class="h-10 w-auto">
+                {% endif %}
                 <div>
-                    <h2 class="font-bold text-lg">GMT Reborn</h2>
+                    <h2 class="font-bold text-lg">{{ company.name|default:"GMT Reborn" }}</h2>
                     <p class="text-xs opacity-70">Enterprise Solution</p>
                 </div>
             </div>
@@ -133,7 +141,7 @@
                     
                     <!-- Dashboard -->
                     <li class="mb-1">
-                        <a onclick="loadContent('dashboard', 'main')" class="flex items-center gap-3">
+                        <a href="/" class="flex items-center gap-3">
                             <i class="fa-solid fa-chart-pie w-5"></i>
                             Dashboard
                         </a>
@@ -144,16 +152,16 @@
                     <!-- HR Module -->
                     <li class="mb-1">
                         <details class="group" id="hr-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('hr', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-users text-cobalt w-5"></i>
                                 <span class="flex-1">Human Resource</span>
                                 <span class="badge badge-cobalt">HR</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('hr', 'employees')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
-                                <li><a onclick="loadContent('hr', 'attendance')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
-                                <li><a onclick="loadContent('hr', 'payroll')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
-                                <li><a onclick="loadContent('hr', 'recruitment')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
+                                <li><a href="{% url 'hr_dashboard' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-chart-bar w-5"></i> Dashboard</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
                             </ul>
                         </details>
                     </li>
@@ -161,16 +169,15 @@
                     <!-- Finance Module -->
                     <li class="mb-1">
                         <details class="group" id="finance-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('finance', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-coins text-burnt-orange w-5"></i>
                                 <span class="flex-1">Finance</span>
                                 <span class="badge badge-burnt-orange">ACC</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('finance', 'accounts')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
-                                <li><a onclick="loadContent('finance', 'journal')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
-                                <li><a onclick="loadContent('finance', 'ledger')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
-                                <li><a onclick="loadContent('finance', 'reports')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
+                                <li><a href="{% url 'finance_dashboard' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-chart-bar w-5"></i> Dashboard</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
                             </ul>
                         </details>
                     </li>
@@ -178,16 +185,15 @@
                     <!-- Production Module -->
                     <li class="mb-1">
                         <details class="group" id="production-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('production', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-industry text-production w-5"></i>
                                 <span class="flex-1">Production</span>
                                 <span class="badge badge-production">PROD</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('production', 'orders')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
-                                <li><a onclick="loadContent('production', 'bom')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
-                                <li><a onclick="loadContent('production', 'routing')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
-                                <li><a onclick="loadContent('production', 'quality')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
+                                <li><a href="{% url 'production_dashboard' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-chart-bar w-5"></i> Dashboard</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
                             </ul>
                         </details>
                     </li>
@@ -195,55 +201,175 @@
                     <!-- Warehouse Module -->
                     <li class="mb-1">
                         <details class="group" id="warehouse-details">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2" onclick="loadContent('warehouse', 'dashboard')">
+                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
                                 <i class="fa-solid fa-warehouse text-forest w-5"></i>
                                 <span class="flex-1">Warehouse</span>
                                 <span class="badge badge-forest">WH</span>
                             </summary>
                             <ul class="ml-7 mt-2 space-y-1">
-                                <li><a onclick="loadContent('warehouse', 'inventory')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
-                                <li><a onclick="loadContent('warehouse', 'movement')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
-                                <li><a onclick="loadContent('warehouse', 'receiving')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
-                                <li><a onclick="loadContent('warehouse', 'shipping')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
+                                <li><a href="{% url 'warehouse_dashboard' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-chart-bar w-5"></i> Dashboard</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
                             </ul>
                         </details>
                     </li>
 
-                    <!-- Admin Menu (NEW) - Cuma muncul untuk staff -->
+                    <!-- Administration -->
                     {% if request.user.is_staff %}
-                    <li class="menu-title text-xs opacity-50 mb-2 mt-4">ADMIN</li>
-                    <li class="mb-1">
-                        <details class="group" id="admin-menu">
-                            <summary class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2">
-                                <i class="fa-solid fa-user-shield text-purple-500 w-5"></i>
-                                <span class="flex-1">Administration</span>
-                                <span class="badge badge-ghost">ADMIN</span>
-                            </summary>
-                            <ul class="ml-7 mt-2 space-y-1">
-                                <li><a href="{% url 'admin:index' %}" target="_blank" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
-                                    <i class="fa-solid fa-database w-5"></i> Django Admin
-                                </a></li>
-                                <li><a href="{% url 'settings' %}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
-                                    <i class="fa-solid fa-gear w-5"></i> GMT Settings
-                                </a></li>
-                                <li><a onclick="loadContent('users', 'list')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
-                                    <i class="fa-solid fa-users-cog w-5"></i> User Management
-                                </a></li>
-                                <li><a onclick="loadContent('logs', 'system')" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
-                                    <i class="fa-solid fa-history w-5"></i> System Logs
-                                </a></li>
-                            </ul>
-                        </details>
+                    <li class="mt-2">
+                        <a href="{% url 'sysadmin_users' %}" class="flex items-center gap-3 hover:bg-base-200 rounded-lg p-2">
+                            <i class="fa-solid fa-user-shield text-purple-500 w-5"></i>
+                            <span class="flex-1">Administration</span>
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
             </div>
 
-            <!-- User Profile (sama seperti sebelumnya) -->
+            <!-- User Profile -->
             <div class="sidebar-user-profile w-full">
-                <!-- ... same as before ... -->
+                <div class="relative px-2">
+                    <div class="flex items-center gap-3 p-3 hover:bg-base-200 rounded-lg w-full cursor-pointer profile-trigger" onclick="toggleProfileModal()">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full ring-2 ring-cobalt ring-offset-base-100 ring-offset-2">
+                                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=0047AB&color=fff&bold=true" />
+                            </div>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="font-semibold">{{ request.user.username }}</div>
+                            <div class="text-xs opacity-70">{{ request.user.email|default:"user@gmt.com" }}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-up text-xs opacity-50" id="profile-arrow"></i>
+                    </div>
+
+                    <!-- Profile Modal -->
+                    <div id="profile-modal" class="absolute bottom-full left-0 right-0 mb-2 hidden bg-base-200 rounded-xl shadow-lg border border-base-300 modal-enter">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-medium">Theme</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="theme-toggle" class="sr-only" onchange="toggleThemeSlider()">
+                                    <div class="toggle-slider light" id="slider"></div>
+                                </label>
+                            </div>
+                            <div class="mb-4">
+                                <span class="text-sm font-medium block mb-2">Language</span>
+                                <div class="lang-icons">
+                                    <img src="{% static 'assets/img/flags/id.svg' %}" class="lang-icon" onclick="changeLanguage('id', this)" title="Indonesia">
+                                    <img src="{% static 'assets/img/flags/en.svg' %}" class="lang-icon" onclick="changeLanguage('en', this)" title="English">
+                                    <img src="{% static 'assets/img/flags/kr.svg' %}" class="lang-icon" onclick="changeLanguage('kr', this)" title="Korea">
+                                    <img src="{% static 'assets/img/flags/cn.svg' %}" class="lang-icon" onclick="changeLanguage('cn', this)" title="China">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                <button class="btn btn-sm bg-base-100 hover:bg-base-300 border-none opacity-50 cursor-not-allowed" disabled>
+                                    <i class="fa-solid fa-gear"></i> Settings (Soon)
+                                </button>
+                                <button onclick="loadContent('privacy', 'policy')" class="btn btn-sm bg-base-100 hover:bg-base-300 border-none">
+                                    <i class="fa-solid fa-shield"></i> Privacy
+                                </button>
+                            </div>
+                            <a href="{% url 'logout' %}" class="btn btn-sm bg-burnt-orange hover:bg-burnt-orange/80 text-white w-full border-none">
+                                <i class="fa-solid fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function toggleSidebar() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    drawer.classList.toggle('lg:drawer-open');
+    if (drawer.classList.contains('lg:drawer-open')) {
+        toggleIcon.classList.remove('fa-chevron-right');
+        toggleIcon.classList.add('fa-chevron-left');
+    } else {
+        toggleIcon.classList.remove('fa-chevron-left');
+        toggleIcon.classList.add('fa-chevron-right');
+    }
+    localStorage.setItem('sidebar_collapsed', !drawer.classList.contains('lg:drawer-open'));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const drawer = document.querySelector('.drawer');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const sidebarCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    if (sidebarCollapsed) {
+        drawer.classList.remove('lg:drawer-open');
+        if (toggleIcon) {
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-chevron-right');
+        }
+    }
+});
+
+function toggleProfileModal() {
+    const modal = document.getElementById('profile-modal');
+    const arrow = document.getElementById('profile-arrow');
+    modal.classList.toggle('hidden');
+    arrow.classList.toggle('fa-chevron-up');
+    arrow.classList.toggle('fa-chevron-down');
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('profile-modal');
+    const profileDiv = event.target.closest('.sidebar-user-profile');
+    const modalContent = event.target.closest('#profile-modal');
+    if (!profileDiv && !modalContent && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+        document.getElementById('profile-arrow').classList.remove('fa-chevron-down');
+        document.getElementById('profile-arrow').classList.add('fa-chevron-up');
+    }
+});
+
+function toggleThemeSlider() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    const slider = document.getElementById('slider');
+    slider.className = newTheme === 'light' ? 'toggle-slider light' : 'toggle-slider dark';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const checkbox = document.getElementById('theme-toggle');
+    const slider = document.getElementById('slider');
+    if (savedTheme === 'dark') {
+        checkbox.checked = true;
+        slider.className = 'toggle-slider dark';
+    } else {
+        checkbox.checked = false;
+        slider.className = 'toggle-slider light';
+    }
+});
+
+function changeLanguage(lang, element) {
+    document.querySelectorAll('.lang-icon').forEach(icon => icon.classList.remove('active'));
+    element.classList.add('active');
+    alert(`Language changed to ${lang.toUpperCase()}`);
+}
+
+function loadContent(module, section) {
+    console.log('load content', module, section);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('profile-modal');
+        if (!modal.classList.contains('hidden')) {
+            modal.classList.add('hidden');
+            document.getElementById('profile-arrow').classList.remove('fa-chevron-down');
+            document.getElementById('profile-arrow').classList.add('fa-chevron-up');
+        }
+    }
+});
+</script>
 {% endblock %}
