@@ -156,3 +156,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Force session check on every request
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
+# Media files (uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

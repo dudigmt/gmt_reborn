@@ -1,8 +1,32 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Company Settings - Administration{% endblock %}
+
+{% block content %}
+<!-- Tabs Navigation -->
+<div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
+    <a href="{% url 'sysadmin_users' %}" class="tab tab-lg">
+        <i class="fa-solid fa-users-cog mr-2"></i> User Management
+    </a>
+    <a href="{% url 'sysadmin_company' %}" class="tab tab-lg tab-active">
+        <i class="fa-solid fa-building mr-2"></i> Company
+    </a>
+    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg">
+        <i class="fa-solid fa-puzzle-piece mr-2"></i> Modules
+    </a>
+    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg">
+        <i class="fa-solid fa-server mr-2"></i> System
+    </a>
+    <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">
+        <i class="fa-solid fa-shield-halved mr-2"></i> Audit
+    </a>
+</div>
+
+<!-- Company Settings Content -->
 <div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
     <div class="card-body">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="card-title text-burnt-orange">Company Settings</h2>
-        </div>
+        <h2 class="card-title text-burnt-orange mb-4">Company Settings</h2>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -75,3 +99,4 @@
         </form>
     </div>
 </div>
+{% endblock %}

@@ -12,13 +12,13 @@
     <a href="{% url 'sysadmin_company' %}" class="tab tab-lg">
         <i class="fa-solid fa-building mr-2"></i> Company
     </a>
-    <a href="{% url 'sysadmin_dashboard' %}?tab=modules" class="tab tab-lg">
+    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg">
         <i class="fa-solid fa-puzzle-piece mr-2"></i> Modules
     </a>
-    <a href="{% url 'sysadmin_dashboard' %}?tab=system" class="tab tab-lg">
+    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg">
         <i class="fa-solid fa-server mr-2"></i> System
     </a>
-    <a href="{% url 'sysadmin_dashboard' %}?tab=audit" class="tab tab-lg">
+    <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">
         <i class="fa-solid fa-shield-halved mr-2"></i> Audit
     </a>
 </div>
@@ -46,7 +46,6 @@
         <div class="overflow-x-auto">
             <table class="table">
                 <thead>
-                    问
                         <th>Username</th>
                         <th>Email</th>
                         <th>Staff</th>
