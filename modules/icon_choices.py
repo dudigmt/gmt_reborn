@@ -1,0 +1,63 @@
+ICON_CHOICES = [
+    # HR Icons
+    ('fa-users', '👥 Users'),
+    ('fa-user-plus', '👤 User Plus'),
+    ('fa-address-card', '📇 Address Card'),
+    ('fa-id-card', '🪪 ID Card'),
+    ('fa-clock', '⏰ Clock'),
+    ('fa-calendar', '📅 Calendar'),
+    ('fa-money-bill-wave', '💵 Money Bill'),
+    ('fa-chart-line', '📈 Chart Line'),
+    
+    # Finance Icons
+    ('fa-coins', '🪙 Coins'),
+    ('fa-calculator', '🧮 Calculator'),
+    ('fa-chart-simple', '📊 Chart Simple'),
+    ('fa-chart-pie', '🥧 Chart Pie'),
+    ('fa-dollar-sign', '💵 Dollar'),
+    ('fa-file-invoice', '📄 Invoice'),
+    ('fa-credit-card', '💳 Credit Card'),
+    ('fa-wallet', '👛 Wallet'),
+    
+    # Production Icons
+    ('fa-industry', '🏭 Industry'),
+    ('fa-gear', '⚙️ Gear'),
+    ('fa-gears', '⚙️⚙️ Gears'),
+    ('fa-clipboard-list', '📋 Clipboard'),
+    ('fa-diagram-project', '📐 Diagram'),
+    ('fa-check-double', '✅ Check Double'),
+    ('fa-microchip', '💾 Microchip'),
+    ('fa-robot', '🤖 Robot'),
+    
+    # Warehouse Icons
+    ('fa-warehouse', '🏢 Warehouse'),
+    ('fa-box', '📦 Box'),
+    ('fa-boxes', '📦📦 Boxes'),
+    ('fa-truck', '🚚 Truck'),
+    ('fa-truck-fast', '🚚💨 Fast Truck'),
+    ('fa-arrows-spin', '🔄 Arrows Spin'),
+    ('fa-cubes', '🧊 Cubes'),
+    ('fa-pallet', '📦 Pallet'),
+    
+    # Common Icons
+    ('fa-dashboard', '📊 Dashboard'),
+    ('fa-chart-pie', '🥧 Chart Pie'),
+    ('fa-bell', '🔔 Bell'),
+    ('fa-envelope', '✉️ Envelope'),
+    ('fa-file', '📄 File'),
+    ('fa-folder', '📁 Folder'),
+    ('fa-search', '🔍 Search'),
+    ('fa-edit', '✏️ Edit'),
+    ('fa-trash', '🗑️ Trash'),
+    ('fa-plus', '➕ Plus'),
+    ('fa-minus', '➖ Minus'),
+    ('fa-check', '✅ Check'),
+    ('fa-times', '❌ Times'),
+    ('fa-download', '⬇️ Download'),
+    ('fa-upload', '⬆️ Upload'),
+    ('fa-print', '🖨️ Print'),
+    ('fa-lock', '🔒 Lock'),
+    ('fa-unlock', '🔓 Unlock'),
+    ('fa-eye', '👁️ Eye'),
+    ('fa-eye-slash', '🙈 Eye Slash'),
+]

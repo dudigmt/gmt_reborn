@@ -21,96 +21,106 @@
             </a>
         </div>
         
+        <div class="alert alert-info mb-4 text-sm">
+            <i class="fa-solid fa-arrows-up-down"></i>
+            <span>Drag modules by the <i class="fa-solid fa-grip-vertical"></i> handle to reorder. Order saves automatically.</span>
+        </div>
+        
         <form method="post" action="{% url 'module_settings' %}" id="moduleSettingsForm">
             {% csrf_token %}
             
-            {% for module in modules %}
-            <div class="mb-6 border border-base-300 rounded-lg p-4 group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <i class="bi {{ module.icon }} text-2xl"></i>
-                        <h3 class="text-xl font-bold">{{ module.display_name }}</h3>
-                        <label class="cursor-pointer label">
-                            <input type="checkbox" 
-                                   name="module_{{ module.name }}" 
-                                   class="toggle toggle-success" 
-                                   {% if module.is_enabled %}checked{% endif %}>
-                        </label>
-                    </div>
-                    <div class="flex gap-2 items-center">
-                        <div class="dropdown dropdown-left">
-                            <button class="btn btn-sm btn-ghost opacity-0 group-hover:opacity-100 transition-opacity" type="button">
-                                <i class="fa-solid fa-ellipsis-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-44">
-                                <li>
-                                    <a href="{% url 'edit_module' module.name %}" class="text-sm">
-                                        <i class="fa-solid fa-pen"></i> Edit Module
-                                    </a>
-                                </li>
-                                <li>
-                                    <button type="button" class="text-sm text-error w-full text-left" onclick="openDeleteModal('{{ module.name }}', '{{ module.display_name }}')">
-                                        <i class="fa-solid fa-trash"></i> Delete Module
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                        <a href="{% url 'add_submodule' module.name %}" class="btn btn-sm btn-outline btn-primary">
-                            <i class="fa-solid fa-plus"></i> Add Submodule
-                        </a>
-                        <span class="text-sm text-gray-500">{{ module.description }}</span>
-                    </div>
-                </div>
-                
-                {% if module.submodules %}
-                <div class="ml-8">
-                    <h4 class="font-semibold mb-2 text-sm">Submodules</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {% for submodule in module.submodules %}
-                        <div class="flex items-center justify-between bg-base-200 rounded-lg p-3 group-sub">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid {{ submodule.icon }}"></i>
-                                <span>{{ submodule.display_name }}</span>
+            <div id="modules-container">
+                {% for module in modules %}
+                <div class="mb-6 border border-base-300 rounded-lg p-4 group module-item" data-module-id="{{ module.name }}" data-module-order="{{ forloop.counter }}">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="drag-handle cursor-move text-gray-400 hover:text-gray-600">
+                                <i class="fa-solid fa-grip-vertical"></i>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <label class="cursor-pointer label">
-                                    <input type="checkbox" 
-                                           name="submodule_{{ module.name }}_{{ submodule.name }}" 
-                                           class="toggle toggle-sm toggle-primary" 
-                                           {% if submodule.is_enabled %}checked{% endif %}>
-                                </label>
-                                <div class="dropdown dropdown-left">
-                                    <button class="btn btn-xs btn-ghost opacity-0 group-sub-hover:opacity-100 transition-opacity" type="button">
-                                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-40">
-                                        <li>
-                                            <a href="{% url 'edit_submodule' module.name submodule.name %}" class="text-sm">
-                                                <i class="fa-solid fa-pen"></i> Edit
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="text-sm text-error w-full text-left" onclick="deleteSubmodule('{{ module.name }}', '{{ submodule.name }}', '{{ submodule.display_name }}')">
-                                                <i class="fa-solid fa-trash"></i> Delete
-                                            </button>
-                                        </li>
-                                    </ul>
+                            <i class="bi {{ module.icon }} text-2xl"></i>
+                            <h3 class="text-xl font-bold">{{ module.display_name }}</h3>
+                            <label class="cursor-pointer label">
+                                <input type="checkbox" 
+                                       name="module_{{ module.name }}" 
+                                       class="toggle toggle-success" 
+                                       {% if module.is_enabled %}checked{% endif %}>
+                            </label>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <div class="dropdown dropdown-left">
+                                <button class="btn btn-sm btn-ghost opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-44">
+                                    <li>
+                                        <a href="{% url 'edit_module' module.name %}" class="text-sm">
+                                            <i class="fa-solid fa-pen"></i> Edit Module
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="text-sm text-error w-full text-left" onclick="openDeleteModal('{{ module.name }}', '{{ module.display_name }}')">
+                                            <i class="fa-solid fa-trash"></i> Delete Module
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <a href="{% url 'add_submodule' module.name %}" class="btn btn-sm btn-outline btn-primary">
+                                <i class="fa-solid fa-plus"></i> Add Submodule
+                            </a>
+                            <span class="text-sm text-gray-500">{{ module.description }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if module.submodules %}
+                    <div class="ml-8">
+                        <h4 class="font-semibold mb-2 text-sm">Submodules</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {% for submodule in module.submodules %}
+                            <div class="flex items-center justify-between bg-base-200 rounded-lg p-3 group-sub">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid {{ submodule.icon }}"></i>
+                                    <span>{{ submodule.display_name }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <label class="cursor-pointer label">
+                                        <input type="checkbox" 
+                                               name="submodule_{{ module.name }}_{{ submodule.name }}" 
+                                               class="toggle toggle-sm toggle-primary" 
+                                               {% if submodule.is_enabled %}checked{% endif %}>
+                                    </label>
+                                    <div class="dropdown dropdown-left">
+                                        <button class="btn btn-xs btn-ghost opacity-0 group-sub-hover:opacity-100 transition-opacity" type="button">
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-40">
+                                            <li>
+                                                <a href="{% url 'edit_submodule' module.name submodule.name %}" class="text-sm">
+                                                    <i class="fa-solid fa-pen"></i> Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="text-sm text-error w-full text-left" onclick="deleteSubmodule('{{ module.name }}', '{{ submodule.name }}', '{{ submodule.display_name }}')">
+                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="ml-8 text-center py-4 text-gray-500">
+                        <p>No submodules configured.</p>
+                        <a href="{% url 'add_submodule' module.name %}" class="btn btn-xs btn-outline btn-primary mt-2">
+                            <i class="fa-solid fa-plus"></i> Add First Submodule
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="ml-8 text-center py-4 text-gray-500">
-                    <p>No submodules configured.</p>
-                    <a href="{% url 'add_submodule' module.name %}" class="btn btn-xs btn-outline btn-primary mt-2">
-                        <i class="fa-solid fa-plus"></i> Add First Submodule
-                    </a>
-                </div>
-                {% endif %}
+                {% endfor %}
             </div>
-            {% endfor %}
             
             <div class="mt-6">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -183,9 +193,71 @@
 .group-sub:hover .opacity-0 {
     opacity: 1 !important;
 }
+.drag-handle {
+    cursor: grab;
+}
+.drag-handle:active {
+    cursor: grabbing;
+}
+.module-item {
+    transition: all 0.2s;
+}
+.module-item.sortable-drag {
+    opacity: 0.5;
+}
+.module-item.sortable-ghost {
+    opacity: 0.3;
+    background: #e2e8f0;
+}
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // SortableJS for drag & drop reorder
+    const container = document.getElementById('modules-container');
+    if (container && typeof Sortable !== 'undefined') {
+        let sortable = new Sortable(container, {
+            handle: '.drag-handle',
+            animation: 250,
+            onEnd: function() {
+                // Get new order
+                const items = document.querySelectorAll('.module-item');
+                const orderData = {};
+                items.forEach((item, index) => {
+                    const moduleId = item.dataset.moduleId;
+                    orderData[moduleId] = index + 1;
+                });
+                
+                // Save order via AJAX
+                fetch('/modules/module-settings/reorder/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify(orderData),
+                }).then(response => {
+                    if (response.ok) {
+                        // Update data-order attribute
+                        items.forEach((item, index) => {
+                            item.dataset.moduleOrder = index + 1;
+                        });
+                        // Show temporary success message
+                        const alert = document.createElement('div');
+                        alert.className = 'alert alert-success fixed top-20 right-4 z-50 max-w-xs shadow-lg animate-fade-in';
+                        alert.innerHTML = '<i class="fa-solid fa-check-circle"></i> Module order saved!';
+                        document.body.appendChild(alert);
+                        setTimeout(() => alert.remove(), 2000);
+                    }
+                });
+            }
+        });
+    } else {
+        console.error('Sortable library not loaded or container not found');
+    }
+});
+
 function openDeleteModal(moduleName, moduleDisplayName) {
     const modal = document.getElementById('deleteModal');
     const modalContent = document.getElementById('deleteModalContent');

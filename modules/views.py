@@ -1,25 +1,23 @@
+import os
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.http import JsonResponse
 from .models import Module
-import os
 from django.conf import settings
+from .icon_choices import ICON_CHOICES
 
 @staff_member_required
 def module_settings(request):
     modules = Module.objects.all().order_by('order')
     
     if request.method == 'POST':
-        print("=== POST DATA ===")
-#        print(request.POST)
         for module in modules:
             # Handle main module status
             enabled = request.POST.get(f'module_{module.name}') == 'on'
-#            print(f"Module {module.name}: POST value = {request.POST.get(f'module_{module.name}')}, enabled = {enabled}, current = {module.is_enabled}")
             if module.is_enabled != enabled:
                 module.is_enabled = enabled
-                print(f"--> Changing {module.name} to {enabled}")
             
             # Handle submodules status
             submodules = module.submodules
@@ -77,6 +75,7 @@ def edit_submodule(request, module_name, submodule_name):
     context = {
         'module': module,
         'submodule': submodule,
+        'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
     return render(request, 'sysadmin_submodule_edit.html', context)
@@ -106,6 +105,7 @@ def add_submodule(request, module_name):
     
     context = {
         'module': module,
+        'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
     return render(request, 'sysadmin_submodule_add.html', context)
@@ -140,12 +140,10 @@ def edit_module(request, module_name):
     
     context = {
         'module': module,
+        'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
     return render(request, 'sysadmin_module_edit.html', context)
-
-import os
-from django.conf import settings
 
 @staff_member_required
 def add_module(request):
@@ -212,7 +210,10 @@ def {name}_dashboard(request):
         messages.success(request, f'Module {display_name} created successfully with dashboard view and template')
         return redirect('module_settings')
     
-    context = {'active_tab': 'modules'}
+    context = {
+        'icon_choices': ICON_CHOICES,
+        'active_tab': 'modules'
+    }
     return render(request, 'sysadmin_module_add.html', context)
 
 @staff_member_required
@@ -271,3 +272,17 @@ def delete_module(request, module_name):
         'active_tab': 'modules'
     }
     return render(request, 'sysadmin_module_delete.html', context)
+
+@staff_member_required
+def reorder_modules(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            for module_name, order in data.items():
+                module = Module.objects.get(name=module_name)
+                module.order = order
+                module.save()
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=405)

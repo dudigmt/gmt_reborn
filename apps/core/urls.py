@@ -34,5 +34,4 @@ urlpatterns = [
     # SYSADMIN - System & Audit (coming soon)
     path('sysadmin/system/', views.sysadmin_system, name='sysadmin_system'),
     path('sysadmin/audit/', views.sysadmin_audit, name='sysadmin_audit'),
-    path('marketing/', views.marketing_dashboard, name='marketing_dashboard'),
 ]

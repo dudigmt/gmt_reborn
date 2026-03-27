@@ -44,11 +44,33 @@
                 
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text">Icon (Font Awesome class)</span>
+                        <span class="label-text">Icon</span>
                     </label>
-                    <input type="text" name="icon" value="{{ submodule.icon }}" class="input input-bordered" placeholder="fa-users" required>
+                    <div class="flex gap-3 items-center">
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-outline btn-primary" id="iconDropdownBtn">
+                                <i class="fa-solid {{ submodule.icon }}" id="selectedIconPreview"></i>
+                                <span class="ml-2" id="selectedIconName">{{ submodule.icon }}</span>
+                                <i class="fa-solid fa-chevron-down ml-2"></i>
+                            </button>
+                            <div class="dropdown-menu hidden absolute z-20 mt-2 w-80 max-h-96 overflow-y-auto bg-base-100 rounded-box shadow-lg border border-base-300" id="iconDropdown">
+                                <div class="sticky top-0 bg-base-100 p-2 border-b">
+                                    <input type="text" id="iconSearch" class="input input-sm input-bordered w-full" placeholder="Search icon...">
+                                </div>
+                                <div class="p-2 grid grid-cols-2 md:grid-cols-3 gap-2" id="iconList">
+                                    {% for icon_value, icon_label in icon_choices %}
+                                    <div class="icon-item p-2 rounded-lg hover:bg-base-200 cursor-pointer flex items-center gap-2" data-icon="{{ icon_value }}">
+                                        <i class="fa-solid {{ icon_value }}"></i>
+                                        <span class="text-xs">{{ icon_label }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <input type="text" name="icon" id="iconInput" value="{{ submodule.icon }}" class="input input-bordered flex-1" required>
+                    </div>
                     <label class="label">
-                        <span class="label-text-alt">Example: fa-users, fa-coins, fa-boxes</span>
+                        <span class="label-text-alt">Click dropdown to select icon, or type manually</span>
                     </label>
                 </div>
                 
@@ -77,4 +99,60 @@
         </form>
     </div>
 </div>
+
+<script>
+// Icon dropdown functionality
+const dropdownBtn = document.getElementById('iconDropdownBtn');
+const dropdown = document.getElementById('iconDropdown');
+const iconInput = document.getElementById('iconInput');
+const selectedIconPreview = document.getElementById('selectedIconPreview');
+const selectedIconName = document.getElementById('selectedIconName');
+
+dropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('hidden');
+});
+
+document.addEventListener('click', (e) => {
+    if (!dropdownBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+// Icon search
+const iconSearch = document.getElementById('iconSearch');
+const iconItems = document.querySelectorAll('.icon-item');
+
+iconSearch.addEventListener('input', () => {
+    const searchTerm = iconSearch.value.toLowerCase();
+    iconItems.forEach(item => {
+        const iconValue = item.dataset.icon;
+        const iconLabel = item.querySelector('span').textContent.toLowerCase();
+        if (iconValue.includes(searchTerm) || iconLabel.includes(searchTerm)) {
+            item.classList.remove('hidden');
+        } else {
+            item.classList.add('hidden');
+        }
+    });
+});
+
+// Select icon
+iconItems.forEach(item => {
+    item.addEventListener('click', () => {
+        const iconValue = item.dataset.icon;
+        const iconLabel = item.querySelector('span').textContent;
+        iconInput.value = iconValue;
+        selectedIconPreview.className = `fa-solid ${iconValue}`;
+        selectedIconName.textContent = iconValue;
+        dropdown.classList.add('hidden');
+    });
+});
+
+// Update preview when typing
+iconInput.addEventListener('input', () => {
+    const value = iconInput.value;
+    selectedIconPreview.className = `fa-solid ${value}`;
+    selectedIconName.textContent = value;
+});
+</script>
 {% endblock %}
