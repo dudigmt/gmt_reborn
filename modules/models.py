@@ -1,4 +1,6 @@
 from django.db import models
+# from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 
 class Module(models.Model):
     MODULE_TYPES = [
@@ -14,6 +16,7 @@ class Module(models.Model):
     is_enabled = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
     description = models.TextField(blank=True)
+    submodules = JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

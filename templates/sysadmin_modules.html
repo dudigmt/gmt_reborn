@@ -18,44 +18,47 @@
         
         <form method="post" action="{% url 'module_settings' %}">
             {% csrf_token %}
-            <div class="overflow-x-auto">
-                <table class="table table-zebra">
-                    <thead>
-                        <tr>
-                            <th>Module</th>
-                            <th>Status</th>
-                            <th>Description</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for module in modules %}
-                        <tr>
-                            <td>
-                                <i class="bi {{ module.icon }} mr-2"></i>
-                                {{ module.display_name }}
-                            </td>
-                            <td>
-                                {% if module.is_enabled %}
-                                    <span class="badge badge-success">Enabled</span>
-                                {% else %}
-                                    <span class="badge badge-error">Disabled</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ module.description }}</td>
-                            <td>
-                                <label class="cursor-pointer label">
-                                    <input type="checkbox" 
-                                           name="module_{{ module.name }}" 
-                                           class="toggle toggle-success" 
-                                           {% if module.is_enabled %}checked{% endif %}>
-                                </label>
-                            </td>
-                        </tr>
+            
+            {% for module in modules %}
+            <div class="mb-6 border border-base-300 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <i class="bi {{ module.icon }} text-2xl"></i>
+                        <h3 class="text-xl font-bold">{{ module.display_name }}</h3>
+                        <label class="cursor-pointer label">
+                            <input type="checkbox" 
+                                   name="module_{{ module.name }}" 
+                                   class="toggle toggle-success" 
+                                   {% if module.is_enabled %}checked{% endif %}>
+                        </label>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ module.description }}</span>
+                </div>
+                
+                {% if module.submodules %}
+                <div class="ml-8">
+                    <h4 class="font-semibold mb-2 text-sm">Submodules</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {% for submodule in module.submodules %}
+                        <div class="flex items-center justify-between bg-base-200 rounded-lg p-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid {{ submodule.icon }}"></i>
+                                <span>{{ submodule.display_name }}</span>
+                            </div>
+                            <label class="cursor-pointer label">
+                                <input type="checkbox" 
+                                       name="submodule_{{ module.name }}_{{ submodule.name }}" 
+                                       class="toggle toggle-sm toggle-primary" 
+                                       {% if submodule.is_enabled %}checked{% endif %}>
+                            </label>
+                        </div>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+                {% endif %}
             </div>
+            {% endfor %}
+            
             <div class="mt-6">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>

@@ -98,23 +98,15 @@
                             <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-{{ module.name }}"></i>
                         </div>
                         <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-{{ module.name }}">
-                            {% if module.name == 'hr' %}
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
-                            {% elif module.name == 'finance' %}
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
-                            {% elif module.name == 'production' %}
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
-                            {% elif module.name == 'warehouse' %}
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
-                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
-                            {% endif %}
+                            {% for submodule in module.submodules %}
+                                {% if submodule.is_enabled %}
+                                <li>
+                                    <a href="{{ submodule.url }}" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm">
+                                        <i class="fa-solid {{ submodule.icon }} w-5"></i> {{ submodule.display_name }}
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
                         </ul>
                     </li>
                     {% endfor %}
