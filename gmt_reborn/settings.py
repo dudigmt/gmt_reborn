@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'hr',
     'finance',
     'warehouse',
+    'modules',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.company_profile',
+                'core.context_processors.enabled_modules',
             ],
         },
     },

@@ -209,10 +209,12 @@ def sysadmin_company(request):
     return render(request, 'sysadmin_company.html', {'profile': profile})
 
 
-# ===== SYSADMIN - MODULES (DUMMY) =====
+# ===== SYSADMIN - MODULES =====
 @staff_member_required
 def sysadmin_modules(request):
-    return render(request, 'sysadmin_modules.html')
+    from modules.models import Module
+    modules = Module.objects.all().order_by('order')
+    return render(request, 'sysadmin_modules.html', {'modules': modules})
 
 
 # ===== SYSADMIN - SYSTEM (DUMMY) =====

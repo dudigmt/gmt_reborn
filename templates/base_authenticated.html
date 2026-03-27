@@ -82,65 +82,42 @@
 
                     <li class="menu-title text-xs opacity-50 mb-2 mt-4">MODULES</li>
 
-                    <!-- HR Module -->
+                    <!-- Dynamic Modules from Database -->
+                    {% for module in enabled_modules %}
                     <li class="mb-1">
-                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="hr" data-url="{% url 'hr_dashboard' %}">
-                            <i class="fa-solid fa-users text-cobalt w-5"></i>
-                            <span class="flex-1">Human Resource</span>
-                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-hr"></i>
+                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" 
+                            data-module="{{ module.name }}" 
+                            data-url="{% url module.name|add:'_dashboard' %}">
+                            <i class="fa-solid 
+                                {% if module.name == 'hr' %}fa-users text-cobalt
+                                {% elif module.name == 'finance' %}fa-coins text-burnt-orange
+                                {% elif module.name == 'production' %}fa-industry text-production
+                                {% elif module.name == 'warehouse' %}fa-warehouse text-forest
+                                {% endif %} w-5"></i>
+                            <span class="flex-1">{{ module.display_name }}</span>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-{{ module.name }}"></i>
                         </div>
-                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-hr">
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-magnifying-glass w-5"></i> Recruitment</a></li>
+                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-{{ module.name }}">
+                            {% if module.name == 'hr' %}
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-address-card w-5"></i> Employees</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-regular fa-clock w-5"></i> Attendance</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-money-bill-wave w-5"></i> Payroll</a></li>
+                            {% elif module.name == 'finance' %}
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
+                            {% elif module.name == 'production' %}
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
+                            {% elif module.name == 'warehouse' %}
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
+                                <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
+                            {% endif %}
                         </ul>
                     </li>
-
-                    <!-- Finance Module -->
-                    <li class="mb-1">
-                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="finance" data-url="{% url 'finance_dashboard' %}">
-                            <i class="fa-solid fa-coins text-burnt-orange w-5"></i>
-                            <span class="flex-1">Finance</span>
-                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-finance"></i>
-                        </div>
-                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-finance">
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-list w-5"></i> Chart of Accounts</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square w-5"></i> Journal Entries</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-book w-5"></i> General Ledger</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-chart-simple w-5"></i> Financial Reports</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Production Module -->
-                    <li class="mb-1">
-                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="production" data-url="{% url 'production_dashboard' %}">
-                            <i class="fa-solid fa-industry text-production w-5"></i>
-                            <span class="flex-1">Production</span>
-                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-production"></i>
-                        </div>
-                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-production">
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-clipboard-list w-5"></i> Production Orders</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-diagram-project w-5"></i> Bill of Materials</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-route w-5"></i> Routing</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-check-double w-5"></i> Quality Control</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Warehouse Module -->
-                    <li class="mb-1">
-                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" data-module="warehouse" data-url="{% url 'warehouse_dashboard' %}">
-                            <i class="fa-solid fa-warehouse text-forest w-5"></i>
-                            <span class="flex-1">Warehouse</span>
-                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-warehouse"></i>
-                        </div>
-                        <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-warehouse">
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-boxes w-5"></i> Inventory</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-arrows-spin w-5"></i> Stock Movement</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-ramp-box w-5"></i> Receiving</a></li>
-                            <li><a href="#" class="block py-2 px-3 hover:bg-base-200 rounded-lg text-sm"><i class="fa-solid fa-truck-fast w-5"></i> Shipping</a></li>
-                        </ul>
-                    </li>
+                    {% endfor %}
 
                     <!-- Administration - Single Menu -->
                     {% if request.user.is_staff %}
