@@ -14,13 +14,18 @@
 
 <div class="card bg-base-100 shadow-xl">
     <div class="card-body">
-        <h2 class="card-title">Module Configuration</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="card-title">Module Configuration</h2>
+            <a href="{% url 'add_module' %}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-plus"></i> Add Module
+            </a>
+        </div>
         
-        <form method="post" action="{% url 'module_settings' %}">
+        <form method="post" action="{% url 'module_settings' %}" id="moduleSettingsForm">
             {% csrf_token %}
             
             {% for module in modules %}
-            <div class="mb-6 border border-base-300 rounded-lg p-4">
+            <div class="mb-6 border border-base-300 rounded-lg p-4 group">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
                         <i class="bi {{ module.icon }} text-2xl"></i>
@@ -32,7 +37,29 @@
                                    {% if module.is_enabled %}checked{% endif %}>
                         </label>
                     </div>
-                    <span class="text-sm text-gray-500">{{ module.description }}</span>
+                    <div class="flex gap-2 items-center">
+                        <div class="dropdown dropdown-left">
+                            <button class="btn btn-sm btn-ghost opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-44">
+                                <li>
+                                    <a href="{% url 'edit_module' module.name %}" class="text-sm">
+                                        <i class="fa-solid fa-pen"></i> Edit Module
+                                    </a>
+                                </li>
+                                <li>
+                                    <button type="button" class="text-sm text-error w-full text-left" onclick="openDeleteModal('{{ module.name }}', '{{ module.display_name }}')">
+                                        <i class="fa-solid fa-trash"></i> Delete Module
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="{% url 'add_submodule' module.name %}" class="btn btn-sm btn-outline btn-primary">
+                            <i class="fa-solid fa-plus"></i> Add Submodule
+                        </a>
+                        <span class="text-sm text-gray-500">{{ module.description }}</span>
+                    </div>
                 </div>
                 
                 {% if module.submodules %}
@@ -40,20 +67,46 @@
                     <h4 class="font-semibold mb-2 text-sm">Submodules</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {% for submodule in module.submodules %}
-                        <div class="flex items-center justify-between bg-base-200 rounded-lg p-3">
+                        <div class="flex items-center justify-between bg-base-200 rounded-lg p-3 group-sub">
                             <div class="flex items-center gap-2">
                                 <i class="fa-solid {{ submodule.icon }}"></i>
                                 <span>{{ submodule.display_name }}</span>
                             </div>
-                            <label class="cursor-pointer label">
-                                <input type="checkbox" 
-                                       name="submodule_{{ module.name }}_{{ submodule.name }}" 
-                                       class="toggle toggle-sm toggle-primary" 
-                                       {% if submodule.is_enabled %}checked{% endif %}>
-                            </label>
+                            <div class="flex items-center gap-2">
+                                <label class="cursor-pointer label">
+                                    <input type="checkbox" 
+                                           name="submodule_{{ module.name }}_{{ submodule.name }}" 
+                                           class="toggle toggle-sm toggle-primary" 
+                                           {% if submodule.is_enabled %}checked{% endif %}>
+                                </label>
+                                <div class="dropdown dropdown-left">
+                                    <button class="btn btn-xs btn-ghost opacity-0 group-sub-hover:opacity-100 transition-opacity" type="button">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-40">
+                                        <li>
+                                            <a href="{% url 'edit_submodule' module.name submodule.name %}" class="text-sm">
+                                                <i class="fa-solid fa-pen"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="text-sm text-error w-full text-left" onclick="deleteSubmodule('{{ module.name }}', '{{ submodule.name }}', '{{ submodule.display_name }}')">
+                                                <i class="fa-solid fa-trash"></i> Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
+                </div>
+                {% else %}
+                <div class="ml-8 text-center py-4 text-gray-500">
+                    <p>No submodules configured.</p>
+                    <a href="{% url 'add_submodule' module.name %}" class="btn btn-xs btn-outline btn-primary mt-2">
+                        <i class="fa-solid fa-plus"></i> Add First Submodule
+                    </a>
                 </div>
                 {% endif %}
             </div>
@@ -65,4 +118,128 @@
         </form>
     </div>
 </div>
+
+<!-- Delete Module Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center transition-all duration-300">
+    <div class="bg-base-100 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="deleteModalContent">
+        <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="bg-error/10 p-3 rounded-full">
+                    <i class="fa-solid fa-trash-can text-error text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold">Delete Module</h3>
+                    <p class="text-sm text-gray-500">This action cannot be undone</p>
+                </div>
+            </div>
+            
+            <p class="mb-4">Are you sure you want to delete <strong class="text-error" id="deleteModuleName"></strong>?</p>
+            
+            <div class="bg-base-200 rounded-xl p-4 mb-6">
+                <p class="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                    This will permanently delete:
+                </p>
+                <ul class="text-sm space-y-2">
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-database text-error text-xs w-4"></i>
+                        <span>Module and all submodules from database</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-file text-error text-xs w-4"></i>
+                        <span>Dashboard template file</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-code text-error text-xs w-4"></i>
+                        <span>View function in core/views.py</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-link text-error text-xs w-4"></i>
+                        <span>URL pattern in core/urls.py</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="flex gap-3">
+                <form method="post" id="deleteModuleForm" class="flex-1">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-error w-full gap-2">
+                        <i class="fa-solid fa-trash"></i>
+                        Permanently Delete
+                    </button>
+                </form>
+                <button type="button" onclick="closeDeleteModal()" class="btn btn-ghost flex-1">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.group:hover .opacity-0 {
+    opacity: 1 !important;
+}
+.group-sub:hover .opacity-0 {
+    opacity: 1 !important;
+}
+</style>
+
+<script>
+function openDeleteModal(moduleName, moduleDisplayName) {
+    const modal = document.getElementById('deleteModal');
+    const modalContent = document.getElementById('deleteModalContent');
+    const deleteModuleName = document.getElementById('deleteModuleName');
+    const deleteForm = document.getElementById('deleteModuleForm');
+    
+    deleteModuleName.textContent = moduleDisplayName;
+    deleteForm.action = `/modules/module-settings/${moduleName}/delete/`;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    const modalContent = document.getElementById('deleteModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+}
+
+function deleteSubmodule(moduleName, submoduleName, submoduleDisplayName) {
+    if (confirm(`Delete ${submoduleDisplayName}?`)) {
+        fetch(`/modules/module-settings/${moduleName}/${submoduleName}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+
+document.getElementById('deleteModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDeleteModal();
+    }
+});
+</script>
 {% endblock %}

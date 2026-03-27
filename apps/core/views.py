@@ -227,3 +227,5 @@ def sysadmin_system(request):
 @staff_member_required
 def sysadmin_audit(request):
     return render(request, 'sysadmin_audit.html')
+def marketing_dashboard(request):
+    return render(request, 'marketing_dashboard.html')

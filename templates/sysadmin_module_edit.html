@@ -1,0 +1,77 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Edit Module - Administration{% endblock %}
+
+{% block content %}
+<div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
+    <a href="{% url 'sysadmin_users' %}" class="tab tab-lg">User Management</a>
+    <a href="{% url 'sysadmin_company' %}" class="tab tab-lg">Company</a>
+    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg tab-active">Modules</a>
+    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg">System</a>
+    <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">Audit</a>
+</div>
+
+<div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+        <div class="flex items-center gap-3 mb-6">
+            <a href="{% url 'module_settings' %}" class="btn btn-ghost btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+            <h2 class="card-title">Edit Module: {{ module.display_name }}</h2>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Module Name (slug)</span>
+                    </label>
+                    <input type="text" name="name" value="{{ module.name }}" class="input input-bordered" readonly disabled>
+                    <label class="label">
+                        <span class="label-text-alt text-gray-500">Name cannot be changed</span>
+                    </label>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Display Name</span>
+                    </label>
+                    <input type="text" name="display_name" value="{{ module.display_name }}" class="input input-bordered" required>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Icon (Bootstrap Icons class)</span>
+                    </label>
+                    <input type="text" name="icon" value="{{ module.icon }}" class="input input-bordered" placeholder="bi-people" required>
+                    <label class="label">
+                        <span class="label-text-alt">Example: bi-people, bi-calculator, bi-gear, bi-box</span>
+                    </label>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Order</span>
+                    </label>
+                    <input type="number" name="order" value="{{ module.order }}" class="input input-bordered">
+                </div>
+                
+                <div class="form-control md:col-span-2">
+                    <label class="label">
+                        <span class="label-text">Description</span>
+                    </label>
+                    <textarea name="description" class="textarea textarea-bordered" rows="3">{{ module.description }}</textarea>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex gap-3">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'module_settings' %}" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

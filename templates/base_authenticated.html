@@ -48,12 +48,6 @@
     <div class="drawer-side">
         <label for="main-drawer" class="drawer-overlay"></label>
         <div class="menu p-4 w-80 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col h-screen">
-            <!-- DEBUG: Tampilkan company info
-            {% if company %}
-                <p style="color:red;">Company found: {{ company.name }}, Logo: {{ company.logo }}</p>
-            {% else %}
-                <p style="color:red;">Company NOT found in context!</p>
-            {% endif %} -->
             <!-- Logo -->
             <div class="mb-8 flex items-center gap-3 px-4 flex-shrink-0">
                 {% if company and company.logo %}
@@ -70,8 +64,6 @@
             <!-- Scrollable Menu Container -->
             <div class="sidebar-menu-container flex-1 overflow-y-auto px-2">
                 <ul class="menu menu-lg w-full">
-                    <!-- <li class="menu-title text-xs opacity-50 mb-2">MAIN MENU</li> -->
-                    
                     <!-- Dashboard -->
                     <li class="mb-1">
                         <a href="/" class="flex items-center gap-3">
@@ -85,17 +77,19 @@
                     <!-- Dynamic Modules from Database -->
                     {% for module in enabled_modules %}
                     <li class="mb-1">
-                        <div class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 module-header" 
-                            data-module="{{ module.name }}" 
-                            data-url="{% url module.name|add:'_dashboard' %}">
-                            <i class="fa-solid 
-                                {% if module.name == 'hr' %}fa-users text-cobalt
-                                {% elif module.name == 'finance' %}fa-coins text-burnt-orange
-                                {% elif module.name == 'production' %}fa-industry text-production
-                                {% elif module.name == 'warehouse' %}fa-warehouse text-forest
-                                {% endif %} w-5"></i>
-                            <span class="flex-1">{{ module.display_name }}</span>
-                            <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-{{ module.name }}"></i>
+                        <div class="flex items-center gap-3 hover:bg-base-200 rounded-lg p-2">
+                            <a href="{% url module.name|add:'_dashboard' %}" class="flex items-center gap-3 flex-1 module-link">
+                                <i class="fa-solid 
+                                    {% if module.name == 'hr' %}fa-users text-cobalt
+                                    {% elif module.name == 'finance' %}fa-coins text-burnt-orange
+                                    {% elif module.name == 'production' %}fa-industry text-production
+                                    {% elif module.name == 'warehouse' %}fa-warehouse text-forest
+                                    {% endif %} w-5"></i>
+                                <span class="flex-1">{{ module.display_name }}</span>
+                            </a>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-200 cursor-pointer chevron-icon" 
+                               data-module="{{ module.name }}" 
+                               id="chevron-{{ module.name }}"></i>
                         </div>
                         <ul class="ml-7 mt-2 space-y-1 submenu hidden" id="submenu-{{ module.name }}">
                             {% for submodule in module.submodules %}
@@ -194,14 +188,12 @@ function toggleSidebar() {
 
 // Open a specific submenu and close others
 function openSubmenu(module) {
-    // Close all submenus
     document.querySelectorAll('.submenu').forEach(menu => {
         menu.classList.add('hidden');
     });
     document.querySelectorAll('[id^="chevron-"]').forEach(ch => {
         ch.style.transform = 'rotate(0deg)';
     });
-    // Open the requested one
     const submenu = document.getElementById(`submenu-${module}`);
     const chevron = document.getElementById(`chevron-${module}`);
     if (submenu && chevron) {
@@ -220,20 +212,37 @@ function closeSubmenu(module) {
     }
 }
 
-// Toggle submenu (used by click handler)
+// Toggle submenu
 function toggleSubmenu(module) {
     const submenu = document.getElementById(`submenu-${module}`);
-    const chevron = document.getElementById(`chevron-${module}`);
     if (submenu.classList.contains('hidden')) {
         openSubmenu(module);
-        return true; // opened
+        return true;
     } else {
         closeSubmenu(module);
-        return false; // closed
+        return false;
     }
 }
 
-// On page load, restore the last opened module from localStorage
+// Handle chevron click only
+document.querySelectorAll('.chevron-icon').forEach(chevron => {
+    chevron.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const module = this.dataset.module;
+        toggleSubmenu(module);
+    });
+});
+
+// Handle module link click - only redirect, no submenu toggle
+document.querySelectorAll('.module-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        const module = this.closest('li').querySelector('.chevron-icon').dataset.module;
+        localStorage.setItem('last_module', module);
+        // No submenu toggle on redirect
+    });
+});
+
+// On page load, restore last opened module
 document.addEventListener('DOMContentLoaded', function() {
     const drawer = document.querySelector('.drawer');
     const toggleIcon = document.getElementById('sidebar-toggle-icon');
@@ -246,40 +255,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Restore last opened module
     const lastModule = localStorage.getItem('last_module');
     if (lastModule && ['hr', 'finance', 'production', 'warehouse'].includes(lastModule)) {
         openSubmenu(lastModule);
     }
-});
-
-// Handle clicks on module headers
-document.querySelectorAll('.module-header').forEach(header => {
-    header.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const module = this.dataset.module;
-        const targetUrl = this.dataset.url;
-        const currentPath = window.location.pathname;
-        
-        // Check if we are already on this module's dashboard
-        const isCurrent = (currentPath === targetUrl);
-        
-        if (isCurrent) {
-            // Just toggle the submenu (open/close)
-            const opened = toggleSubmenu(module);
-            if (opened) {
-                // If opened, save this module as last opened
-                localStorage.setItem('last_module', module);
-            } else {
-                // If closed, remove last_module so it stays closed on refresh
-                localStorage.removeItem('last_module');
-            }
-        } else {
-            // Different module: save to localStorage and redirect
-            localStorage.setItem('last_module', module);
-            window.location.href = targetUrl;
-        }
-    });
 });
 
 function toggleProfileModal() {
