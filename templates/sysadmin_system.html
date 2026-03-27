@@ -1,21 +1,137 @@
 {% extends 'base_authenticated.html' %}
 {% load static %}
 
-{% block title %}Modules - Administration{% endblock %}
+{% block title %}System - Administration{% endblock %}
 
 {% block content %}
 <div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
     <a href="{% url 'sysadmin_users' %}" class="tab tab-lg">User Management</a>
     <a href="{% url 'sysadmin_company' %}" class="tab tab-lg">Company</a>
-    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg tab-active">Modules</a>
-    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg">System</a>
+    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg">Modules</a>
+    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg tab-active">System</a>
     <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">Audit</a>
 </div>
 
-<div class="card bg-base-100 shadow-xl border-l-4 border-production">
-    <div class="card-body">
-        <h2 class="card-title text-production">System Configuration</h2>
-        <p class="text-gray-500">This feature is coming soon.</p>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- System Information -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i class="fa-solid fa-server text-primary"></i>
+                System Information
+            </h2>
+            <div class="divider"></div>
+            <div class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="font-semibold">Django Version:</span>
+                    <span>{{ system_info.django_version }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Python Version:</span>
+                    <span>{{ system_info.python_version }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Database:</span>
+                    <span>{{ system_info.database }} - {{ system_info.database_name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Operating System:</span>
+                    <span>{{ system_info.os }} {{ system_info.os_release }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Hostname:</span>
+                    <span>{{ system_info.hostname }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Server Time:</span>
+                    <span>{{ system_info.server_time }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Environment:</span>
+                    <span>
+                        {% if system_info.environment == 'Production' %}
+                            <span class="badge badge-error">Production</span>
+                        {% else %}
+                            <span class="badge badge-warning">Development</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disk & Memory -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i class="fa-solid fa-hard-drive text-primary"></i>
+                Storage & Memory
+            </h2>
+            <div class="divider"></div>
+            
+            <div class="mb-4">
+                <div class="flex justify-between mb-1">
+                    <span class="font-semibold">Disk Usage</span>
+                    <span>{{ system_info.disk_used }} / {{ system_info.disk_total }}</span>
+                </div>
+                <div class="w-full bg-base-300 rounded-full h-2.5">
+                    <div class="bg-primary h-2.5 rounded-full" style="width: {{ system_info.disk_percent }}%"></div>
+                </div>
+                <div class="text-right text-xs mt-1">{{ system_info.disk_percent }}% used</div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex justify-between mb-1">
+                    <span class="font-semibold">Memory Usage</span>
+                    <span>{{ system_info.memory_used }} / {{ system_info.memory_total }}</span>
+                </div>
+                <div class="w-full bg-base-300 rounded-full h-2.5">
+                    <div class="bg-success h-2.5 rounded-full" style="width: {{ system_info.memory_percent }}%"></div>
+                </div>
+                <div class="text-right text-xs mt-1">{{ system_info.memory_percent }}% used</div>
+            </div>
+            
+            <div class="flex justify-between">
+                <span class="font-semibold">Free Disk Space:</span>
+                <span>{{ system_info.disk_free }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body items-center text-center">
+            <i class="fa-solid fa-database text-4xl text-primary"></i>
+            <h3 class="font-bold">Backup Database</h3>
+            <p class="text-sm text-gray-500">Download SQL dump</p>
+            <button class="btn btn-outline btn-primary btn-sm mt-2" disabled>
+                <i class="fa-solid fa-download"></i> Coming Soon
+            </button>
+        </div>
+    </div>
+    
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body items-center text-center">
+            <i class="fa-solid fa-broom text-4xl text-warning"></i>
+            <h3 class="font-bold">Clear Cache</h3>
+            <p class="text-sm text-gray-500">Clear all cached data</p>
+            <button class="btn btn-outline btn-warning btn-sm mt-2" disabled>
+                <i class="fa-solid fa-trash"></i> Coming Soon
+            </button>
+        </div>
+    </div>
+    
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body items-center text-center">
+            <i class="fa-solid fa-wrench text-4xl text-info"></i>
+            <h3 class="font-bold">Maintenance Mode</h3>
+            <p class="text-sm text-gray-500">Put site under maintenance</p>
+            <button class="btn btn-outline btn-info btn-sm mt-2" disabled>
+                <i class="fa-solid fa-toggle-off"></i> Coming Soon
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}

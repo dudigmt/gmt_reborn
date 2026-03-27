@@ -9,6 +9,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import LoginHistory, CompanyProfile 
+from django.conf import settings
 
 
 def login_view(request):
@@ -228,3 +229,51 @@ def sysadmin_system(request):
 def sysadmin_audit(request):
     return render(request, 'sysadmin_audit.html')
 
+import platform
+import sys
+import django
+from django.db import connection
+import psutil
+from datetime import datetime
+import os
+
+@staff_member_required
+def sysadmin_system(request):
+    # System Info
+    system_info = {
+        'django_version': django.get_version(),
+        'python_version': sys.version.split()[0],
+        'database': connection.vendor,
+        'database_name': connection.settings_dict['NAME'],
+        'os': platform.system(),
+        'os_release': platform.release(),
+        'hostname': platform.node(),
+        'server_time': datetime.now().strftime('%d %B %Y, %H:%M:%S'),
+        'environment': 'Development' if settings.DEBUG else 'Production',
+    }
+    
+    # Disk usage
+    try:
+        disk = psutil.disk_usage('/')
+        system_info['disk_total'] = f"{disk.total / (1024**3):.1f} GB"
+        system_info['disk_used'] = f"{disk.used / (1024**3):.1f} GB"
+        system_info['disk_free'] = f"{disk.free / (1024**3):.1f} GB"
+        system_info['disk_percent'] = disk.percent
+    except:
+        system_info['disk_total'] = 'N/A'
+        system_info['disk_used'] = 'N/A'
+        system_info['disk_free'] = 'N/A'
+        system_info['disk_percent'] = 'N/A'
+    
+    # Memory usage
+    try:
+        memory = psutil.virtual_memory()
+        system_info['memory_total'] = f"{memory.total / (1024**3):.1f} GB"
+        system_info['memory_used'] = f"{memory.used / (1024**3):.1f} GB"
+        system_info['memory_percent'] = memory.percent
+    except:
+        system_info['memory_total'] = 'N/A'
+        system_info['memory_used'] = 'N/A'
+        system_info['memory_percent'] = 'N/A'
+    
+    return render(request, 'sysadmin_system.html', {'system_info': system_info, 'active_tab': 'system'})
