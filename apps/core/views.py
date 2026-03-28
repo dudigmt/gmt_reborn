@@ -43,7 +43,7 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password')
     
-    return render(request, 'login.html', {'expired_time': expired_time})
+    return render(request, 'auth/login.html', {'expired_time': expired_time})
 
 
 def logout_view(request):
@@ -88,19 +88,19 @@ def extend_session(request):
 
 # ===== MODULE DASHBOARDS =====
 def hr_dashboard(request):
-    return render(request, 'hr_dashboard.html')
+    return render(request, 'modules/hr_dashboard.html')
 
 
 def finance_dashboard(request):
-    return render(request, 'finance_dashboard.html')
+    return render(request, 'modules/finance_dashboard.html')
 
 
 def production_dashboard(request):
-    return render(request, 'production_dashboard.html')
+    return render(request, 'modules/production_dashboard.html')
 
 
 def warehouse_dashboard(request):
-    return render(request, 'warehouse_dashboard.html')
+    return render(request, 'modules/warehouse_dashboard.html')
 
 
 # ===== SYSADMIN - USER MANAGEMENT =====
@@ -115,7 +115,7 @@ def sysadmin_users(request):
     page_number = request.GET.get('page')
     users = paginator.get_page(page_number)
     
-    return render(request, 'sysadmin_users.html', {'users': users})
+    return render(request, 'admin/users/list.html', {'users': users})
 
 
 @staff_member_required
@@ -139,7 +139,7 @@ def sysadmin_users_add(request):
             errors.append('Username already exists')
         
         if errors:
-            return render(request, 'sysadmin_users_add.html', {'errors': errors})
+            return render(request, 'admin/users/add.html', {'errors': errors})
         
         User.objects.create(
             username=username,
@@ -150,7 +150,7 @@ def sysadmin_users_add(request):
         )
         return redirect('sysadmin_users')
     
-    return render(request, 'sysadmin_users_add.html')
+    return render(request, 'admin/users/add.html')
 
 
 @staff_member_required
@@ -171,7 +171,7 @@ def sysadmin_users_edit(request, user_id):
         user.save()
         return redirect('sysadmin_users')
     
-    return render(request, 'sysadmin_users_edit.html', {'user': user})
+    return render(request, 'admin/users/edit.html', {'user': user})
 
 
 @staff_member_required
@@ -207,7 +207,7 @@ def sysadmin_company(request):
         
         return redirect('sysadmin_company')
     
-    return render(request, 'sysadmin_company.html', {'profile': profile})
+    return render(request, 'admin/company/settings.html', {'profile': profile})
 
 
 # ===== SYSADMIN - MODULES =====
@@ -215,19 +215,19 @@ def sysadmin_company(request):
 def sysadmin_modules(request):
     from modules.models import Module
     modules = Module.objects.all().order_by('order')
-    return render(request, 'sysadmin_modules.html', {'modules': modules})
+    return render(request, 'admin/modules/list.html', {'modules': modules})
 
 
 # ===== SYSADMIN - SYSTEM (DUMMY) =====
 @staff_member_required
 def sysadmin_system(request):
-    return render(request, 'sysadmin_system.html')
+    return render(request, 'admin/system/sysadmin_system.html')
 
 
 # ===== SYSADMIN - AUDIT (DUMMY) =====
 @staff_member_required
 def sysadmin_audit(request):
-    return render(request, 'sysadmin_audit.html')
+    return render(request, 'admin/audit/logs.html')
 
 import platform
 import sys
@@ -276,4 +276,4 @@ def sysadmin_system(request):
         system_info['memory_used'] = 'N/A'
         system_info['memory_percent'] = 'N/A'
     
-    return render(request, 'sysadmin_system.html', {'system_info': system_info, 'active_tab': 'system'})
+    return render(request, 'admin/system/info.html', {'system_info': system_info, 'active_tab': 'system'})

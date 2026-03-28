@@ -40,7 +40,7 @@ def module_settings(request):
         'modules': modules,
         'active_tab': 'modules'
     }
-    return render(request, 'sysadmin_modules.html', context)
+    return render(request, 'admin/sysadmin_modules.html', context)
 
 @staff_member_required
 def edit_submodule(request, module_name, submodule_name):
@@ -78,7 +78,7 @@ def edit_submodule(request, module_name, submodule_name):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'sysadmin_submodule_edit.html', context)
+    return render(request, 'admin/sysadmin_submodule_edit.html', context)
 
 @staff_member_required
 def add_submodule(request, module_name):
@@ -108,7 +108,7 @@ def add_submodule(request, module_name):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'sysadmin_submodule_add.html', context)
+    return render(request, 'admin/sysadmin_submodule_add.html', context)
 
 @staff_member_required
 def delete_submodule(request, module_name, submodule_name):
@@ -143,7 +143,7 @@ def edit_module(request, module_name):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'sysadmin_module_edit.html', context)
+    return render(request, 'admin/sysadmin_module_edit.html', context)
 
 @staff_member_required
 def add_module(request):
@@ -271,7 +271,7 @@ def delete_module(request, module_name):
         'module': module,
         'active_tab': 'modules'
     }
-    return render(request, 'sysadmin_module_delete.html', context)
+    return render(request, 'admin/sysadmin_module_delete.html', context)
 
 @staff_member_required
 def reorder_modules(request):
