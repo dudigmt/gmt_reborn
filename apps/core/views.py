@@ -322,3 +322,10 @@ def data_manager_view(request):
         'admin_submodules': get_admin_submodules(),
     }
     return render(request, 'admin/data_manager.html', context)
+
+
+
+
+
+def invoice_dashboard(request):
+    return render(request, 'invoice_dashboard.html')

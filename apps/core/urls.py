@@ -36,4 +36,5 @@ urlpatterns = [
     path('sysadmin/system/', views.sysadmin_system, name='sysadmin_system'),
     path('sysadmin/audit/', views.sysadmin_audit, name='sysadmin_audit'),
     path('sysadmin/data_manager/', views.data_manager_view, name='data_manager_view'),
+    path('invoice/', views.invoice_dashboard, name='invoice_dashboard'),
 ]
