@@ -35,4 +35,5 @@ urlpatterns = [
     # SYSADMIN - System & Audit (coming soon)
     path('sysadmin/system/', views.sysadmin_system, name='sysadmin_system'),
     path('sysadmin/audit/', views.sysadmin_audit, name='sysadmin_audit'),
+    path('sysadmin/data_manager/', views.data_manager_view, name='data_manager_view'),
 ]

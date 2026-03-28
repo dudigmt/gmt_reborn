@@ -91,11 +91,19 @@ def add_submodule(request, module_name):
     if request.method == 'POST':
         submodules = module.submodules or []
         
+        name = request.POST.get('name')
+        display_name = request.POST.get('display_name')
+        icon = request.POST.get('icon')
+        url = request.POST.get('url')
+        
+        # Auto-detect submodule type based on parent module
+        is_admin_module = (module_name == 'admin')
+        
         new_submodule = {
-            'name': request.POST.get('name'),
-            'display_name': request.POST.get('display_name'),
-            'icon': request.POST.get('icon'),
-            'url': request.POST.get('url'),
+            'name': name,
+            'display_name': display_name,
+            'icon': icon,
+            'url': url,
             'order': len(submodules) + 1,
             'is_enabled': True
         }
@@ -104,7 +112,64 @@ def add_submodule(request, module_name):
         module.submodules = submodules
         module.save()
         
-        messages.success(request, f'Submodule {new_submodule["display_name"]} added successfully')
+        # Auto-generate for admin module submodules
+        if is_admin_module:
+            # Generate view
+            views_path = os.path.join(settings.BASE_DIR, 'apps/core/views.py')
+            with open(views_path, 'r') as f:
+                views_content = f.read()
+            
+            if f'def {name}_view(request):' not in views_content:
+                with open(views_path, 'a') as f:
+                    f.write(f"""
+def {name}_view(request):
+    return render(request, 'admin/{name}.html')
+""")
+            
+            # Generate URL pattern
+            urls_path = os.path.join(settings.BASE_DIR, 'apps/core/urls.py')
+            with open(urls_path, 'r') as f:
+                urls_content = f.read()
+            
+            new_url = f"    path('sysadmin/{name}/', views.{name}_view, name='{name}_view'),\n"
+            if new_url not in urls_content:
+                urls_content = urls_content.replace(']', new_url + ']')
+                with open(urls_path, 'w') as f:
+                    f.write(urls_content)
+            
+            # Generate template
+            template_path = os.path.join(settings.BASE_DIR, f'templates/admin/{name}.html')
+            template_content = f"""{{% extends 'base_authenticated.html' %}}
+{{% load static %}}
+
+{{% block title %}}{display_name}{{% endblock %}}
+
+{{% block content %}}
+<div class="container mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">{display_name}</h2>
+            <p>Welcome to {display_name}. This is an auto-generated page.</p>
+            <p class="text-gray-500 mt-4">You can customize this template at <code>templates/admin/{name}.html</code></p>
+        </div>
+    </div>
+</div>
+{{% endblock %}}
+"""
+            with open(template_path, 'w') as f:
+                f.write(template_content)
+            
+            # Update URL in database to match generated URL
+            for sub in module.submodules:
+                if sub.get('name') == name:
+                    sub['url'] = f'/sysadmin/{name}/'
+                    break
+            module.save()
+            
+            messages.success(request, f'Submodule {display_name} added with auto-generated view, URL, and template!')
+        else:
+            messages.success(request, f'Submodule {display_name} added successfully')
+        
         return redirect('module_settings')
     
     context = {

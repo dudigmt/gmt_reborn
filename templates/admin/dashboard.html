@@ -69,109 +69,26 @@
         </div>
     </div>
 
-    <!-- Quick Actions Grid -->
+    <!-- Quick Actions Grid - Dynamic from submodules -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for submodule in admin_submodules %}
         <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
             <div class="card-body">
                 <div class="flex items-center gap-3">
                     <div class="bg-primary/10 p-3 rounded-full">
-                        <i class="fa-solid fa-users text-primary text-2xl"></i>
+                        <i class="fa-solid {{ submodule.icon }} text-primary text-2xl"></i>
                     </div>
-                    <h2 class="card-title">User Management</h2>
+                    <h2 class="card-title">{{ submodule.display_name }}</h2>
                 </div>
-                <p class="text-gray-500 mt-2">Manage system users, roles, and permissions.</p>
+                <p class="text-gray-500 mt-2">Manage {{ submodule.display_name|lower }} settings.</p>
                 <div class="card-actions justify-end mt-4">
-                    <a href="{% url 'sysadmin_users' %}" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-arrow-right"></i> Manage Users
+                    <a href="{{ submodule.url }}" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-arrow-right"></i> Open
                     </a>
                 </div>
             </div>
         </div>
-        
-        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-            <div class="card-body">
-                <div class="flex items-center gap-3">
-                    <div class="bg-secondary/10 p-3 rounded-full">
-                        <i class="fa-solid fa-building text-secondary text-2xl"></i>
-                    </div>
-                    <h2 class="card-title">Company Settings</h2>
-                </div>
-                <p class="text-gray-500 mt-2">Configure company profile, logo, and preferences.</p>
-                <div class="card-actions justify-end mt-4">
-                    <a href="{% url 'sysadmin_company' %}" class="btn btn-secondary btn-sm">
-                        <i class="fa-solid fa-gear"></i> Configure
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-            <div class="card-body">
-                <div class="flex items-center gap-3">
-                    <div class="bg-accent/10 p-3 rounded-full">
-                        <i class="fa-solid fa-puzzle-piece text-accent text-2xl"></i>
-                    </div>
-                    <h2 class="card-title">Module Configuration</h2>
-                </div>
-                <p class="text-gray-500 mt-2">Enable/disable modules and submodules.</p>
-                <div class="card-actions justify-end mt-4">
-                    <a href="{% url 'sysadmin_modules' %}" class="btn btn-accent btn-sm">
-                        <i class="fa-solid fa-sliders-h"></i> Configure
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-            <div class="card-body">
-                <div class="flex items-center gap-3">
-                    <div class="bg-info/10 p-3 rounded-full">
-                        <i class="fa-solid fa-server text-info text-2xl"></i>
-                    </div>
-                    <h2 class="card-title">System Information</h2>
-                </div>
-                <p class="text-gray-500 mt-2">View system status, disk usage, and memory.</p>
-                <div class="card-actions justify-end mt-4">
-                    <a href="{% url 'sysadmin_system' %}" class="btn btn-info btn-sm">
-                        <i class="fa-solid fa-chart-line"></i> View Stats
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-            <div class="card-body">
-                <div class="flex items-center gap-3">
-                    <div class="bg-warning/10 p-3 rounded-full">
-                        <i class="fa-solid fa-history text-warning text-2xl"></i>
-                    </div>
-                    <h2 class="card-title">Audit Logs</h2>
-                </div>
-                <p class="text-gray-500 mt-2">Track user activities and system events.</p>
-                <div class="card-actions justify-end mt-4">
-                    <a href="{% url 'sysadmin_audit' %}" class="btn btn-warning btn-sm">
-                        <i class="fa-solid fa-search"></i> View Logs
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-            <div class="card-body">
-                <div class="flex items-center gap-3">
-                    <div class="bg-error/10 p-3 rounded-full">
-                        <i class="fa-solid fa-database text-error text-2xl"></i>
-                    </div>
-                    <h2 class="card-title">Backup & Maintenance</h2>
-                </div>
-                <p class="text-gray-500 mt-2">Backup database, clear cache, maintenance mode.</p>
-                <div class="card-actions justify-end mt-4">
-                    <button class="btn btn-error btn-sm" disabled>
-                        <i class="fa-solid fa-tools"></i> Coming Soon
-                    </button>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 
     <!-- Recent Activities -->

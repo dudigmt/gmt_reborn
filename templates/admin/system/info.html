@@ -4,13 +4,7 @@
 {% block title %}System - Administration{% endblock %}
 
 {% block content %}
-<div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
-    <a href="{% url 'sysadmin_users' %}" class="tab tab-lg">User Management</a>
-    <a href="{% url 'sysadmin_company' %}" class="tab tab-lg">Company</a>
-    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg">Modules</a>
-    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg tab-active">System</a>
-    <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">Audit</a>
-</div>
+{% include 'admin/partials/tabs.html' %}
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- System Information -->

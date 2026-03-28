@@ -4,98 +4,24 @@
 {% block title %}Company Settings - Administration{% endblock %}
 
 {% block content %}
-<!-- Tabs Navigation -->
-<div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
-    <a href="{% url 'sysadmin_users' %}" class="tab tab-lg">
-        <i class="fa-solid fa-users-cog mr-2"></i> User Management
-    </a>
-    <a href="{% url 'sysadmin_company' %}" class="tab tab-lg tab-active">
-        <i class="fa-solid fa-building mr-2"></i> Company
-    </a>
-    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg">
-        <i class="fa-solid fa-puzzle-piece mr-2"></i> Modules
-    </a>
-    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg">
-        <i class="fa-solid fa-server mr-2"></i> System
-    </a>
-    <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">
-        <i class="fa-solid fa-shield-halved mr-2"></i> Audit
-    </a>
-</div>
+{% include 'admin/partials/tabs.html' %}
 
-<!-- Company Settings Content -->
-<div class="card bg-base-100 shadow-xl border-l-4 border-burnt-orange">
+<div class="card bg-base-100 shadow-xl">
     <div class="card-body">
-        <h2 class="card-title text-burnt-orange mb-4">Company Settings</h2>
-
+        <h2 class="card-title">Company Profile</h2>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Company Name -->
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Company Name</span></label>
-                    <input type="text" name="name" value="{{ profile.name }}" class="input input-bordered">
-                </div>
-
-                <!-- Tax ID (NPWP) -->
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Tax ID (NPWP)</span></label>
-                    <input type="text" name="tax_id" value="{{ profile.tax_id }}" class="input input-bordered">
-                </div>
-
-                <!-- Phone -->
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Phone</span></label>
-                    <input type="text" name="phone" value="{{ profile.phone }}" class="input input-bordered">
-                </div>
-
-                <!-- Email -->
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Email</span></label>
-                    <input type="email" name="email" value="{{ profile.email }}" class="input input-bordered">
-                </div>
-
-                <!-- Address (full width) -->
-                <div class="form-control md:col-span-2">
-                    <label class="label"><span class="label-text">Address</span></label>
-                    <textarea name="address" rows="3" class="textarea textarea-bordered">{{ profile.address }}</textarea>
-                </div>
-
-                <!-- Currency -->
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Currency</span></label>
-                    <select name="currency" class="select select-bordered">
-                        <option value="IDR" {% if profile.currency == 'IDR' %}selected{% endif %}>IDR - Indonesian Rupiah</option>
-                        <option value="USD" {% if profile.currency == 'USD' %}selected{% endif %}>USD - US Dollar</option>
-                    </select>
-                </div>
-
-                <!-- Date Format -->
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Date Format</span></label>
-                    <select name="date_format" class="select select-bordered">
-                        <option value="d/m/Y" {% if profile.date_format == 'd/m/Y' %}selected{% endif %}>DD/MM/YYYY</option>
-                        <option value="m/d/Y" {% if profile.date_format == 'm/d/Y' %}selected{% endif %}>MM/DD/YYYY</option>
-                        <option value="Y-m-d" {% if profile.date_format == 'Y-m-d' %}selected{% endif %}>YYYY-MM-DD</option>
-                    </select>
-                </div>
-
-                <!-- Logo Upload -->
-                <div class="form-control md:col-span-2">
-                    <label class="label"><span class="label-text">Company Logo</span></label>
-                    {% if profile.logo %}
-                    <div class="mb-2">
-                        <img src="{{ profile.logo.url }}" class="h-16 w-auto">
-                    </div>
-                    {% endif %}
-                    <input type="file" name="logo" class="file-input file-input-bordered">
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-control"><label class="label">Company Name</label><input type="text" name="name" value="{{ profile.name }}" class="input input-bordered" required></div>
+                <div class="form-control"><label class="label">Email</label><input type="email" name="email" value="{{ profile.email }}" class="input input-bordered"></div>
+                <div class="form-control"><label class="label">Phone</label><input type="text" name="phone" value="{{ profile.phone }}" class="input input-bordered"></div>
+                <div class="form-control"><label class="label">Tax ID (NPWP)</label><input type="text" name="tax_id" value="{{ profile.tax_id }}" class="input input-bordered"></div>
+                <div class="form-control md:col-span-2"><label class="label">Address</label><textarea name="address" class="textarea textarea-bordered" rows="3">{{ profile.address }}</textarea></div>
+                <div class="form-control"><label class="label">Currency</label><input type="text" name="currency" value="{{ profile.currency }}" class="input input-bordered"></div>
+                <div class="form-control"><label class="label">Date Format</label><input type="text" name="date_format" value="{{ profile.date_format }}" class="input input-bordered"></div>
+                <div class="form-control"><label class="label">Company Logo</label><input type="file" name="logo" class="file-input file-input-bordered">{% if profile.logo %}<div class="mt-2"><img src="{{ profile.logo.url }}" class="h-16 w-auto"></div>{% endif %}</div>
             </div>
-
-            <div class="card-actions justify-end mt-6">
-                <button type="submit" class="btn bg-burnt-orange text-white">Save Changes</button>
-            </div>
+            <div class="mt-6"><button type="submit" class="btn btn-primary">Save Changes</button></div>
         </form>
     </div>
 </div>

@@ -8,10 +8,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
 from django.db.models import Q
-from .models import LoginHistory, CompanyProfile 
-from django.conf import settings
+from .models import LoginHistory, CompanyProfile
+from modules.models import Module
 
-
+# ===== AUTH VIEWS =====
 def login_view(request):
     expired_time = None
     
@@ -24,7 +24,6 @@ def login_view(request):
         if user:
             login(request, user)
             
-            # Simpan login history
             x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
             if x_forwarded_for:
                 ip = x_forwarded_for.split(',')[0]
@@ -45,107 +44,46 @@ def login_view(request):
     
     return render(request, 'auth/login.html', {'expired_time': expired_time})
 
-
 def logout_view(request):
     logout(request)
     return redirect('login')
-
 
 def dashboard_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     return render(request, 'dashboard.html')
 
-
 def check_session(request):
     if request.user.is_authenticated:
         return HttpResponse('OK')
     return HttpResponse('Unauthorized', status=401)
 
-
 def extend_session(request):
     if request.user.is_authenticated:
-        request.session.set_expiry(1800)  # 30 minutes
+        request.session.set_expiry(1800)
         return HttpResponse('OK')
     return HttpResponse('Unauthorized', status=401)
-
-def admin_dashboard(request):
-    from django.contrib.auth.models import User
-    from django.utils import timezone
-    from datetime import timedelta
-    from modules.models import Module
-    import os
-    import psutil
-    
-    total_users = User.objects.count()
-    total_modules = Module.objects.count()
-    today_logins = 0  # nanti diisi dari LoginHistory
-    
-    # DB size (approximate)
-    db_size = "N/A"
-    try:
-        import subprocess
-        result = subprocess.run(['du', '-sh', '/home/adung/projects/gmt_reborn'], capture_output=True, text=True)
-        db_size = result.stdout.split()[0] if result.returncode == 0 else "N/A"
-    except:
-        pass
-    
-    # Uptime
-    uptime = "N/A"
-    try:
-        with open('/proc/uptime', 'r') as f:
-            uptime_seconds = float(f.readline().split()[0])
-            hours = int(uptime_seconds // 3600)
-            minutes = int((uptime_seconds % 3600) // 60)
-            uptime = f"{hours}h {minutes}m"
-    except:
-        pass
-    
-    # Recent logs placeholder
-    recent_logs = []
-    
-    context = {
-        'total_users': total_users,
-        'total_modules': total_modules,
-        'today_logins': today_logins,
-        'db_size': db_size,
-        'uptime': uptime,
-        'recent_logs': recent_logs,
-    }
-    return render(request, 'admin/dashboard.html', context)
-
-#def settings_view(request):
-#    settings = GMTSettings.get_settings()
-#    
-#    if request.method == 'POST':
-#        session_timeout = request.POST.get('session_timeout')
-#        if session_timeout and session_timeout.isdigit():
-#            settings.session_timeout = int(session_timeout)
-#            settings.updated_by = request.user
-#            settings.save()
-#            messages.success(request, 'Settings updated successfully')
-#        else:
-#            messages.error(request, 'Invalid session timeout value')
-#    
-#    return render(request, 'settings.html', {'settings': settings})
-
 
 # ===== MODULE DASHBOARDS =====
 def hr_dashboard(request):
     return render(request, 'modules/hr_dashboard.html')
 
-
 def finance_dashboard(request):
     return render(request, 'modules/finance_dashboard.html')
-
 
 def production_dashboard(request):
     return render(request, 'modules/production_dashboard.html')
 
-
 def warehouse_dashboard(request):
     return render(request, 'modules/warehouse_dashboard.html')
 
+# ===== HELPER =====
+def get_admin_submodules():
+    try:
+        admin_module = Module.objects.get(name='admin')
+        return [sub for sub in admin_module.submodules if sub.get('is_enabled', True)]
+    except:
+        return []
 
 # ===== SYSADMIN - USER MANAGEMENT =====
 @staff_member_required
@@ -159,8 +97,8 @@ def sysadmin_users(request):
     page_number = request.GET.get('page')
     users = paginator.get_page(page_number)
     
-    return render(request, 'admin/users/list.html', {'users': users})
-
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/users/list.html', {'users': users, 'admin_submodules': admin_submodules})
 
 @staff_member_required
 def sysadmin_users_add(request):
@@ -183,7 +121,8 @@ def sysadmin_users_add(request):
             errors.append('Username already exists')
         
         if errors:
-            return render(request, 'admin/users/add.html', {'errors': errors})
+            admin_submodules = get_admin_submodules()
+            return render(request, 'admin/users/add.html', {'errors': errors, 'admin_submodules': admin_submodules})
         
         User.objects.create(
             username=username,
@@ -194,8 +133,8 @@ def sysadmin_users_add(request):
         )
         return redirect('sysadmin_users')
     
-    return render(request, 'admin/users/add.html')
-
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/users/add.html', {'admin_submodules': admin_submodules})
 
 @staff_member_required
 def sysadmin_users_edit(request, user_id):
@@ -215,21 +154,19 @@ def sysadmin_users_edit(request, user_id):
         user.save()
         return redirect('sysadmin_users')
     
-    return render(request, 'admin/users/edit.html', {'user': user})
-
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/users/edit.html', {'user': user, 'admin_submodules': admin_submodules})
 
 @staff_member_required
 def sysadmin_users_delete(request, user_id):
     if request.method == 'POST':
         user = get_object_or_404(User, id=user_id)
-        if user != request.user:  # Prevent self-deletion
+        if user != request.user:
             user.delete()
         return redirect('sysadmin_users')
-    
     return redirect('sysadmin_users')
 
-
-# ===== SYSADMIN - COMPANY SETTINGS =====
+# ===== SYSADMIN - COMPANY =====
 @staff_member_required
 def sysadmin_company(request):
     profile = CompanyProfile.get_profile()
@@ -251,39 +188,27 @@ def sysadmin_company(request):
         
         return redirect('sysadmin_company')
     
-    return render(request, 'admin/company/settings.html', {'profile': profile})
-
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/company/settings.html', {'profile': profile, 'admin_submodules': admin_submodules})
 
 # ===== SYSADMIN - MODULES =====
 @staff_member_required
 def sysadmin_modules(request):
-    from modules.models import Module
     modules = Module.objects.all().order_by('order')
-    return render(request, 'admin/modules/list.html', {'modules': modules})
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/modules/list.html', {'modules': modules, 'admin_submodules': admin_submodules})
 
-
-# ===== SYSADMIN - SYSTEM (DUMMY) =====
+# ===== SYSADMIN - SYSTEM =====
 @staff_member_required
 def sysadmin_system(request):
-    return render(request, 'admin/system/sysadmin_system.html')
-
-
-# ===== SYSADMIN - AUDIT (DUMMY) =====
-@staff_member_required
-def sysadmin_audit(request):
-    return render(request, 'admin/audit/logs.html')
-
-import platform
-import sys
-import django
-from django.db import connection
-import psutil
-from datetime import datetime
-import os
-
-@staff_member_required
-def sysadmin_system(request):
-    # System Info
+    import platform
+    import sys
+    import django
+    from django.db import connection
+    import psutil
+    from datetime import datetime
+    from django.conf import settings
+    
     system_info = {
         'django_version': django.get_version(),
         'python_version': sys.version.split()[0],
@@ -296,7 +221,6 @@ def sysadmin_system(request):
         'environment': 'Development' if settings.DEBUG else 'Production',
     }
     
-    # Disk usage
     try:
         disk = psutil.disk_usage('/')
         system_info['disk_total'] = f"{disk.total / (1024**3):.1f} GB"
@@ -309,7 +233,6 @@ def sysadmin_system(request):
         system_info['disk_free'] = 'N/A'
         system_info['disk_percent'] = 'N/A'
     
-    # Memory usage
     try:
         memory = psutil.virtual_memory()
         system_info['memory_total'] = f"{memory.total / (1024**3):.1f} GB"
@@ -320,4 +243,82 @@ def sysadmin_system(request):
         system_info['memory_used'] = 'N/A'
         system_info['memory_percent'] = 'N/A'
     
-    return render(request, 'admin/system/info.html', {'system_info': system_info, 'active_tab': 'system'})
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/system/info.html', {'system_info': system_info, 'admin_submodules': admin_submodules})
+
+# ===== SYSADMIN - AUDIT =====
+@staff_member_required
+def sysadmin_audit(request):
+    admin_submodules = get_admin_submodules()
+    return render(request, 'admin/audit/logs.html', {'admin_submodules': admin_submodules})
+
+# ===== ADMIN DASHBOARD =====
+def admin_dashboard(request):
+    admin_module = Module.objects.get(name='admin')
+    admin_submodules = [sub for sub in admin_module.submodules if sub.get('is_enabled', True)]
+    
+    total_users = User.objects.count()
+    total_modules = Module.objects.count()
+    today_logins = 0
+    
+    db_size = "N/A"
+    try:
+        import subprocess
+        result = subprocess.run(['du', '-sh', '/home/adung/projects/gmt_reborn'], capture_output=True, text=True)
+        db_size = result.stdout.split()[0] if result.returncode == 0 else "N/A"
+    except:
+        pass
+    
+    uptime = "N/A"
+    try:
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+            hours = int(uptime_seconds // 3600)
+            minutes = int((uptime_seconds % 3600) // 60)
+            uptime = f"{hours}h {minutes}m"
+    except:
+        pass
+    
+    context = {
+        'total_users': total_users,
+        'total_modules': total_modules,
+        'today_logins': today_logins,
+        'db_size': db_size,
+        'uptime': uptime,
+        'admin_submodules': admin_submodules,
+        'recent_logs': [],
+    }
+    return render(request, 'admin/dashboard.html', context)
+
+def data_manager_view(request):
+    from django.db import connection
+    
+    tables = []
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename")
+        tables = [row[0] for row in cursor.fetchall()]
+    
+    selected_table = request.GET.get('table', '')
+    table_data = None
+    columns = []
+    rows = []
+    row_count = 0
+    
+    if selected_table and selected_table in tables:
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{selected_table}' ORDER BY ordinal_position")
+            columns = [col[0] for col in cursor.fetchall()]
+            cursor.execute(f'SELECT * FROM "{selected_table}" LIMIT 100')
+            rows = cursor.fetchall()
+            cursor.execute(f'SELECT COUNT(*) FROM "{selected_table}"')
+            row_count = cursor.fetchone()[0]
+    
+    context = {
+        'tables': tables,
+        'selected_table': selected_table,
+        'columns': columns,
+        'rows': rows,
+        'row_count': row_count,
+        'admin_submodules': get_admin_submodules(),
+    }
+    return render(request, 'admin/data_manager.html', context)

@@ -4,26 +4,8 @@
 {% block title %}User Management - Administration{% endblock %}
 
 {% block content %}
-<!-- Tabs Navigation -->
-<div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
-    <a href="{% url 'sysadmin_users' %}" class="tab tab-lg tab-active">
-        <i class="fa-solid fa-users-cog mr-2"></i> User Management
-    </a>
-    <a href="{% url 'sysadmin_company' %}" class="tab tab-lg">
-        <i class="fa-solid fa-building mr-2"></i> Company
-    </a>
-    <a href="{% url 'sysadmin_modules' %}" class="tab tab-lg">
-        <i class="fa-solid fa-puzzle-piece mr-2"></i> Modules
-    </a>
-    <a href="{% url 'sysadmin_system' %}" class="tab tab-lg">
-        <i class="fa-solid fa-server mr-2"></i> System
-    </a>
-    <a href="{% url 'sysadmin_audit' %}" class="tab tab-lg">
-        <i class="fa-solid fa-shield-halved mr-2"></i> Audit
-    </a>
-</div>
+{% include 'admin/partials/tabs.html' %}
 
-<!-- User Management Content -->
 <div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
     <div class="card-body">
         <div class="flex justify-between items-center mb-4">
@@ -31,7 +13,6 @@
             <a href="{% url 'sysadmin_users_add' %}" class="btn btn-sm bg-cobalt text-white">+ Add User</a>
         </div>
 
-        <!-- Search form -->
         <div class="mb-4">
             <form method="get" class="flex gap-2">
                 <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search by username, email..." class="input input-bordered w-full max-w-xs">
@@ -42,18 +23,11 @@
             </form>
         </div>
 
-        <!-- User table -->
         <div class="overflow-x-auto">
             <table class="table">
                 <thead>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Staff</th>
-                        <th>Active</th>
-                        <th>Last Login</th>
-                        <th>Device Info</th>
-                        <th>Actions</th>
-                    </thead>
+                    <tr><th>Username</th><th>Email</th><th>Staff</th><th>Active</th><th>Last Login</th><th>Device Info</th><th>Actions</th></tr>
+                </thead>
                 <tbody>
                     {% for user in users %}
                     <tr>
@@ -61,31 +35,9 @@
                         <td>{{ user.email|default:"-" }}</td>
                         <td>{% if user.is_staff %}<span class="badge badge-success">Yes</span>{% else %}<span class="badge">No</span>{% endif %}</td>
                         <td>{% if user.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-warning">Inactive</span>{% endif %}</td>
-                        <td>
-                            {% with last_history=user.login_history.first %}
-                                {% if last_history %}
-                                    <div class="tooltip tooltip-right" data-tip="{{ last_history.login_time|date:'d M Y H:i:s' }}">
-                                        {{ last_history.login_time|date:"d M Y H:i" }}
-                                    </div>
-                                {% else %}
-                                    {{ user.last_login|date:"d M Y H:i"|default:"Never" }}
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                        <td>
-                            {% with last_history=user.login_history.first %}
-                                {% if last_history %}
-                                    <div class="tooltip tooltip-right" data-tip="IP: {{ last_history.ip_address }}&#10;{{ last_history.user_agent|truncatechars:60 }}">
-                                        <i class="fa-solid fa-laptop-code text-gray-500"></i>
-                                        <span class="text-xs ml-1">{{ last_history.ip_address }}</span>
-                                    </div>
-                                {% else %}
-                                    <span class="text-gray-400">-</span>
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                        <td>
-                            <a href="{% url 'sysadmin_users_edit' user.id %}" class="btn btn-xs btn-ghost"><i class="fa-solid fa-edit"></i></a>
+                        <td>{% with last_history=user.login_history.first %}{% if last_history %}{{ last_history.login_time|date:"d M Y H:i" }}{% else %}{{ user.last_login|date:"d M Y H:i"|default:"Never" }}{% endif %}{% endwith %}</td>
+                        <td>{% with last_history=user.login_history.first %}{% if last_history %}{{ last_history.ip_address }}{% else %}-{% endif %}{% endwith %}</td>
+                        <td><a href="{% url 'sysadmin_users_edit' user.id %}" class="btn btn-xs btn-ghost"><i class="fa-solid fa-edit"></i></a>
                             <button onclick="confirmDelete('{{ user.username }}', '{% url 'sysadmin_users_delete' user.id %}')" class="btn btn-xs btn-ghost text-error"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
@@ -96,19 +48,12 @@
             </table>
         </div>
 
-        <!-- Pagination -->
         {% if users.paginator.num_pages > 1 %}
         <div class="flex justify-center mt-4">
             <div class="join">
-                {% if users.has_previous %}
-                    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">«</a>
-                    <a href="?page={{ users.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">‹</a>
-                {% endif %}
+                {% if users.has_previous %}<a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">«</a><a href="?page={{ users.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">‹</a>{% endif %}
                 <span class="join-item btn btn-sm">Page {{ users.number }} of {{ users.paginator.num_pages }}</span>
-                {% if users.has_next %}
-                    <a href="?page={{ users.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">›</a>
-                    <a href="?page={{ users.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">»</a>
-                {% endif %}
+                {% if users.has_next %}<a href="?page={{ users.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">›</a><a href="?page={{ users.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="join-item btn btn-sm">»</a>{% endif %}
             </div>
         </div>
         {% endif %}
@@ -118,18 +63,7 @@
 <script>
 function confirmDelete(username, url) {
     if (confirm(`Are you sure you want to delete user "${username}"?`)) {
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-        }).then(response => {
-            if (response.ok) {
-                window.location.href = "{% url 'sysadmin_users' %}";
-            } else {
-                alert('Error deleting user');
-            }
-        });
+        fetch(url, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } }).then(response => { if (response.ok) { window.location.href = "{% url 'sysadmin_users' %}"; } });
     }
 }
 </script>

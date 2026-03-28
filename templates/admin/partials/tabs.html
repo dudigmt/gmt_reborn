@@ -1,0 +1,8 @@
+<!-- Tabs Navigation - Dynamic from database -->
+<div class="tabs tabs-boxed bg-base-200 p-1 mb-6 overflow-x-auto flex-nowrap">
+    {% for submodule in admin_submodules %}
+    <a href="{{ submodule.url }}" class="tab tab-lg {% if request.path == submodule.url %}tab-active{% endif %}">
+        <i class="fa-solid {{ submodule.icon }} mr-2"></i> {{ submodule.display_name }}
+    </a>
+    {% endfor %}
+</div>

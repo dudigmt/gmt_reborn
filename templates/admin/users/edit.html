@@ -4,50 +4,22 @@
 {% block title %}Edit User - Administration{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto">
-    <div class="card bg-base-100 shadow-xl border-l-4 border-cobalt">
-        <div class="card-body">
-            <h2 class="card-title text-cobalt">Edit User: {{ user.username }}</h2>
+{% include 'admin/partials/tabs.html' %}
 
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="form-control mb-4">
-                    <label class="label"><span class="label-text">Username *</span></label>
-                    <input type="text" name="username" value="{{ user.username }}" required class="input input-bordered w-full">
-                </div>
-
-                <div class="form-control mb-4">
-                    <label class="label"><span class="label-text">Email</span></label>
-                    <input type="email" name="email" value="{{ user.email|default:'' }}" class="input input-bordered w-full">
-                </div>
-
-                <div class="form-control mb-4">
-                    <label class="label"><span class="label-text">New Password (leave blank to keep unchanged)</span></label>
-                    <input type="password" name="password1" class="input input-bordered w-full">
-                    <input type="password" name="password2" placeholder="Confirm password" class="input input-bordered w-full mt-2">
-                </div>
-
-                <div class="form-control mb-4">
-                    <label class="cursor-pointer label justify-start gap-4">
-                        <input type="checkbox" name="is_staff" class="checkbox checkbox-primary" {% if user.is_staff %}checked{% endif %}>
-                        <span class="label-text">Staff status (can access admin)</span>
-                    </label>
-                </div>
-
-                <div class="form-control mb-4">
-                    <label class="cursor-pointer label justify-start gap-4">
-                        <input type="checkbox" name="is_active" class="checkbox checkbox-primary" {% if user.is_active %}checked{% endif %}>
-                        <span class="label-text">Active</span>
-                    </label>
-                </div>
-
-                <div class="card-actions justify-end">
-                    <a href="{% url 'sysadmin_users' %}" class="btn btn-ghost">Cancel</a>
-                    <button type="submit" class="btn bg-cobalt text-white">Update User</button>
-                </div>
-            </form>
-        </div>
+<div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+        <div class="flex items-center gap-3 mb-6"><a href="{% url 'sysadmin_users' %}" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a><h2 class="card-title">Edit User: {{ user.username }}</h2></div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-control"><label class="label">Username</label><input type="text" name="username" value="{{ user.username }}" class="input input-bordered" required></div>
+                <div class="form-control"><label class="label">Email</label><input type="email" name="email" value="{{ user.email }}" class="input input-bordered"></div>
+                <div class="form-control"><label class="label">New Password (leave blank to keep current)</label><input type="password" name="password1" class="input input-bordered"></div>
+                <div class="form-control"><label class="label">Confirm Password</label><input type="password" name="password2" class="input input-bordered"></div>
+                <div class="form-control flex flex-row items-center gap-4"><label class="cursor-pointer flex items-center gap-2"><input type="checkbox" name="is_staff" class="checkbox checkbox-primary" {% if user.is_staff %}checked{% endif %}> Staff Status</label><label class="cursor-pointer flex items-center gap-2"><input type="checkbox" name="is_active" class="checkbox checkbox-success" {% if user.is_active %}checked{% endif %}> Active</label></div>
+            </div>
+            <div class="mt-6 flex gap-3"><button type="submit" class="btn btn-primary">Save Changes</button><a href="{% url 'sysadmin_users' %}" class="btn btn-ghost">Cancel</a></div>
+        </form>
     </div>
 </div>
 {% endblock %}
