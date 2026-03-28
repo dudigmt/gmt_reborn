@@ -38,7 +38,7 @@ def module_settings(request):
             module.save()
         
         messages.success(request, 'Module settings updated successfully')
-        return redirect('module_settings')
+        return redirect('sysadmin_modules')
     
     context = {
         'modules': modules,
@@ -153,6 +153,7 @@ def edit_module(request, module_name):
 def add_module(request):
     if request.method == 'POST':
         name = request.POST.get('name')
+        module_type = request.POST.get('module_type', 'standard')
         
         if Module.objects.filter(name=name).exists():
             messages.error(request, f'Module with name {name} already exists')
@@ -160,7 +161,7 @@ def add_module(request):
         
         display_name = request.POST.get('display_name')
         
-        # 1. Create module in database
+        # Create module in database
         module = Module.objects.create(
             name=name,
             display_name=display_name,
@@ -171,29 +172,24 @@ def add_module(request):
             is_system=False
         )
         
-        # 2. Generate view in core/views.py
-        views_path = os.path.join(settings.BASE_DIR, 'apps/core/views.py')
-        with open(views_path, 'a') as f:
-            f.write(f"""
-def {name}_dashboard(request):
-    return render(request, '{name}_dashboard.html')
-""")
-        
-        # 3. Generate URL pattern in core/urls.py
-        urls_path = os.path.join(settings.BASE_DIR, 'apps/core/urls.py')
-        with open(urls_path, 'r') as f:
-            urls_content = f.read()
-        
-        # Insert before last line
-        new_url = f"    path('{name}/', views.{name}_dashboard, name='{name}_dashboard'),\n"
-        urls_content = urls_content.replace(']', new_url + ']')
-        
-        with open(urls_path, 'w') as f:
-            f.write(urls_content)
-        
-        # 4. Generate template
-        template_path = os.path.join(settings.BASE_DIR, f'templates/{name}_dashboard.html')
-        template_content = f"""{{% extends 'base_authenticated.html' %}}
+        if module_type == 'standard':
+            # Generate standard dashboard view
+            views_path = os.path.join(settings.BASE_DIR, 'apps/core/views.py')
+            with open(views_path, 'a') as f:
+                f.write(f"\ndef {name}_dashboard(request):\n    return render(request, '{name}_dashboard.html')\n")
+            
+            # Generate URL pattern
+            urls_path = os.path.join(settings.BASE_DIR, 'apps/core/urls.py')
+            with open(urls_path, 'r') as f:
+                urls_content = f.read()
+            new_url = f"    path('{name}/', views.{name}_dashboard, name='{name}_dashboard'),\n"
+            urls_content = urls_content.replace(']', new_url + ']')
+            with open(urls_path, 'w') as f:
+                f.write(urls_content)
+            
+            # Generate template
+            template_path = os.path.join(settings.BASE_DIR, f'templates/{name}_dashboard.html')
+            template_content = f"""{{% extends 'base_authenticated.html' %}}
 {{% load static %}}
 
 {{% block title %}}{display_name} Dashboard{{% endblock %}}
@@ -209,10 +205,63 @@ def {name}_dashboard(request):
 </div>
 {{% endblock %}}
 """
-        with open(template_path, 'w') as f:
-            f.write(template_content)
+            with open(template_path, 'w') as f:
+                f.write(template_content)
+                
+        else:  # admin module type
+            # Generate admin dashboard view
+            views_path = os.path.join(settings.BASE_DIR, 'apps/core/views.py')
+            with open(views_path, 'a') as f:
+                f.write(f"\ndef {name}_dashboard(request):\n    return render(request, 'admin/{name}/dashboard.html')\n")
+            
+            # Generate URL pattern
+            urls_path = os.path.join(settings.BASE_DIR, 'apps/core/urls.py')
+            with open(urls_path, 'r') as f:
+                urls_content = f.read()
+            new_url = f"    path('{name}/', views.{name}_dashboard, name='{name}_dashboard'),\n"
+            urls_content = urls_content.replace(']', new_url + ']')
+            with open(urls_path, 'w') as f:
+                f.write(urls_content)
+            
+            # Create folder and templates
+            os.makedirs(os.path.join(settings.BASE_DIR, f'templates/admin/{name}'), exist_ok=True)
+            
+            # Dashboard template - using string concatenation to avoid f-string issues
+            dashboard_path = os.path.join(settings.BASE_DIR, f'templates/admin/{name}/dashboard.html')
+            dashboard_content = '{% extends "base_authenticated.html" %}\n'
+            dashboard_content += '{% load static %}\n\n'
+            dashboard_content += f'{{% block title %}}{display_name} Dashboard{{% endblock %}}\n\n'
+            dashboard_content += '{% block content %}\n'
+            dashboard_content += '<div class="container mx-auto">\n'
+            dashboard_content += '    <div class="card bg-base-100 shadow-xl">\n'
+            dashboard_content += '        <div class="card-body">\n'
+            dashboard_content += f'            <h2 class="card-title">{display_name} Dashboard</h2>\n'
+            dashboard_content += '            <p>Welcome to this module.</p>\n'
+            dashboard_content += '            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">\n'
+            dashboard_content += '                {% for submodule in module.submodules %}\n'
+            dashboard_content += '                <a href="{{ submodule.url }}" class="btn btn-outline btn-primary">\n'
+            dashboard_content += '                    <i class="fa-solid {{ submodule.icon }}"></i>\n'
+            dashboard_content += '                    {{ submodule.display_name }}\n'
+            dashboard_content += '                </a>\n'
+            dashboard_content += '                {% endfor %}\n'
+            dashboard_content += '            </div>\n'
+            dashboard_content += '        </div>\n'
+            dashboard_content += '    </div>\n'
+            dashboard_content += '</div>\n'
+            dashboard_content += '{% endblock %}'
+            
+            with open(dashboard_path, 'w') as f:
+                f.write(dashboard_content)
+            
+            # Create default submodules
+            submodules = [
+                {'name': 'list', 'display_name': 'List', 'icon': 'fa-list', 'url': f'/{name}/list/', 'order': 1, 'is_enabled': True},
+                {'name': 'add', 'display_name': 'Add', 'icon': 'fa-plus', 'url': f'/{name}/add/', 'order': 2, 'is_enabled': True},
+            ]
+            module.submodules = submodules
+            module.save()
         
-        messages.success(request, f'Module {display_name} created successfully with dashboard view and template')
+        messages.success(request, f'Module {display_name} created successfully')
         return redirect('module_settings')
     
     context = {
@@ -270,7 +319,7 @@ def delete_module(request, module_name):
         with open(urls_path, 'w') as f:
             f.writelines(new_urls_lines)
         
-        # 4. Delete module from database (cascade to submodules)
+        # 4. Delete module from database
         module_name_display = module.display_name
         module.delete()
         

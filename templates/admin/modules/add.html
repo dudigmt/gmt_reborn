@@ -44,6 +44,24 @@
                 
                 <div class="form-control">
                     <label class="label">
+                        <span class="label-text">Module Type</span>
+                    </label>
+                    <div class="flex gap-4">
+                        <label class="cursor-pointer flex items-center gap-2">
+                            <input type="radio" name="module_type" value="standard" class="radio radio-primary" checked>
+                            <span>Standard Dashboard</span>
+                            <span class="text-xs text-gray-500">(Single dashboard page)</span>
+                        </label>
+                        <label class="cursor-pointer flex items-center gap-2">
+                            <input type="radio" name="module_type" value="admin" class="radio radio-primary">
+                            <span>Admin Module</span>
+                            <span class="text-xs text-gray-500">(With list/add submodules)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
                         <span class="label-text">Icon</span>
                     </label>
                     <div class="flex gap-3 items-center">
