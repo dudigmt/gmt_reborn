@@ -8,6 +8,7 @@ urlpatterns = [
     
     # Dashboard
     path('', views.dashboard_view, name='dashboard'),
+    path('sysadmin/', views.admin_dashboard, name='admin_dashboard'),
     
     # Session API
     path('api/check-session/', views.check_session, name='check-session'),

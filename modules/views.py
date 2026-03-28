@@ -14,6 +14,10 @@ def module_settings(request):
     
     if request.method == 'POST':
         for module in modules:
+            # Skip system modules - cannot be disabled
+            if module.is_system:
+                continue
+                
             # Handle main module status
             enabled = request.POST.get(f'module_{module.name}') == 'on'
             if module.is_enabled != enabled:
@@ -40,7 +44,7 @@ def module_settings(request):
         'modules': modules,
         'active_tab': 'modules'
     }
-    return render(request, 'admin/sysadmin_modules.html', context)
+    return render(request, 'admin/modules/list.html', context)
 
 @staff_member_required
 def edit_submodule(request, module_name, submodule_name):
@@ -78,7 +82,7 @@ def edit_submodule(request, module_name, submodule_name):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'admin/sysadmin_submodule_edit.html', context)
+    return render(request, 'admin/modules/submodule_edit.html', context)
 
 @staff_member_required
 def add_submodule(request, module_name):
@@ -108,7 +112,7 @@ def add_submodule(request, module_name):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'admin/sysadmin_submodule_add.html', context)
+    return render(request, 'admin/modules/submodule_add.html', context)
 
 @staff_member_required
 def delete_submodule(request, module_name, submodule_name):
@@ -143,7 +147,7 @@ def edit_module(request, module_name):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'admin/sysadmin_module_edit.html', context)
+    return render(request, 'admin/modules/edit.html', context)
 
 @staff_member_required
 def add_module(request):
@@ -163,7 +167,8 @@ def add_module(request):
             icon=request.POST.get('icon'),
             description=request.POST.get('description'),
             order=Module.objects.count() + 1,
-            is_enabled=True
+            is_enabled=True,
+            is_system=False
         )
         
         # 2. Generate view in core/views.py
@@ -214,11 +219,16 @@ def {name}_dashboard(request):
         'icon_choices': ICON_CHOICES,
         'active_tab': 'modules'
     }
-    return render(request, 'sysadmin_module_add.html', context)
+    return render(request, 'admin/modules/add.html', context)
 
 @staff_member_required
 def delete_module(request, module_name):
     module = get_object_or_404(Module, name=module_name)
+    
+    # Prevent deletion of system modules
+    if module.is_system:
+        messages.error(request, f'Cannot delete system module: {module.display_name}')
+        return redirect('module_settings')
     
     if request.method == 'POST':
         # 1. Delete template file
@@ -271,7 +281,7 @@ def delete_module(request, module_name):
         'module': module,
         'active_tab': 'modules'
     }
-    return render(request, 'admin/sysadmin_module_delete.html', context)
+    return render(request, 'admin/modules/delete.html', context)
 
 @staff_member_required
 def reorder_modules(request):

@@ -24,6 +24,9 @@
         <div class="alert alert-info mb-4 text-sm">
             <i class="fa-solid fa-arrows-up-down"></i>
             <span>Drag modules by the <i class="fa-solid fa-grip-vertical"></i> handle to reorder. Order saves automatically.</span>
+            {% if system_modules_exist %}
+            <div class="mt-2 text-xs">🔒 System modules (Administration) cannot be disabled or deleted.</div>
+            {% endif %}
         </div>
         
         <form method="post" action="{% url 'module_settings' %}" id="moduleSettingsForm">
@@ -39,12 +42,24 @@
                             </div>
                             <i class="bi {{ module.icon }} text-2xl"></i>
                             <h3 class="text-xl font-bold">{{ module.display_name }}</h3>
-                            <label class="cursor-pointer label">
-                                <input type="checkbox" 
-                                       name="module_{{ module.name }}" 
-                                       class="toggle toggle-success" 
-                                       {% if module.is_enabled %}checked{% endif %}>
-                            </label>
+                            {% if module.is_system %}
+                                <span class="badge badge-info badge-sm">System Module</span>
+                                <label class="cursor-pointer label">
+                                    <input type="checkbox" 
+                                           name="module_{{ module.name }}" 
+                                           class="toggle toggle-success" 
+                                           {% if module.is_enabled %}checked{% endif %}
+                                           disabled>
+                                </label>
+                                <span class="text-xs text-gray-500">(locked)</span>
+                            {% else %}
+                                <label class="cursor-pointer label">
+                                    <input type="checkbox" 
+                                           name="module_{{ module.name }}" 
+                                           class="toggle toggle-success" 
+                                           {% if module.is_enabled %}checked{% endif %}>
+                                </label>
+                            {% endif %}
                         </div>
                         <div class="flex gap-2 items-center">
                             <div class="dropdown dropdown-left">
@@ -57,11 +72,13 @@
                                             <i class="fa-solid fa-pen"></i> Edit Module
                                         </a>
                                     </li>
+                                    {% if not module.is_system %}
                                     <li>
                                         <button type="button" class="text-sm text-error w-full text-left" onclick="openDeleteModal('{{ module.name }}', '{{ module.display_name }}')">
                                             <i class="fa-solid fa-trash"></i> Delete Module
                                         </button>
                                     </li>
+                                    {% endif %}
                                 </ul>
                             </div>
                             <a href="{% url 'add_submodule' module.name %}" class="btn btn-sm btn-outline btn-primary">

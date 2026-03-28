@@ -84,6 +84,7 @@
                                     {% elif module.name == 'finance' %}fa-coins text-burnt-orange
                                     {% elif module.name == 'production' %}fa-industry text-production
                                     {% elif module.name == 'warehouse' %}fa-warehouse text-forest
+                                    {% elif module.name == 'admin' %}fa-user-shield text-purple-500
                                     {% endif %} w-5"></i>
                                 <span class="flex-1">{{ module.display_name }}</span>
                             </a>
@@ -104,16 +105,6 @@
                         </ul>
                     </li>
                     {% endfor %}
-
-                    <!-- Administration - Single Menu -->
-                    {% if request.user.is_staff %}
-                    <li class="mt-2">
-                        <a href="{% url 'sysadmin_users' %}" class="flex items-center gap-3 hover:bg-base-200 rounded-lg p-2">
-                            <i class="fa-solid fa-user-shield text-purple-500 w-5"></i>
-                            <span class="flex-1">Administration</span>
-                        </a>
-                    </li>
-                    {% endif %}
                 </ul>
             </div>
 
@@ -256,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const lastModule = localStorage.getItem('last_module');
-    if (lastModule && ['hr', 'finance', 'production', 'warehouse'].includes(lastModule)) {
+    if (lastModule && ['hr', 'finance', 'production', 'warehouse', 'admin'].includes(lastModule)) {
         openSubmenu(lastModule);
     }
 });

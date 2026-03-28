@@ -1,0 +1,213 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Administration Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold">Administration</h1>
+        <p class="text-gray-500 mt-1">Manage your system settings and configurations</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div class="stats shadow bg-primary text-primary-content">
+            <div class="stat">
+                <div class="stat-figure text-primary-content">
+                    <i class="fa-solid fa-users text-2xl"></i>
+                </div>
+                <div class="stat-title text-primary-content">Users</div>
+                <div class="stat-value text-primary-content">{{ total_users|default:"0" }}</div>
+                <div class="stat-desc text-primary-content">Registered accounts</div>
+            </div>
+        </div>
+        
+        <div class="stats shadow bg-secondary text-secondary-content">
+            <div class="stat">
+                <div class="stat-figure text-secondary-content">
+                    <i class="fa-solid fa-puzzle-piece text-2xl"></i>
+                </div>
+                <div class="stat-title text-secondary-content">Modules</div>
+                <div class="stat-value text-secondary-content">{{ total_modules|default:"0" }}</div>
+                <div class="stat-desc text-secondary-content">Active modules</div>
+            </div>
+        </div>
+        
+        <div class="stats shadow bg-accent text-accent-content">
+            <div class="stat">
+                <div class="stat-figure text-accent-content">
+                    <i class="fa-solid fa-clock text-2xl"></i>
+                </div>
+                <div class="stat-title text-accent-content">Login Today</div>
+                <div class="stat-value text-accent-content">{{ today_logins|default:"0" }}</div>
+                <div class="stat-desc text-accent-content">Last 24 hours</div>
+            </div>
+        </div>
+        
+        <div class="stats shadow bg-info text-info-content">
+            <div class="stat">
+                <div class="stat-figure text-info-content">
+                    <i class="fa-solid fa-database text-2xl"></i>
+                </div>
+                <div class="stat-title text-info-content">DB Size</div>
+                <div class="stat-value text-info-content text-2xl">{{ db_size|default:"N/A" }}</div>
+                <div class="stat-desc text-info-content">PostgreSQL</div>
+            </div>
+        </div>
+        
+        <div class="stats shadow bg-warning text-warning-content">
+            <div class="stat">
+                <div class="stat-figure text-warning-content">
+                    <i class="fa-solid fa-server text-2xl"></i>
+                </div>
+                <div class="stat-title text-warning-content">Uptime</div>
+                <div class="stat-value text-warning-content text-2xl">{{ uptime|default:"N/A" }}</div>
+                <div class="stat-desc text-warning-content">Server running</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary/10 p-3 rounded-full">
+                        <i class="fa-solid fa-users text-primary text-2xl"></i>
+                    </div>
+                    <h2 class="card-title">User Management</h2>
+                </div>
+                <p class="text-gray-500 mt-2">Manage system users, roles, and permissions.</p>
+                <div class="card-actions justify-end mt-4">
+                    <a href="{% url 'sysadmin_users' %}" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-arrow-right"></i> Manage Users
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="bg-secondary/10 p-3 rounded-full">
+                        <i class="fa-solid fa-building text-secondary text-2xl"></i>
+                    </div>
+                    <h2 class="card-title">Company Settings</h2>
+                </div>
+                <p class="text-gray-500 mt-2">Configure company profile, logo, and preferences.</p>
+                <div class="card-actions justify-end mt-4">
+                    <a href="{% url 'sysadmin_company' %}" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-gear"></i> Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="bg-accent/10 p-3 rounded-full">
+                        <i class="fa-solid fa-puzzle-piece text-accent text-2xl"></i>
+                    </div>
+                    <h2 class="card-title">Module Configuration</h2>
+                </div>
+                <p class="text-gray-500 mt-2">Enable/disable modules and submodules.</p>
+                <div class="card-actions justify-end mt-4">
+                    <a href="{% url 'sysadmin_modules' %}" class="btn btn-accent btn-sm">
+                        <i class="fa-solid fa-sliders-h"></i> Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="bg-info/10 p-3 rounded-full">
+                        <i class="fa-solid fa-server text-info text-2xl"></i>
+                    </div>
+                    <h2 class="card-title">System Information</h2>
+                </div>
+                <p class="text-gray-500 mt-2">View system status, disk usage, and memory.</p>
+                <div class="card-actions justify-end mt-4">
+                    <a href="{% url 'sysadmin_system' %}" class="btn btn-info btn-sm">
+                        <i class="fa-solid fa-chart-line"></i> View Stats
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="bg-warning/10 p-3 rounded-full">
+                        <i class="fa-solid fa-history text-warning text-2xl"></i>
+                    </div>
+                    <h2 class="card-title">Audit Logs</h2>
+                </div>
+                <p class="text-gray-500 mt-2">Track user activities and system events.</p>
+                <div class="card-actions justify-end mt-4">
+                    <a href="{% url 'sysadmin_audit' %}" class="btn btn-warning btn-sm">
+                        <i class="fa-solid fa-search"></i> View Logs
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="bg-error/10 p-3 rounded-full">
+                        <i class="fa-solid fa-database text-error text-2xl"></i>
+                    </div>
+                    <h2 class="card-title">Backup & Maintenance</h2>
+                </div>
+                <p class="text-gray-500 mt-2">Backup database, clear cache, maintenance mode.</p>
+                <div class="card-actions justify-end mt-4">
+                    <button class="btn btn-error btn-sm" disabled>
+                        <i class="fa-solid fa-tools"></i> Coming Soon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i class="fa-solid fa-clock"></i>
+                Recent Activities
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td>{{ log.timestamp|date:"H:i:s" }}</td>
+                            <td>{{ log.user.username }}</td>
+                            <td>{{ log.action }}</td>
+                            <td>{{ log.details|truncatechars:50 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-gray-500">No recent activities</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

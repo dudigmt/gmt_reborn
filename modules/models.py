@@ -8,12 +8,14 @@ class Module(models.Model):
         ('finance', 'Finance'),
         ('production', 'Production'),
         ('warehouse', 'Warehouse'),
+        ('admin', 'Administration'),
     ]
     
     name = models.CharField(max_length=50, choices=MODULE_TYPES, unique=True)
     display_name = models.CharField(max_length=100)
     icon = models.CharField(max_length=50, default='bi-grid')
     is_enabled = models.BooleanField(default=True)
+    is_system = models.BooleanField(default=False)  # System modules cannot be disabled/deleted
     order = models.IntegerField(default=0)
     description = models.TextField(blank=True)
     submodules = JSONField(default=list, blank=True)

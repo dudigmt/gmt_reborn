@@ -69,6 +69,50 @@ def extend_session(request):
         return HttpResponse('OK')
     return HttpResponse('Unauthorized', status=401)
 
+def admin_dashboard(request):
+    from django.contrib.auth.models import User
+    from django.utils import timezone
+    from datetime import timedelta
+    from modules.models import Module
+    import os
+    import psutil
+    
+    total_users = User.objects.count()
+    total_modules = Module.objects.count()
+    today_logins = 0  # nanti diisi dari LoginHistory
+    
+    # DB size (approximate)
+    db_size = "N/A"
+    try:
+        import subprocess
+        result = subprocess.run(['du', '-sh', '/home/adung/projects/gmt_reborn'], capture_output=True, text=True)
+        db_size = result.stdout.split()[0] if result.returncode == 0 else "N/A"
+    except:
+        pass
+    
+    # Uptime
+    uptime = "N/A"
+    try:
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+            hours = int(uptime_seconds // 3600)
+            minutes = int((uptime_seconds % 3600) // 60)
+            uptime = f"{hours}h {minutes}m"
+    except:
+        pass
+    
+    # Recent logs placeholder
+    recent_logs = []
+    
+    context = {
+        'total_users': total_users,
+        'total_modules': total_modules,
+        'today_logins': today_logins,
+        'db_size': db_size,
+        'uptime': uptime,
+        'recent_logs': recent_logs,
+    }
+    return render(request, 'admin/dashboard.html', context)
 
 #def settings_view(request):
 #    settings = GMTSettings.get_settings()
