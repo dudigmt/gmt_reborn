@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db import connection
 from django.conf import settings
-from .models import LoginHistory, CompanyProfile
+from .models import *
 from modules.models import Module
 import json
 import re
@@ -700,3 +700,250 @@ def data_manager_get_table_schema(request, table_name):
             'success': False, 
             'error': str(e)
         }, status=500)
+
+# ============================================================================
+# DJANGO TABLE SYNC - Auto sync database ke models.py + migration
+# ============================================================================
+
+import os
+import subprocess
+from django.apps import apps
+
+def get_table_columns_detailed(table_name):
+    """Get detailed column info from database"""
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                column_name, 
+                data_type, 
+                character_maximum_length,
+                is_nullable,
+                column_default,
+                udt_name
+            FROM information_schema.columns
+            WHERE table_name = %s
+            ORDER BY ordinal_position
+        """, [table_name])
+        columns = []
+        for col in cursor.fetchall():
+            columns.append({
+                'name': col[0],
+                'data_type': col[1],
+                'max_length': col[2],
+                'nullable': col[3] == 'YES',
+                'default': col[4],
+                'udt_name': col[5]
+            })
+        return columns
+
+def map_db_to_django_field(col):
+    """Map database column ke Django model field"""
+    col_name = col['name']
+    data_type = col['data_type']
+    udt_name = col['udt_name']
+    max_length = col['max_length']
+    nullable = col['nullable']
+    
+    if col_name == 'id':
+        return None
+    
+    # Base field tanpa kurung dulu
+    if data_type == 'integer':
+        field = 'models.IntegerField'
+    elif data_type == 'bigint':
+        field = 'models.BigIntegerField'
+    elif data_type == 'character varying' or udt_name == 'varchar':
+        length = max_length or 255
+        field = f'models.CharField(max_length={length})'
+    elif data_type == 'text':
+        field = 'models.TextField'
+    elif data_type == 'boolean':
+        field = 'models.BooleanField(default=False)'
+    elif data_type == 'date':
+        field = 'models.DateField'
+    elif data_type == 'timestamp without time zone' or udt_name == 'timestamp':
+        field = 'models.DateTimeField'
+    elif data_type == 'numeric' or udt_name == 'numeric':
+        field = 'models.DecimalField(max_digits=15, decimal_places=2)'
+    elif udt_name == 'jsonb':
+        field = 'models.JSONField'
+    else:
+        field = 'models.TextField'
+    
+    # Tambah parameter null/blank
+    if nullable and col_name not in ['created_at', 'updated_at']:
+        # Hapus kurung tutup dulu kalau ada
+        if field.endswith(')'):
+            field = field[:-1] + ', blank=True, null=True)'
+        else:
+            field += '(blank=True, null=True)'
+    else:
+        if not field.endswith(')'):
+            field += '()'
+    
+    return field
+
+def sync_single_table(table_name, app_name):
+    """Sync satu tabel ke model Django"""
+    if not table_name.startswith(app_name):
+        return False, f"Table {table_name} tidak sesuai dengan app {app_name}"
+    
+    # Get columns dari database
+    columns = get_table_columns_detailed(table_name)
+    
+    # Generate model code
+    class_name = ''.join(word.capitalize() for word in table_name.split('_')[1:])
+    if not class_name:
+        class_name = 'DynamicModel'
+    
+    model_code = f"""from django.db import models
+from django.contrib.auth.models import User
+
+
+class {class_name}(models.Model):
+    \"\"\"Auto-synced from database table: {table_name}\"\"\"
+"""
+    
+    for col in columns:
+        field_def = map_db_to_django_field(col)
+        if field_def:
+            model_code += f"    {col['name']} = {field_def}\n"
+    
+    model_code += f"""
+    class Meta:
+        db_table = '{table_name}'
+        verbose_name = '{table_name}'
+        verbose_name_plural = '{table_name}'
+    
+    def __str__(self):
+        return str(self.id)
+"""
+    
+    # Write to models.py
+    models_path = os.path.join(settings.BASE_DIR, f'apps/{app_name}/models.py')
+    with open(models_path, 'w') as f:
+        f.write(model_code)
+    
+    return True, f"Model {class_name} berhasil di-sync"
+
+def run_migrations_for_app(app_name):
+    """Run makemigrations and migrate untuk app tertentu"""
+    try:
+        # Run makemigrations
+        result = subprocess.run(
+            ['python', 'manage.py', 'makemigrations', app_name, '--noinput'],
+            cwd=settings.BASE_DIR,
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode != 0:
+            return False, result.stderr
+        
+        # Run migrate
+        result = subprocess.run(
+            ['python', 'manage.py', 'migrate', app_name, '--noinput'],
+            cwd=settings.BASE_DIR,
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode != 0:
+            return False, result.stderr
+        
+        return True, "Migration berhasil"
+    
+    except Exception as e:
+        return False, str(e)
+
+@staff_member_required
+def sync_django_table(request, table_name):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    # Cek apakah perlu sync
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT 1 FROM information_schema.tables 
+                WHERE table_name = %s
+            )
+        """, [table_name])
+        if not cursor.fetchone()[0]:
+            return JsonResponse({'error': f'Table {table_name} not found'}, status=404)
+    
+    # Tentukan app name
+    if table_name.startswith('hr_'):
+        app_name = 'hr'
+    elif table_name.startswith('core_'):
+        app_name = 'core'
+    elif table_name.startswith('modules_'):
+        app_name = 'modules'
+    else:
+        return JsonResponse({'error': f'Unknown app for table: {table_name}'}, status=400)
+    
+    try:
+        # 1. Sync model ke models.py
+        success, message = sync_single_table(table_name, app_name)
+        if not success:
+            return JsonResponse({'error': message}, status=500)
+        
+        # 2. Auto makemigrations
+        from io import StringIO
+        from django.core.management import call_command
+        
+        out = StringIO()
+        call_command('makemigrations', app_name, '--noinput', stdout=out, stderr=out)
+        
+        # 3. Auto migrate
+        call_command('migrate', app_name, '--noinput', stdout=out, stderr=out)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Table {table_name} berhasil disinkronkan + migration otomatis'
+        })
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@staff_member_required
+def check_table_sync_status(request, table_name):
+    """Cek apakah tabel perlu sync"""
+    try:
+        # Tentukan app name
+        if table_name.startswith('hr_'):
+            app_name = 'hr'
+        elif table_name.startswith('core_'):
+            app_name = 'core'
+        elif table_name.startswith('modules_'):
+            app_name = 'modules'
+        else:
+            return JsonResponse({'needs_sync': False, 'message': 'Not a Django table'})
+        
+        # Get columns dari database
+        db_columns = get_table_columns_detailed(table_name)
+        db_column_names = set([c['name'] for c in db_columns if c['name'] != 'id'])
+        
+        # Get columns dari model (coba import model)
+        try:
+            model_module = __import__(f'apps.{app_name}.models', fromlist=[''])
+            model_class = getattr(model_module, table_name.split('_')[1].capitalize())
+            model_column_names = set([f.name for f in model_class._meta.get_fields() if f.name != 'id'])
+        except:
+            return JsonResponse({'needs_sync': True, 'message': 'Model tidak ditemukan, perlu sync'})
+        
+        # Bandingkan
+        if db_column_names == model_column_names:
+            return JsonResponse({'needs_sync': False, 'message': 'Model dan database sudah sinkron'})
+        else:
+            added = db_column_names - model_column_names
+            removed = model_column_names - db_column_names
+            return JsonResponse({
+                'needs_sync': True,
+                'message': f'Perubahan: +{len(added)} kolom, -{len(removed)} kolom',
+                'added_columns': list(added),
+                'removed_columns': list(removed)
+            })
+    
+    except Exception as e:
+        return JsonResponse({'needs_sync': False, 'message': str(e)})

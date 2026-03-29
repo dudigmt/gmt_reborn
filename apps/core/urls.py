@@ -50,4 +50,8 @@ urlpatterns = [
         
     # Invoice
     path('invoice/', views.invoice_dashboard, name='invoice_dashboard'),
+
+    # SYSADMIN - Data Manager Sync
+    path('sysadmin/data_manager/sync/<str:table_name>/', views.sync_django_table, name='sync_django_table'),
+    path('sysadmin/data_manager/sync/<str:table_name>/status/', views.check_table_sync_status, name='check_table_sync_status'),
 ]

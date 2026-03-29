@@ -15,6 +15,9 @@
                 <button class="btn btn-primary btn-sm" onclick="openCreateTableModal()">
                     <i class="fa-solid fa-plus"></i> Create Table
                 </button>
+                <button class="btn btn-secondary btn-sm ml-2" onclick="syncAllTables()">
+                    <i class="fa-solid fa-rotate-right"></i> Sync All Django Tables
+                </button>
             </div>
             <div class="overflow-y-auto max-h-[calc(100vh-250px)]">
                 <ul class="space-y-1">
@@ -175,6 +178,9 @@
         </div>
         <div class="modal-action mt-4">
             <button type="button" class="btn btn-sm" onclick="closeEditTableModal()">Close</button>
+            <button type="button" id="syncBtn" class="btn btn-success btn-sm" onclick="syncCurrentTable()" disabled>
+                <i class="fa-solid fa-rotate-right"></i> Sync to Django
+            </button>
         </div>
     </div>
 </dialog>
@@ -610,5 +616,174 @@ document.getElementById('editRecordForm').addEventListener('submit', function(e)
         }
     });
 });
+
+function syncAllTables() {
+    if (confirm('Sync semua tabel Django? Ini akan regenerate models.py dan menjalankan migration.')) {
+        const tables = [];
+        document.querySelectorAll('ul li a span').forEach(el => {
+            const tableName = el.textContent.trim();
+            // Hanya sync hr_ dan core_, exclude modules_module
+            if ((tableName.startsWith('hr_') || tableName.startsWith('core_')) && tableName !== 'modules_module') {
+                tables.push(tableName);
+            }
+        });
+        
+        if (tables.length === 0) {
+            alert('Tidak ada tabel Django yang ditemukan');
+            return;
+        }
+        
+        let completed = 0;
+        let errors = [];
+        
+        tables.forEach(table => {
+            fetch(`/sysadmin/data_manager/sync/${table}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
+            })
+            .then(response => response.json())
+            .then(data => {
+                completed++;
+                if (!data.success) {
+                    errors.push(`${table}: ${data.error}`);
+                }
+                if (completed === tables.length) {
+                    if (errors.length > 0) {
+                        alert('Sync selesai dengan error:\n' + errors.join('\n'));
+                    } else {
+                        alert(`Sync selesai! ${tables.length} tabel berhasil disinkronkan`);
+                        location.reload();
+                    }
+                }
+            });
+        });
+    }
+}
+
+let hasChanges = false;
+
+function markChanges() {
+    hasChanges = true;
+    const syncBtn = document.getElementById('syncBtn');
+    if (syncBtn) {
+        syncBtn.disabled = false;
+        syncBtn.classList.add('btn-warning');
+        syncBtn.classList.remove('btn-success');
+    }
+}
+
+// Panggil markChanges() di setiap action (modifyColumn, dropColumn, addColumnField, rename)
+// Contoh di modifyColumn:
+function modifyColumn(btn) {
+    // ... existing code ...
+    markChanges(); // Tambah ini
+}
+
+function dropColumn(btn, colName) {
+    // ... existing code ...
+    markChanges(); // Tambah ini
+}
+
+function addColumnField() {
+    addColumnRow('new_column', 'varchar', '255', true);
+    markChanges(); // Tambah ini
+}
+
+document.getElementById('renameTableForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // ... existing code ...
+    markChanges(); // Tambah ini
+});
+
+function syncCurrentTable() {
+    if (!hasChanges) {
+        alert('Tidak ada perubahan yang perlu disinkronkan');
+        return;
+    }
+    
+    if (!confirm('Sync perubahan ke Django model? Ini akan update models.py dan menjalankan migration.')) {
+        return;
+    }
+    
+    const syncBtn = document.getElementById('syncBtn');
+    syncBtn.disabled = true;
+    syncBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+    
+    fetch(`/sysadmin/data_manager/sync/${currentEditTable}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Sync berhasil! Model dan migration telah diupdate.');
+            hasChanges = false;
+            syncBtn.disabled = true;
+            syncBtn.classList.remove('btn-warning');
+            syncBtn.classList.add('btn-success');
+            syncBtn.innerHTML = '<i class="fa-solid fa-check"></i> Synced';
+        } else {
+            alert('Error: ' + data.error);
+            syncBtn.disabled = false;
+            syncBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Sync to Django';
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Sync to Django';
+    });
+}
+
+// Reset hasChanges saat modal dibuka
+function openEditTableModal(tableName) {
+    hasChanges = false;
+    currentEditTable = tableName;
+    document.getElementById('editTableName').textContent = tableName;
+    document.getElementById('renameTableForm').reset();
+    document.getElementById('renameTableForm').querySelector('[name=new_name]').value = tableName;
+    document.getElementById('columnsContainer').innerHTML = '<div class="text-center text-gray-500 py-4">Loading columns...</div>';
+    
+    // Reset sync button
+    const syncBtn = document.getElementById('syncBtn');
+    syncBtn.disabled = true;
+    syncBtn.classList.remove('btn-warning');
+    syncBtn.classList.add('btn-success');
+    syncBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Sync to Django';
+    
+    // Cek status sync
+    fetch(`/sysadmin/data_manager/sync/${tableName}/status/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.needs_sync) {
+                syncBtn.disabled = false;
+                syncBtn.classList.add('btn-warning');
+                syncBtn.classList.remove('btn-success');
+                syncBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Sync Needed';
+            }
+        });
+    
+    document.getElementById('editTableModal').showModal();
+    
+    // Load columns
+    fetch(`/sysadmin/data_manager/table/${tableName}/schema/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('columnsContainer');
+            if (data.success && data.columns) {
+                container.innerHTML = '';
+                data.columns.forEach(col => {
+                    if (col.name === 'id') return;
+                    addColumnRow(col.name, col.type, col.length || '', col.nullable);
+                });
+                if (container.innerHTML === '') {
+                    container.innerHTML = '<div class="text-center text-gray-500 py-4">No editable columns</div>';
+                }
+            } else {
+                container.innerHTML = '<div class="text-center text-red-500 py-4">Error: ' + (data.error || 'Unknown') + '</div>';
+            }
+        });
+}
+
 </script>
 {% endblock %}

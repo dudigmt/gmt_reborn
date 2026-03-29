@@ -1,8 +1,10 @@
+from modules.models import Module
+
 def gmt_settings(request):
     try:
-        settings = GMTSettings.get_settings()
+        # GMTSettings model sudah dihapus, pake default 30
         return {
-            'session_timeout': settings.session_timeout,
+            'session_timeout': 30,
         }
     except:
         return {
@@ -10,12 +12,7 @@ def gmt_settings(request):
         }
 
 def company_profile(request):
-    from .models import CompanyProfile
-    try:
-        profile = CompanyProfile.get_profile()
-        return {'company': profile}
-    except:
-        return {'company': None}
+    return {'company': None}
 
 def enabled_modules(request):
     from modules.models import Module
