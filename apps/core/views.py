@@ -2,16 +2,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils import timezone
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db import connection
+from django.conf import settings
 from .models import LoginHistory, CompanyProfile
 from modules.models import Module
+import json
+import re
+import os
 
-# ===== AUTH VIEWS =====
+
+# ============================================================================
+# AUTH VIEWS
+# ============================================================================
+
 def login_view(request):
     expired_time = None
     
@@ -44,19 +53,23 @@ def login_view(request):
     
     return render(request, 'auth/login.html', {'expired_time': expired_time})
 
+
 def logout_view(request):
     logout(request)
     return redirect('login')
+
 
 def dashboard_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     return render(request, 'dashboard.html')
 
+
 def check_session(request):
     if request.user.is_authenticated:
         return HttpResponse('OK')
     return HttpResponse('Unauthorized', status=401)
+
 
 def extend_session(request):
     if request.user.is_authenticated:
@@ -64,20 +77,35 @@ def extend_session(request):
         return HttpResponse('OK')
     return HttpResponse('Unauthorized', status=401)
 
-# ===== MODULE DASHBOARDS =====
+
+# ============================================================================
+# MODULE DASHBOARDS
+# ============================================================================
+
 def hr_dashboard(request):
     return render(request, 'modules/hr_dashboard.html')
+
 
 def finance_dashboard(request):
     return render(request, 'modules/finance_dashboard.html')
 
+
 def production_dashboard(request):
     return render(request, 'modules/production_dashboard.html')
+
 
 def warehouse_dashboard(request):
     return render(request, 'modules/warehouse_dashboard.html')
 
-# ===== HELPER =====
+
+def invoice_dashboard(request):
+    return render(request, 'invoice_dashboard.html')
+
+
+# ============================================================================
+# HELPER
+# ============================================================================
+
 def get_admin_submodules():
     try:
         admin_module = Module.objects.get(name='admin')
@@ -85,7 +113,11 @@ def get_admin_submodules():
     except:
         return []
 
-# ===== SYSADMIN - USER MANAGEMENT =====
+
+# ============================================================================
+# SYSADMIN - USER MANAGEMENT
+# ============================================================================
+
 @staff_member_required
 def sysadmin_users(request):
     query = request.GET.get('q', '')
@@ -99,6 +131,7 @@ def sysadmin_users(request):
     
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/users/list.html', {'users': users, 'admin_submodules': admin_submodules})
+
 
 @staff_member_required
 def sysadmin_users_add(request):
@@ -136,6 +169,7 @@ def sysadmin_users_add(request):
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/users/add.html', {'admin_submodules': admin_submodules})
 
+
 @staff_member_required
 def sysadmin_users_edit(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -157,6 +191,7 @@ def sysadmin_users_edit(request, user_id):
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/users/edit.html', {'user': user, 'admin_submodules': admin_submodules})
 
+
 @staff_member_required
 def sysadmin_users_delete(request, user_id):
     if request.method == 'POST':
@@ -166,7 +201,11 @@ def sysadmin_users_delete(request, user_id):
         return redirect('sysadmin_users')
     return redirect('sysadmin_users')
 
-# ===== SYSADMIN - COMPANY =====
+
+# ============================================================================
+# SYSADMIN - COMPANY
+# ============================================================================
+
 @staff_member_required
 def sysadmin_company(request):
     profile = CompanyProfile.get_profile()
@@ -191,23 +230,29 @@ def sysadmin_company(request):
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/company/settings.html', {'profile': profile, 'admin_submodules': admin_submodules})
 
-# ===== SYSADMIN - MODULES =====
+
+# ============================================================================
+# SYSADMIN - MODULES
+# ============================================================================
+
 @staff_member_required
 def sysadmin_modules(request):
     modules = Module.objects.all().order_by('order')
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/modules/list.html', {'modules': modules, 'admin_submodules': admin_submodules})
 
-# ===== SYSADMIN - SYSTEM =====
+
+# ============================================================================
+# SYSADMIN - SYSTEM
+# ============================================================================
+
 @staff_member_required
 def sysadmin_system(request):
     import platform
     import sys
     import django
-    from django.db import connection
     import psutil
     from datetime import datetime
-    from django.conf import settings
     
     system_info = {
         'django_version': django.get_version(),
@@ -246,60 +291,47 @@ def sysadmin_system(request):
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/system/info.html', {'system_info': system_info, 'admin_submodules': admin_submodules})
 
-# ===== SYSADMIN - AUDIT =====
+
+# ============================================================================
+# SYSADMIN - AUDIT
+# ============================================================================
+
 @staff_member_required
 def sysadmin_audit(request):
     admin_submodules = get_admin_submodules()
     return render(request, 'admin/audit/logs.html', {'admin_submodules': admin_submodules})
 
-# ===== ADMIN DASHBOARD =====
+
+# ============================================================================
+# ADMIN DASHBOARD
+# ============================================================================
+
 def admin_dashboard(request):
     admin_module = Module.objects.get(name='admin')
     admin_submodules = [sub for sub in admin_module.submodules if sub.get('is_enabled', True)]
     
     total_users = User.objects.count()
     total_modules = Module.objects.count()
-    today_logins = 0
-    
-    db_size = "N/A"
-    try:
-        import subprocess
-        result = subprocess.run(['du', '-sh', '/home/adung/projects/gmt_reborn'], capture_output=True, text=True)
-        db_size = result.stdout.split()[0] if result.returncode == 0 else "N/A"
-    except:
-        pass
-    
-    uptime = "N/A"
-    try:
-        with open('/proc/uptime', 'r') as f:
-            uptime_seconds = float(f.readline().split()[0])
-            hours = int(uptime_seconds // 3600)
-            minutes = int((uptime_seconds % 3600) // 60)
-            uptime = f"{hours}h {minutes}m"
-    except:
-        pass
     
     context = {
         'total_users': total_users,
         'total_modules': total_modules,
-        'today_logins': today_logins,
-        'db_size': db_size,
-        'uptime': uptime,
         'admin_submodules': admin_submodules,
-        'recent_logs': [],
     }
     return render(request, 'admin/dashboard.html', context)
 
+
+# ============================================================================
+# DATA MANAGER - VIEW (Pure SQL for viewing only)
+# ============================================================================
+
 def data_manager_view(request):
-    from django.db import connection
-    
     tables = []
     with connection.cursor() as cursor:
         cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename")
         tables = [row[0] for row in cursor.fetchall()]
     
     selected_table = request.GET.get('table', '')
-    table_data = None
     columns = []
     rows = []
     row_count = 0
@@ -324,8 +356,347 @@ def data_manager_view(request):
     return render(request, 'admin/data_manager.html', context)
 
 
+# ============================================================================
+# DATA MANAGER - RECORD CRUD (Untuk tabel yang sudah ada Django models)
+# ============================================================================
+
+ALLOWED_TABLES = [
+    'core_companyprofile',
+    'core_loginhistory',
+    'modules_module',
+    'auth_user',
+]
+
+EXCLUDED_TABLES = [
+    'auth_group',
+    'auth_group_permissions',
+    'auth_permission',
+    'django_admin_log',
+    'django_content_type',
+    'django_migrations',
+    'django_session',
+]
 
 
+@staff_member_required
+def data_manager_add(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    table_name = request.POST.get('table_name')
+    
+    if table_name not in ALLOWED_TABLES or table_name in EXCLUDED_TABLES:
+        return JsonResponse({'error': 'Table not allowed for add operation'}, status=403)
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT column_name, data_type, is_nullable
+                FROM information_schema.columns
+                WHERE table_name = %s
+                ORDER BY ordinal_position
+            """, [table_name])
+            columns = cursor.fetchall()
+        
+        columns_list = []
+        values_list = []
+        placeholders = []
+        
+        for col in columns:
+            col_name = col[0]
+            if col_name == 'id':
+                continue
+            
+            value = request.POST.get(col_name)
+            if value or col[2] == 'YES':
+                columns_list.append(col_name)
+                placeholders.append('%s')
+                values_list.append(value if value else None)
+        
+        if not columns_list:
+            return JsonResponse({'error': 'No valid columns to insert'}, status=400)
+        
+        insert_sql = f'INSERT INTO "{table_name}" ({", ".join(columns_list)}) VALUES ({", ".join(placeholders)}) RETURNING id'
+        with connection.cursor() as cursor:
+            cursor.execute(insert_sql, values_list)
+            new_id = cursor.fetchone()[0]
+        
+        return JsonResponse({'success': True, 'message': 'Record added successfully', 'id': new_id})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-def invoice_dashboard(request):
-    return render(request, 'invoice_dashboard.html')
+
+@staff_member_required
+def data_manager_edit(request, table_name, row_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    if table_name not in ALLOWED_TABLES or table_name in EXCLUDED_TABLES:
+        return JsonResponse({'error': 'Table not allowed for edit operation'}, status=403)
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT column_name, data_type, is_nullable
+                FROM information_schema.columns
+                WHERE table_name = %s
+                ORDER BY ordinal_position
+            """, [table_name])
+            columns = cursor.fetchall()
+        
+        update_fields = []
+        values = []
+        
+        for col in columns:
+            col_name = col[0]
+            if col_name == 'id':
+                continue
+            
+            value = request.POST.get(col_name)
+            if value is not None:
+                update_fields.append(f'"{col_name}" = %s')
+                values.append(value if value else None)
+        
+        if not update_fields:
+            return JsonResponse({'error': 'No fields to update'}, status=400)
+        
+        values.append(row_id)
+        update_sql = f'UPDATE "{table_name}" SET {", ".join(update_fields)} WHERE id = %s'
+        
+        with connection.cursor() as cursor:
+            cursor.execute(update_sql, values)
+        
+        return JsonResponse({'success': True, 'message': 'Record updated successfully'})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@staff_member_required
+def data_manager_delete(request, table_name, row_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    if table_name not in ALLOWED_TABLES or table_name in EXCLUDED_TABLES:
+        return JsonResponse({'error': 'Table not allowed for delete operation'}, status=403)
+    
+    if table_name == 'auth_user':
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT username, is_superuser FROM auth_user WHERE id = %s', [row_id])
+            user = cursor.fetchone()
+            if user and (user[1] or request.user.id == row_id):
+                return JsonResponse({'error': 'Cannot delete superuser or yourself'}, status=403)
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(f'DELETE FROM "{table_name}" WHERE id = %s', [row_id])
+        
+        return JsonResponse({'success': True, 'message': 'Record deleted successfully'})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@staff_member_required
+def data_manager_get_record(request, table_name, row_id):
+    if table_name not in ALLOWED_TABLES or table_name in EXCLUDED_TABLES:
+        return JsonResponse({'error': 'Table not allowed'}, status=403)
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_name = %s
+                ORDER BY ordinal_position
+            """, [table_name])
+            columns = [col[0] for col in cursor.fetchall()]
+            
+            cursor.execute(f'SELECT * FROM "{table_name}" WHERE id = %s', [row_id])
+            row = cursor.fetchone()
+            
+            if not row:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            data = dict(zip(columns, row))
+        
+        return JsonResponse({'success': True, 'data': data})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@staff_member_required
+def data_manager_delete_table(request, table_name):
+    """Delete table - ONLY for NON-Django tables (custom tables)"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    # PROTECT DJANGO SYSTEM TABLES (TIDAK BISA DIHAPUS)
+    if table_name.startswith('hr_') or table_name.startswith('core_') or table_name.startswith('auth_') or table_name.startswith('django_') or table_name.startswith('modules_'):
+        return JsonResponse({'error': 'Cannot delete Django system table. Use migration instead.'}, status=403)
+    
+    # Juga proteksi tabel penting lainnya
+    PROTECTED_TABLES = [
+        'core_companyprofile', 'core_loginhistory', 'modules_module'
+    ]
+    if table_name in PROTECTED_TABLES:
+        return JsonResponse({'error': f'Cannot delete protected table: {table_name}'}, status=403)
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(f'DROP TABLE IF EXISTS "{table_name}" CASCADE')
+        
+        return JsonResponse({'success': True, 'message': f'Table "{table_name}" deleted successfully'})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@staff_member_required
+def data_manager_edit_table(request, table_name):
+    """Alter table structure - BISA untuk SEMUA tabel (termasuk Django tables)"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        action = request.POST.get('action')
+        
+        if action == 'rename':
+            new_name = request.POST.get('new_name')
+            if not new_name or not re.match(r'^[a-z_][a-z0-9_]*$', new_name):
+                return JsonResponse({'error': 'Invalid table name'}, status=400)
+            
+            # Cek apakah ini tabel Django, kasih warning tapi tetap bisa
+            is_django_table = table_name.startswith('hr_') or table_name.startswith('core_') or table_name.startswith('auth_') or table_name.startswith('django_') or table_name.startswith('modules_')
+            
+            with connection.cursor() as cursor:
+                cursor.execute(f'ALTER TABLE "{table_name}" RENAME TO "{new_name}"')
+            
+            message = f'Table renamed to {new_name}'
+            if is_django_table:
+                message += ' (Note: This is a Django table. You may need to update models.py manually)'
+            
+            return JsonResponse({'success': True, 'message': message, 'new_name': new_name})
+        
+        elif action == 'add_column':
+            column_name = request.POST.get('column_name')
+            column_type = request.POST.get('column_type')
+            column_length = request.POST.get('column_length', '')
+            nullable = request.POST.get('nullable') == 'true'
+            
+            if not column_name or not column_type:
+                return JsonResponse({'error': 'Column name and type required'}, status=400)
+            
+            type_map = {
+                'varchar': f'VARCHAR({column_length or 255})',
+                'text': 'TEXT',
+                'integer': 'INTEGER',
+                'bigint': 'BIGINT',
+                'decimal': f'DECIMAL(15,{column_length or 2})',
+                'boolean': 'BOOLEAN',
+                'date': 'DATE',
+                'datetime': 'TIMESTAMP',
+                'json': 'JSONB'
+            }
+            
+            sql_type = type_map.get(column_type, 'VARCHAR(255)')
+            null_constraint = '' if nullable else 'NOT NULL'
+            
+            with connection.cursor() as cursor:
+                cursor.execute(f'ALTER TABLE "{table_name}" ADD COLUMN "{column_name}" {sql_type} {null_constraint}'.strip())
+            
+            return JsonResponse({'success': True, 'message': f'Column {column_name} added'})
+        
+        elif action == 'modify_column':
+            old_name = request.POST.get('old_name')
+            new_name = request.POST.get('new_name')
+            column_type = request.POST.get('column_type')
+            column_length = request.POST.get('column_length', '')
+            nullable = request.POST.get('nullable') == 'true'
+            
+            if not old_name:
+                return JsonResponse({'error': 'Column name required'}, status=400)
+            
+            with connection.cursor() as cursor:
+                if new_name and new_name != old_name:
+                    cursor.execute(f'ALTER TABLE "{table_name}" RENAME COLUMN "{old_name}" TO "{new_name}"')
+                    old_name = new_name
+                
+                if column_type:
+                    type_map = {
+                        'varchar': f'VARCHAR({column_length or 255})',
+                        'text': 'TEXT',
+                        'integer': 'INTEGER USING "{old_name}"::INTEGER',
+                        'bigint': 'BIGINT USING "{old_name}"::BIGINT',
+                        'decimal': f'DECIMAL(15,{column_length or 2}) USING "{old_name}"::DECIMAL',
+                        'boolean': 'BOOLEAN USING "{old_name}"::BOOLEAN',
+                        'date': 'DATE USING "{old_name}"::DATE',
+                        'datetime': 'TIMESTAMP USING "{old_name}"::TIMESTAMP',
+                        'json': 'JSONB USING "{old_name}"::JSONB'
+                    }
+                    sql_type = type_map.get(column_type, f'VARCHAR({column_length or 255})')
+                    cursor.execute(f'ALTER TABLE "{table_name}" ALTER COLUMN "{old_name}" TYPE {sql_type}')
+                
+                if nullable:
+                    cursor.execute(f'ALTER TABLE "{table_name}" ALTER COLUMN "{old_name}" DROP NOT NULL')
+                else:
+                    cursor.execute(f'ALTER TABLE "{table_name}" ALTER COLUMN "{old_name}" SET NOT NULL')
+            
+            return JsonResponse({'success': True, 'message': f'Column {old_name} modified'})
+        
+        elif action == 'drop_column':
+            column_name = request.POST.get('column_name')
+            if not column_name:
+                return JsonResponse({'error': 'Column name required'}, status=400)
+            
+            with connection.cursor() as cursor:
+                cursor.execute(f'ALTER TABLE "{table_name}" DROP COLUMN "{column_name}" CASCADE')
+            
+            return JsonResponse({'success': True, 'message': f'Column {column_name} dropped'})
+        
+        else:
+            return JsonResponse({'error': 'Invalid action'}, status=400)
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@staff_member_required
+def data_manager_get_table_schema(request, table_name):
+    """Get table schema for editing - BISA untuk SEMUA tabel"""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT column_name, data_type, character_maximum_length, is_nullable
+                FROM information_schema.columns
+                WHERE table_name = %s
+                ORDER BY ordinal_position
+            """, [table_name])
+            
+            columns = []
+            for row in cursor.fetchall():
+                col_type = row[1]
+                if col_type == 'character varying':
+                    col_type = 'varchar'
+                elif col_type == 'timestamp without time zone':
+                    col_type = 'datetime'
+                elif col_type == 'numeric':
+                    col_type = 'decimal'
+                    
+                columns.append({
+                    'name': row[0],
+                    'type': col_type,
+                    'length': row[2] if row[2] else None,
+                    'nullable': row[3] == 'YES'
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'table_name': table_name,
+                'columns': columns,
+            })
+    
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=500)

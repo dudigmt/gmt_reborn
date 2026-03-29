@@ -29,12 +29,25 @@ urlpatterns = [
     # SYSADMIN - Company Settings
     path('sysadmin/company/', views.sysadmin_company, name='sysadmin_company'),
     
-    # SYSADMIN - Modules (redirect ke module_settings)
+    # SYSADMIN - Modules
     path('sysadmin/modules/', views.sysadmin_modules, name='sysadmin_modules'),
     
-    # SYSADMIN - System & Audit (coming soon)
+    # SYSADMIN - System & Audit
     path('sysadmin/system/', views.sysadmin_system, name='sysadmin_system'),
     path('sysadmin/audit/', views.sysadmin_audit, name='sysadmin_audit'),
+    
+    # SYSADMIN - Data Manager
     path('sysadmin/data_manager/', views.data_manager_view, name='data_manager_view'),
+    path('sysadmin/data_manager/add/', views.data_manager_add, name='data_manager_add'),
+    path('sysadmin/data_manager/<str:table_name>/<int:row_id>/edit/', views.data_manager_edit, name='data_manager_edit'),
+    path('sysadmin/data_manager/<str:table_name>/<int:row_id>/delete/', views.data_manager_delete, name='data_manager_delete'),
+    path('sysadmin/data_manager/<str:table_name>/<int:row_id>/get/', views.data_manager_get_record, name='data_manager_get_record'),
+    path('sysadmin/data_manager/table/<str:table_name>/schema/', views.data_manager_get_table_schema, name='data_manager_table_schema'),
+    path('sysadmin/data_manager/table/<str:table_name>/edit/', views.data_manager_edit_table, name='data_manager_edit_table'),
+    path('sysadmin/data_manager/table/<str:table_name>/delete/', views.data_manager_delete_table, name='data_manager_delete_table'),
+    # HAPUS line ini karena function tidak ada:
+    # path('sysadmin/data_manager/table/add/', views.data_manager_add_table, name='data_manager_add_table'),
+        
+    # Invoice
     path('invoice/', views.invoice_dashboard, name='invoice_dashboard'),
 ]

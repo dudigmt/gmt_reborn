@@ -1,0 +1,39 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Success - Module Created{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="card bg-base-100 shadow-xl max-w-md w-full text-center">
+        <div class="card-body">
+            <div class="flex justify-center mb-4">
+                <div class="bg-success/20 p-4 rounded-full">
+                    <i class="fa-solid fa-check-circle text-success text-5xl"></i>
+                </div>
+            </div>
+            <h2 class="card-title justify-center text-2xl">Module Created!</h2>
+            <p class="text-gray-500 mt-2">Module <strong>{{ module_name }}</strong> has been successfully created.</p>
+            <div class="mt-6">
+                <div class="loading loading-spinner loading-md text-primary"></div>
+                <p class="text-sm text-gray-500 mt-2">Redirecting in <span id="countdown">3</span> seconds...</p>
+            </div>
+            <div class="divider">or</div>
+            <a href="{% url redirect_url %}" class="btn btn-primary">Click here if not redirected</a>
+        </div>
+    </div>
+</div>
+
+<script>
+let seconds = 3;
+const countdownEl = document.getElementById('countdown');
+const interval = setInterval(() => {
+    seconds--;
+    countdownEl.textContent = seconds;
+    if (seconds <= 0) {
+        clearInterval(interval);
+        window.location.href = "{% url redirect_url %}";
+    }
+}, 1000);
+</script>
+{% endblock %}

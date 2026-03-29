@@ -7,35 +7,608 @@
 {% include 'admin/partials/tabs.html' %}
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Panel: Tables List -->
     <div class="card bg-base-100 shadow-xl">
-        <div class="card-body">
-            <h2 class="card-title"><i class="fa-solid fa-database"></i> Tables</h2>
-            <div class="divider"></div>
-            <div class="overflow-y-auto max-h-96">
-                <ul class="menu">
+        <div class="card-body p-4">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="card-title text-base"><i class="fa-solid fa-database"></i> Tables</h2>
+                <button class="btn btn-primary btn-sm" onclick="openCreateTableModal()">
+                    <i class="fa-solid fa-plus"></i> Create Table
+                </button>
+            </div>
+            <div class="overflow-y-auto max-h-[calc(100vh-250px)]">
+                <ul class="space-y-1">
                     {% for table in tables %}
-                    <li><a href="?table={{ table }}" class="{% if selected_table == table %}active bg-primary/10{% endif %}"><i class="fa-solid fa-table"></i> {{ table }}</a></li>
+                    <li class="flex items-center justify-between group hover:bg-base-200 rounded-lg px-2 py-1">
+                        <a href="?table={{ table }}" class="flex-1 block {% if selected_table == table %}text-primary font-semibold{% endif %}">
+                            <i class="fa-solid fa-table mr-2 text-sm"></i>
+                            <span class="text-sm">{{ table }}</span>
+                        </a>
+                        <div class="dropdown dropdown-left">
+                            <label tabindex="0" class="btn btn-ghost btn-xs p-1 min-h-0 h-6">
+                                <i class="fa-solid fa-ellipsis-vertical text-gray-500"></i>
+                            </label>
+                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40 z-10 text-sm">
+                                <li><a onclick="openEditTableModal('{{ table }}')"><i class="fa-solid fa-pen mr-2"></i> Edit Structure</a></li>
+                                {% if not table|slice:":3" == 'hr_' and not table|slice:":5" == 'core_' and not table|slice:":5" == 'auth_' and not table|slice:":7" == 'django_' and not table|slice:":8" == 'modules_' %}
+                                <li><a onclick="openDeleteTableModal('{{ table }}')" class="text-error"><i class="fa-solid fa-trash mr-2"></i> Delete Table</a></li>
+                                {% else %}
+                                <li class="opacity-50 cursor-not-allowed"><a class="text-gray-400"><i class="fa-solid fa-lock mr-2"></i> Delete (System Table)</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
     
+    <!-- Right Panel: Table Data -->
     <div class="card bg-base-100 shadow-xl lg:col-span-2">
-        <div class="card-body">
+        <div class="card-body p-4">
             {% if selected_table %}
-            <h2 class="card-title"><i class="fa-solid fa-table-list"></i> {{ selected_table }} <span class="badge badge-primary ml-2">{{ row_count }} rows</span></h2>
-            <div class="divider"></div>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="card-title text-base"><i class="fa-solid fa-table-list"></i> {{ selected_table }} <span class="badge badge-primary badge-sm ml-2">{{ row_count }} rows</span></h2>
+                <button class="btn btn-primary btn-sm" onclick="openAddRecordModal()">
+                    <i class="fa-solid fa-plus"></i> Add Record
+                </button>
+            </div>
+            <div class="divider my-2"></div>
             <div class="overflow-x-auto">
                 <table class="table table-zebra table-sm">
-                    <thead><tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr></thead>
-                    <tbody>{% for row in rows %}<tr>{% for value in row %}<td>{{ value|truncatechars:50 }}</td>{% endfor %}</tr>{% empty %}<tr><td colspan="{{ columns|length }}" class="text-center">No data</td></tr>{% endfor %}</tbody>
+                    <thead>
+                        <tr>
+                            {% for col in columns %}
+                            <th class="text-xs">{{ col }}</th>
+                            {% endfor %}
+                            <th class="text-xs">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for value in row %}
+                            <td class="text-xs">{{ value|truncatechars:50|default:"-" }}</td>
+                            {% endfor %}
+                            <td>
+                                <button class="btn btn-xs btn-info mr-1" onclick="openEditRecordModal('{{ selected_table }}', {{ row.0 }})">
+                                    <i class="fa-solid fa-edit"></i>
+                                </button>
+                                <button class="btn btn-xs btn-error" onclick="openDeleteRecordModal('{{ selected_table }}', {{ row.0 }})">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{{ columns|length|add:1 }}" class="text-center text-sm">No data</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
             {% else %}
-            <div class="text-center py-12"><i class="fa-solid fa-database text-6xl text-gray-400 mb-4"></i><h3 class="text-xl font-semibold">Select a table</h3><p class="text-gray-500 mt-2">Choose a table from the left panel to view its data</p></div>
+            <div class="text-center py-12">
+                <i class="fa-solid fa-database text-5xl text-gray-400 mb-3"></i>
+                <h3 class="text-base font-semibold">Select a table</h3>
+                <p class="text-xs text-gray-500 mt-1">Choose a table from the left panel to view its data</p>
+            </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<!-- CREATE TABLE MODAL -->
+<dialog id="createTableModal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl">
+        <h3 class="font-bold text-lg mb-4">Create New Table</h3>
+        <form id="createTableForm">
+            {% csrf_token %}
+            <div class="form-control mb-4">
+                <label class="label"><span class="label-text font-bold">Table Name</span></label>
+                <input type="text" name="table_name" class="input input-bordered" placeholder="e.g., products, customers" required>
+                <label class="label"><span class="label-text-alt">Lowercase, letters, numbers, underscores only</span></label>
+            </div>
+            <div class="form-control mb-4">
+                <label class="label"><span class="label-text font-bold">Custom Fields</span></label>
+                <div class="text-xs text-gray-500 mb-2">Standard fields (id, created_at, updated_at, created_by, is_active) will be added automatically</div>
+                <div id="fieldsContainer" class="space-y-2">
+                    <div class="field-row grid grid-cols-12 gap-2 items-center">
+                        <div class="col-span-3"><input type="text" name="field_name[]" class="input input-bordered input-sm w-full" placeholder="Field name" required></div>
+                        <div class="col-span-2">
+                            <select name="field_type[]" class="select select-bordered select-sm w-full">
+                                <option value="varchar">VARCHAR</option>
+                                <option value="text">TEXT</option>
+                                <option value="integer">INTEGER</option>
+                                <option value="bigint">BIGINT</option>
+                                <option value="decimal">DECIMAL</option>
+                                <option value="boolean">BOOLEAN</option>
+                                <option value="date">DATE</option>
+                                <option value="datetime">DATETIME</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2"><input type="text" name="field_length[]" class="input input-bordered input-sm w-full" placeholder="Length"></div>
+                        <div class="col-span-2"><label class="cursor-pointer flex items-center gap-1"><input type="checkbox" name="field_nullable[]" class="checkbox checkbox-sm" checked> <span class="text-xs">Nullable</span></label></div>
+                        <div class="col-span-2"><button type="button" class="btn btn-error btn-xs" onclick="removeField(this)"><i class="fa-solid fa-trash"></i></button></div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-xs mt-2 w-fit" onclick="addField()"><i class="fa-solid fa-plus"></i> Add Field</button>
+            </div>
+            <div class="modal-action">
+                <button type="button" class="btn btn-sm" onclick="closeCreateTableModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm">Create Table</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<!-- EDIT TABLE MODAL -->
+<dialog id="editTableModal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl">
+        <h3 class="font-bold text-lg mb-4">Edit Table Structure: <span id="editTableName" class="text-primary"></span></h3>
+        <div class="tabs tabs-boxed mb-4">
+            <a class="tab tab-sm tab-active" onclick="switchEditTab('rename')">Rename Table</a>
+            <a class="tab tab-sm" onclick="switchEditTab('columns')">Manage Columns</a>
+        </div>
+        <div id="renameTab" class="edit-tab">
+            <form id="renameTableForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="rename">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">New Table Name</span></label>
+                    <input type="text" name="new_name" class="input input-bordered" required>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary btn-sm">Rename</button>
+                </div>
+            </form>
+        </div>
+        <div id="columnsTab" class="edit-tab hidden">
+            <div class="mb-3">
+                <button type="button" class="btn btn-secondary btn-xs" onclick="addColumnField()"><i class="fa-solid fa-plus"></i> Add Column</button>
+            </div>
+            <div id="columnsContainer" class="space-y-2 max-h-96 overflow-y-auto">
+                <div class="text-center text-gray-500 py-4" id="loadingColumns">Loading columns...</div>
+            </div>
+        </div>
+        <div class="modal-action mt-4">
+            <button type="button" class="btn btn-sm" onclick="closeEditTableModal()">Close</button>
+        </div>
+    </div>
+</dialog>
+
+<!-- DELETE TABLE MODAL -->
+<dialog id="deleteTableModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Confirm Delete Table</h3>
+        <p class="py-4">Are you sure you want to delete table <strong id="deleteTableName"></strong>? This action cannot be undone.</p>
+        <form id="deleteTableForm">
+            {% csrf_token %}
+            <div class="modal-action">
+                <button type="button" class="btn btn-sm" onclick="closeDeleteTableModal()">Cancel</button>
+                <button type="submit" class="btn btn-error btn-sm">Delete Table</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<!-- RECORD MODALS -->
+<dialog id="addRecordModal" class="modal">
+    <div class="modal-box w-11/12 max-w-2xl">
+        <h3 class="font-bold text-lg mb-4">Add Record to <span id="addRecordTableName"></span></h3>
+        <form id="addRecordForm">
+            {% csrf_token %}
+            <input type="hidden" name="table_name" id="addRecordTableNameInput">
+            <div id="addRecordFields" class="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto"></div>
+            <div class="modal-action mt-4">
+                <button type="button" class="btn btn-sm" onclick="closeAddRecordModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<dialog id="editRecordModal" class="modal">
+    <div class="modal-box w-11/12 max-w-2xl">
+        <h3 class="font-bold text-lg mb-4">Edit Record</h3>
+        <form id="editRecordForm">
+            {% csrf_token %}
+            <input type="hidden" name="table_name" id="editRecordTableName">
+            <input type="hidden" name="row_id" id="editRecordRowId">
+            <div id="editRecordFields" class="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto"></div>
+            <div class="modal-action mt-4">
+                <button type="button" class="btn btn-sm" onclick="closeEditRecordModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<dialog id="deleteRecordModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Confirm Delete Record</h3>
+        <p class="py-4">Are you sure you want to delete this record? This action cannot be undone.</p>
+        <form id="deleteRecordForm">
+            {% csrf_token %}
+            <div class="modal-action">
+                <button type="button" class="btn btn-sm" onclick="closeDeleteRecordModal()">Cancel</button>
+                <button type="submit" class="btn btn-error btn-sm">Delete</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<script>
+let currentTable = '{{ selected_table }}';
+let currentColumns = {{ columns|safe }};
+let currentEditTable = '';
+
+function addField() {
+    const container = document.getElementById('fieldsContainer');
+    const newRow = document.createElement('div');
+    newRow.className = 'field-row grid grid-cols-12 gap-2 items-center';
+    newRow.innerHTML = `
+        <div class="col-span-3"><input type="text" name="field_name[]" class="input input-bordered input-sm w-full" placeholder="Field name" required></div>
+        <div class="col-span-2"><select name="field_type[]" class="select select-bordered select-sm w-full"><option value="varchar">VARCHAR</option><option value="text">TEXT</option><option value="integer">INTEGER</option><option value="bigint">BIGINT</option><option value="decimal">DECIMAL</option><option value="boolean">BOOLEAN</option><option value="date">DATE</option><option value="datetime">DATETIME</option><option value="json">JSON</option></select></div>
+        <div class="col-span-2"><input type="text" name="field_length[]" class="input input-bordered input-sm w-full" placeholder="Length"></div>
+        <div class="col-span-2"><label class="cursor-pointer flex items-center gap-1"><input type="checkbox" name="field_nullable[]" class="checkbox checkbox-sm" checked> <span class="text-xs">Nullable</span></label></div>
+        <div class="col-span-2"><button type="button" class="btn btn-error btn-xs" onclick="removeField(this)"><i class="fa-solid fa-trash"></i></button></div>
+    `;
+    container.appendChild(newRow);
+}
+
+function removeField(btn) {
+    if (document.querySelectorAll('.field-row').length > 1) {
+        btn.closest('.field-row').remove();
+    }
+}
+
+function openCreateTableModal() {
+    document.getElementById('createTableModal').showModal();
+}
+
+function closeCreateTableModal() {
+    document.getElementById('createTableModal').close();
+}
+
+document.getElementById('createTableForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const fields = [];
+    const fieldNames = formData.getAll('field_name[]');
+    const fieldTypes = formData.getAll('field_type[]');
+    const fieldLengths = formData.getAll('field_length[]');
+    const fieldNullables = formData.getAll('field_nullable[]');
+    
+    for (let i = 0; i < fieldNames.length; i++) {
+        if (fieldNames[i]) {
+            fields.push({
+                name: fieldNames[i],
+                type: fieldTypes[i],
+                length: fieldLengths[i] || '',
+                nullable: fieldNullables[i] === 'on'
+            });
+        }
+    }
+    
+    fetch('/sysadmin/data_manager/table/add/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `table_name=${encodeURIComponent(formData.get('table_name'))}&fields=${encodeURIComponent(JSON.stringify(fields))}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeCreateTableModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+});
+
+function openEditTableModal(tableName) {
+    currentEditTable = tableName;
+    document.getElementById('editTableName').textContent = tableName;
+    document.getElementById('renameTableForm').reset();
+    document.getElementById('renameTableForm').querySelector('[name=new_name]').value = tableName;
+    document.getElementById('columnsContainer').innerHTML = '<div class="text-center text-gray-500 py-4">Loading columns...</div>';
+    document.getElementById('editTableModal').showModal();
+    
+    // Load columns
+    fetch(`/sysadmin/data_manager/table/${tableName}/schema/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('columnsContainer');
+            if (data.success && data.columns) {
+                container.innerHTML = '';
+                data.columns.forEach(col => {
+                    if (col.name === 'id') return;
+                    addColumnRow(col.name, col.type, col.length || '', col.nullable);
+                });
+                if (container.innerHTML === '') {
+                    container.innerHTML = '<div class="text-center text-gray-500 py-4">No editable columns</div>';
+                }
+            } else {
+                container.innerHTML = '<div class="text-center text-red-500 py-4">Error: ' + (data.error || 'Unknown') + '</div>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('columnsContainer').innerHTML = '<div class="text-center text-red-500 py-4">Failed to load schema</div>';
+        });
+}
+
+function addColumnRow(name, type, length, nullable) {
+    const container = document.getElementById('columnsContainer');
+    const showLength = (type === 'varchar' || type === 'decimal');
+    const rowId = 'col_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    
+    const html = `
+        <div id="${rowId}" class="column-row grid grid-cols-12 gap-2 items-center bg-base-200 p-2 rounded-lg">
+            <input type="hidden" class="col-old-name" value="${name}">
+            <div class="col-span-3"><input type="text" class="col-name input input-bordered input-sm w-full" value="${name}" placeholder="Column name"></div>
+            <div class="col-span-2">
+                <select class="col-type select select-bordered select-sm w-full">
+                    <option value="varchar" ${type === 'varchar' ? 'selected' : ''}>VARCHAR</option>
+                    <option value="text" ${type === 'text' ? 'selected' : ''}>TEXT</option>
+                    <option value="integer" ${type === 'integer' ? 'selected' : ''}>INTEGER</option>
+                    <option value="bigint" ${type === 'bigint' ? 'selected' : ''}>BIGINT</option>
+                    <option value="decimal" ${type === 'decimal' ? 'selected' : ''}>DECIMAL</option>
+                    <option value="boolean" ${type === 'boolean' ? 'selected' : ''}>BOOLEAN</option>
+                    <option value="date" ${type === 'date' ? 'selected' : ''}>DATE</option>
+                    <option value="datetime" ${type === 'datetime' ? 'selected' : ''}>DATETIME</option>
+                    <option value="json" ${type === 'json' ? 'selected' : ''}>JSON</option>
+                </select>
+            </div>
+            <div class="col-span-2 ${showLength ? '' : 'hidden'} length-field">
+                <input type="text" class="col-length input input-bordered input-sm w-full" placeholder="Length" value="${length || (type === 'varchar' ? '255' : '')}">
+            </div>
+            <div class="col-span-2 ${showLength ? '' : 'col-span-4'}">
+                <label class="cursor-pointer flex items-center gap-1">
+                    <input type="checkbox" class="col-nullable checkbox checkbox-sm" ${nullable ? 'checked' : ''}>
+                    <span class="text-xs">Nullable</span>
+                </label>
+            </div>
+            <div class="col-span-2">
+                <button type="button" class="btn btn-warning btn-xs" onclick="modifyColumn(this)"><i class="fa-solid fa-save"></i> Save</button>
+            </div>
+            <div class="col-span-1">
+                <button type="button" class="btn btn-error btn-xs" onclick="dropColumn(this, '${name}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+function addColumnField() {
+    addColumnRow('new_column', 'varchar', '255', true);
+}
+
+function modifyColumn(btn) {
+    const row = btn.closest('.column-row');
+    const oldName = row.querySelector('.col-old-name').value;
+    const newName = row.querySelector('.col-name').value;
+    const colType = row.querySelector('.col-type').value;
+    const colLength = row.querySelector('.col-length')?.value || '';
+    const nullable = row.querySelector('.col-nullable').checked;
+    
+    if (!newName) {
+        alert('Column name required');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('action', 'modify_column');
+    formData.append('old_name', oldName);
+    formData.append('new_name', newName);
+    formData.append('column_type', colType);
+    formData.append('column_length', colLength);
+    formData.append('nullable', nullable);
+    
+    fetch(`/sysadmin/data_manager/table/${currentEditTable}/edit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            row.querySelector('.col-old-name').value = newName;
+            alert('Column modified successfully');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function dropColumn(btn, colName) {
+    if (!confirm(`Delete column "${colName}"? This cannot be undone.`)) return;
+    const formData = new FormData();
+    formData.append('action', 'drop_column');
+    formData.append('column_name', colName);
+    
+    fetch(`/sysadmin/data_manager/table/${currentEditTable}/edit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            btn.closest('.column-row').remove();
+            alert('Column dropped');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+document.getElementById('renameTableForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch(`/sysadmin/data_manager/table/${currentEditTable}/edit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+});
+
+function switchEditTab(tab) {
+    document.querySelectorAll('.edit-tab').forEach(t => t.classList.add('hidden'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+    if (tab === 'rename') {
+        document.getElementById('renameTab').classList.remove('hidden');
+        document.querySelector('.tab').classList.add('tab-active');
+    } else {
+        document.getElementById('columnsTab').classList.remove('hidden');
+        document.querySelectorAll('.tab')[1].classList.add('tab-active');
+    }
+}
+
+function closeEditTableModal() {
+    document.getElementById('editTableModal').close();
+}
+
+function openDeleteTableModal(tableName) {
+    document.getElementById('deleteTableName').textContent = tableName;
+    document.getElementById('deleteTableForm').onsubmit = function(e) {
+        e.preventDefault();
+        fetch(`/sysadmin/data_manager/table/${tableName}/delete/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeDeleteTableModal();
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    };
+    document.getElementById('deleteTableModal').showModal();
+}
+
+function closeDeleteTableModal() {
+    document.getElementById('deleteTableModal').close();
+}
+
+// Record functions
+function openAddRecordModal() {
+    if (!currentTable) return;
+    document.getElementById('addRecordTableName').textContent = currentTable;
+    document.getElementById('addRecordTableNameInput').value = currentTable;
+    const container = document.getElementById('addRecordFields');
+    container.innerHTML = '';
+    currentColumns.forEach(col => {
+        if (col === 'id' || col === 'created_at' || col === 'updated_at') return;
+        container.innerHTML += `<div class="form-control"><label class="label py-1"><span class="label-text text-xs">${col}</span></label><input type="text" name="${col}" class="input input-bordered input-sm"></div>`;
+    });
+    document.getElementById('addRecordModal').showModal();
+}
+
+function closeAddRecordModal() {
+    document.getElementById('addRecordModal').close();
+}
+
+function openEditRecordModal(tableName, rowId) {
+    document.getElementById('editRecordTableName').value = tableName;
+    document.getElementById('editRecordRowId').value = rowId;
+    fetch(`/sysadmin/data_manager/${tableName}/${rowId}/get/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const container = document.getElementById('editRecordFields');
+                container.innerHTML = '';
+                for (const [key, value] of Object.entries(data.data)) {
+                    if (key === 'id' || key === 'created_at' || key === 'updated_at') continue;
+                    container.innerHTML += `<div class="form-control"><label class="label py-1"><span class="label-text text-xs">${key}</span></label><input type="text" name="${key}" value="${value || ''}" class="input input-bordered input-sm"></div>`;
+                }
+            }
+        });
+    document.getElementById('editRecordModal').showModal();
+}
+
+function closeEditRecordModal() {
+    document.getElementById('editRecordModal').close();
+}
+
+function openDeleteRecordModal(tableName, rowId) {
+    document.getElementById('deleteRecordForm').onsubmit = function(e) {
+        e.preventDefault();
+        fetch(`/sysadmin/data_manager/${tableName}/${rowId}/delete/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeDeleteRecordModal();
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    };
+    document.getElementById('deleteRecordModal').showModal();
+}
+
+function closeDeleteRecordModal() {
+    document.getElementById('deleteRecordModal').close();
+}
+
+document.getElementById('addRecordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('/sysadmin/data_manager/add/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeAddRecordModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+});
+
+document.getElementById('editRecordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const tableName = document.getElementById('editRecordTableName').value;
+    const rowId = document.getElementById('editRecordRowId').value;
+    const formData = new FormData(this);
+    fetch(`/sysadmin/data_manager/${tableName}/${rowId}/edit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditRecordModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+});
+</script>
 {% endblock %}

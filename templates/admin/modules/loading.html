@@ -1,0 +1,45 @@
+{% extends 'base_authenticated.html' %}
+{% load static %}
+
+{% block title %}Creating Module...{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="card bg-base-100 shadow-xl max-w-md w-full text-center">
+        <div class="card-body">
+            <div class="flex justify-center mb-4">
+                <div class="bg-primary/20 p-4 rounded-full">
+                    <i class="fa-solid fa-cogs text-primary text-5xl animate-spin"></i>
+                </div>
+            </div>
+            <h2 class="card-title justify-center text-2xl">Creating Module</h2>
+            <p class="text-gray-500 mt-2">Please wait while we set up <strong>{{ module_name }}</strong>...</p>
+            <div class="mt-6">
+                <div class="w-full bg-base-300 rounded-full h-2 overflow-hidden">
+                    <div class="bg-primary h-2 rounded-full animate-progress" style="width: 0%; animation: progress 2s ease-out forwards;"></div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Setting up files and configurations...</p>
+            </div>
+            <div class="divider">or</div>
+            <a href="{% url redirect_url %}" class="btn btn-ghost btn-sm">Cancel and go back</a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes progress {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+.animate-progress {
+    animation: progress 2s ease-out forwards;
+}
+</style>
+
+<script>
+setTimeout(function() {
+    window.location.href = "{% url redirect_url %}";
+}, 2500);
+</script>
+{% endblock %}

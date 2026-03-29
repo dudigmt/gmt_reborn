@@ -1,0 +1,58 @@
+{% extends 'base_authenticated.html' %}
+
+{% block title %}Add Table{% endblock %}
+
+{% block content %}
+<div class="container mx-auto max-w-2xl py-8">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Create New Table</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-control mb-4">
+                    <label>Table Name (lowercase, underscore)</label>
+                    <input type="text" name="table_name" class="input input-bordered" required pattern="[a-z_]+">
+                </div>
+                <div class="form-control mb-4">
+                    <label>Display Name</label>
+                    <input type="text" name="display_name" class="input input-bordered" required>
+                </div>
+                <div class="divider">Fields</div>
+                <div id="fields-container">
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <input type="text" name="field_name[]" placeholder="Field name" class="input input-bordered input-sm">
+                        <select name="field_type[]" class="select select-bordered select-sm">
+                            <option value="VARCHAR(255)">Text</option>
+                            <option value="INTEGER">Number</option>
+                            <option value="DATE">Date</option>
+                            <option value="BOOLEAN">Boolean</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" onclick="addField()" class="btn btn-sm btn-outline mb-4">+ Add Field</button>
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a href="{% url 'data_manager' %}" class="btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+function addField() {
+    const container = document.getElementById('fields-container');
+    const div = document.createElement('div');
+    div.className = 'grid grid-cols-2 gap-2 mb-2';
+    div.innerHTML = `
+        <input type="text" name="field_name[]" placeholder="Field name" class="input input-bordered input-sm">
+        <select name="field_type[]" class="select select-bordered select-sm">
+            <option value="VARCHAR(255)">Text</option>
+            <option value="INTEGER">Number</option>
+            <option value="DATE">Date</option>
+            <option value="BOOLEAN">Boolean</option>
+        </select>
+    `;
+    container.appendChild(div);
+}
+</script>
+{% endblock %}
