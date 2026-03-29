@@ -208,7 +208,7 @@ def sysadmin_users_delete(request, user_id):
 
 @staff_member_required
 def sysadmin_company(request):
-    profile = CompanyProfile.get_profile()
+    profile = Companyprofile.get_profile()
     
     if request.method == 'POST':
         profile.name = request.POST.get('name', 'GMT Reborn')
@@ -341,9 +341,35 @@ def data_manager_view(request):
             cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{selected_table}' ORDER BY ordinal_position")
             columns = [col[0] for col in cursor.fetchall()]
             cursor.execute(f'SELECT * FROM "{selected_table}" LIMIT 100')
-            rows = cursor.fetchall()
+            rows = list(cursor.fetchall())
             cursor.execute(f'SELECT COUNT(*) FROM "{selected_table}"')
             row_count = cursor.fetchone()[0]
+        
+        # Khusus untuk tabel hr_dept, ganti parent_id jadi nama group_dept
+        if selected_table == 'hr_dept' and 'parent_id' in columns:
+            # Ambil semua group_dept untuk mapping
+            group_map = {}
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT id, nama FROM hr_group_dept')
+                for row in cursor.fetchall():
+                    group_map[row[0]] = row[1]
+            
+            # Cari index kolom parent_id
+            parent_idx = columns.index('parent_id')
+            
+            # Ganti nilai parent_id jadi nama group
+            new_rows = []
+            for row in rows:
+                row_list = list(row)
+                parent_val = row_list[parent_idx]
+                if parent_val and parent_val in group_map:
+                    row_list[parent_idx] = group_map[parent_val]
+                elif parent_val:
+                    row_list[parent_idx] = f"ID: {parent_val} (not found)"
+                else:
+                    row_list[parent_idx] = '-'
+                new_rows.append(tuple(row_list))
+            rows = new_rows
     
     context = {
         'tables': tables,
@@ -365,6 +391,10 @@ ALLOWED_TABLES = [
     'core_loginhistory',
     'modules_module',
     'auth_user',
+    'hr_dept',
+    'hr_jabatan',
+    'hr_group_dept',
+    'hr_employee',
 ]
 
 EXCLUDED_TABLES = [
@@ -792,9 +822,10 @@ def sync_single_table(table_name, app_name):
     columns = get_table_columns_detailed(table_name)
     
     # Generate model code
+    # Generate class name dari table_name (hr_dept -> HrDept)
     class_name = ''.join(word.capitalize() for word in table_name.split('_')[1:])
     if not class_name:
-        class_name = 'DynamicModel'
+        class_name = table_name.capitalize()
     
     model_code = f"""from django.db import models
 from django.contrib.auth.models import User
@@ -855,6 +886,120 @@ def run_migrations_for_app(app_name):
     
     except Exception as e:
         return False, str(e)
+
+@staff_member_required
+def data_manager_add_table(request):
+    """Create new table with auto-generated Django model + migration"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    table_name = request.POST.get('table_name')
+    fields_json = request.POST.get('fields')
+    app_name = request.POST.get('app_name', 'hr')  # Default ke hr
+    
+    if not table_name or not fields_json:
+        return JsonResponse({'error': 'Table name and fields are required'}, status=400)
+    
+    # Validate table name
+    if not re.match(r'^[a-z_][a-z0-9_]*$', table_name):
+        return JsonResponse({'error': 'Table name must be lowercase, start with letter, and contain only letters, numbers, underscores'}, status=400)
+    
+    if table_name.startswith('django_') or table_name.startswith('auth_'):
+        return JsonResponse({'error': 'Cannot create table with system prefix'}, status=403)
+    
+    # Valid app name
+    if app_name not in ['hr', 'finance', 'production', 'warehouse', 'core']:
+        app_name = 'hr'
+    
+    try:
+        fields = json.loads(fields_json)
+        
+        # Build CREATE TABLE SQL
+        columns_sql = [
+            '"id" BIGSERIAL PRIMARY KEY',
+            '"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+            '"updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+            '"created_by" INTEGER NULL',
+            '"is_active" BOOLEAN DEFAULT TRUE'
+        ]
+        
+        for field in fields:
+            field_name = field['name']
+            field_type = field['type']
+            field_length = field.get('length', '')
+            nullable = field.get('nullable', True)
+            
+            if not re.match(r'^[a-z_][a-z0-9_]*$', field_name):
+                return JsonResponse({'error': f'Invalid field name: {field_name}'}, status=400)
+            
+            if field_name in ['id', 'created_at', 'updated_at', 'created_by', 'is_active']:
+                continue
+            
+            type_map = {
+                'varchar': f'VARCHAR({field_length or 255})',
+                'text': 'TEXT',
+                'integer': 'INTEGER',
+                'bigint': 'BIGINT',
+                'decimal': f'DECIMAL(15,{field_length or 2})',
+                'boolean': 'BOOLEAN',
+                'date': 'DATE',
+                'datetime': 'TIMESTAMP',
+                'json': 'JSONB'
+            }
+            
+            sql_type = type_map.get(field_type, 'VARCHAR(255)')
+            null_constraint = '' if nullable else 'NOT NULL'
+            col_def = f'"{field_name}" {sql_type} {null_constraint}'.strip()
+            columns_sql.append(col_def)
+        
+        # Create table
+        create_sql = f'CREATE TABLE "{table_name}" (\n    ' + ',\n    '.join(columns_sql) + '\n)'
+        
+        with connection.cursor() as cursor:
+            cursor.execute(create_sql)
+            
+            # Create trigger for updated_at
+            cursor.execute("""
+                CREATE OR REPLACE FUNCTION update_updated_at_column()
+                RETURNS TRIGGER AS $$
+                BEGIN
+                    NEW.updated_at = CURRENT_TIMESTAMP;
+                    RETURN NEW;
+                END;
+                $$ language 'plpgsql';
+            """)
+            
+            cursor.execute(f"""
+                DROP TRIGGER IF EXISTS update_{table_name}_updated_at ON "{table_name}";
+                CREATE TRIGGER update_{table_name}_updated_at
+                    BEFORE UPDATE ON "{table_name}"
+                    FOR EACH ROW
+                    EXECUTE FUNCTION update_updated_at_column();
+            """)
+        
+        # Generate Django model
+        success, message = sync_single_table(table_name, app_name)
+        if not success:
+            return JsonResponse({'error': f'Table created but model sync failed: {message}'}, status=500)
+        
+        # Auto migration
+        from io import StringIO
+        from django.core.management import call_command
+        
+        out = StringIO()
+        call_command('makemigrations', app_name, '--noinput', stdout=out, stderr=out)
+        call_command('migrate', app_name, '--noinput', stdout=out, stderr=out)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Table "{table_name}" created with Django model + auto migration!',
+            'table_name': table_name
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid fields data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @staff_member_required
 def sync_django_table(request, table_name):

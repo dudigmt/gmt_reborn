@@ -105,6 +105,16 @@
 <!-- CREATE TABLE MODAL -->
 <dialog id="createTableModal" class="modal">
     <div class="modal-box w-11/12 max-w-4xl">
+        <div class="form-control mb-4">
+            <label class="label"><span class="label-text font-bold">App Destination</span></label>
+            <select name="app_name" class="select select-bordered">
+                <option value="hr">HR Module</option>
+                <option value="finance">Finance Module</option>
+                <option value="production">Production Module</option>
+                <option value="warehouse">Warehouse Module</option>
+                <option value="core">Core Module</option>
+            </select>
+        </div>
         <h3 class="font-bold text-lg mb-4">Create New Table</h3>
         <form id="createTableForm">
             {% csrf_token %}
@@ -305,7 +315,7 @@ document.getElementById('createTableForm').addEventListener('submit', function(e
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `table_name=${encodeURIComponent(formData.get('table_name'))}&fields=${encodeURIComponent(JSON.stringify(fields))}`
+        body: `table_name=${encodeURIComponent(formData.get('table_name'))}&fields=${encodeURIComponent(JSON.stringify(fields))}&app_name=${encodeURIComponent(formData.get('app_name'))}`
     })
     .then(response => response.json())
     .then(data => {

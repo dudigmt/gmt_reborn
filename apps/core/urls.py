@@ -45,8 +45,7 @@ urlpatterns = [
     path('sysadmin/data_manager/table/<str:table_name>/schema/', views.data_manager_get_table_schema, name='data_manager_table_schema'),
     path('sysadmin/data_manager/table/<str:table_name>/edit/', views.data_manager_edit_table, name='data_manager_edit_table'),
     path('sysadmin/data_manager/table/<str:table_name>/delete/', views.data_manager_delete_table, name='data_manager_delete_table'),
-    # HAPUS line ini karena function tidak ada:
-    # path('sysadmin/data_manager/table/add/', views.data_manager_add_table, name='data_manager_add_table'),
+    path('sysadmin/data_manager/table/add/', views.data_manager_add_table, name='data_manager_add_table'),
         
     # Invoice
     path('invoice/', views.invoice_dashboard, name='invoice_dashboard'),
