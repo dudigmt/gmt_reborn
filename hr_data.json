@@ -1,0 +1,357 @@
+[
+{
+  "model": "hr.dept",
+  "pk": 1,
+  "fields": {
+    "kode": "HRD",
+    "nama": "Office | HRD",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 2,
+  "fields": {
+    "kode": "FIN",
+    "nama": "Office | Accounting & Finance",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 3,
+  "fields": {
+    "kode": "ADM",
+    "nama": "Office | Admin Produksi",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 4,
+  "fields": {
+    "kode": "MKT",
+    "nama": "Office | Marketing",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 5,
+  "fields": {
+    "kode": "LEG",
+    "nama": "Office | Legal",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 6,
+  "fields": {
+    "kode": "ENG",
+    "nama": "Office | Mekanik",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 7,
+  "fields": {
+    "kode": "PUR",
+    "nama": "Office | Purchasing",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 8,
+  "fields": {
+    "kode": "DEV",
+    "nama": "Office | Sample & Development",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 9,
+  "fields": {
+    "kode": "PPC",
+    "nama": "Office | PPIC",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 10,
+  "fields": {
+    "kode": "EXI",
+    "nama": "Office | EX-IM",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 11,
+  "fields": {
+    "kode": "GB",
+    "nama": "Office | Gudang Berikat",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 12,
+  "fields": {
+    "kode": "GA",
+    "nama": "Office | General Affair",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 13,
+  "fields": {
+    "kode": "SBO",
+    "nama": "Office | Sablon",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 14,
+  "fields": {
+    "kode": "DRV",
+    "nama": "Office | Driver",
+    "parent": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 15,
+  "fields": {
+    "kode": "JST",
+    "nama": "Office | JST",
+    "parent": 4,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 16,
+  "fields": {
+    "kode": "DSA",
+    "nama": "Office | DSA",
+    "parent": 5,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 17,
+  "fields": {
+    "kode": "WHM",
+    "nama": "Gudang Material",
+    "parent": 3,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 18,
+  "fields": {
+    "kode": "SWG",
+    "nama": "Sewing",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 19,
+  "fields": {
+    "kode": "BRD",
+    "nama": "Bordir",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 20,
+  "fields": {
+    "kode": "ASB",
+    "nama": "Assembling",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 21,
+  "fields": {
+    "kode": "SBL",
+    "nama": "Sablon",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 22,
+  "fields": {
+    "kode": "SBF",
+    "nama": "Sablon | Film",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 23,
+  "fields": {
+    "kode": "SBM",
+    "nama": "Sablon | Mixing",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 24,
+  "fields": {
+    "kode": "SBA",
+    "nama": "Sablon | Gudang Chemical / ATK",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 25,
+  "fields": {
+    "kode": "QC",
+    "nama": "QC",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 26,
+  "fields": {
+    "kode": "IOP",
+    "nama": "In/Out Put",
+    "parent": 3,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 27,
+  "fields": {
+    "kode": "NSW",
+    "nama": "Nosew",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 28,
+  "fields": {
+    "kode": "HPR",
+    "nama": "Hot Press",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 29,
+  "fields": {
+    "kode": "CUT",
+    "nama": "Cutting",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 30,
+  "fields": {
+    "kode": "EMB",
+    "nama": "Emboss",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.dept",
+  "pk": 31,
+  "fields": {
+    "kode": "LAM",
+    "nama": "Laminating",
+    "parent": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "hr.groupdept",
+  "pk": 1,
+  "fields": {
+    "kode": "OFC",
+    "nama": "Office",
+    "is_active": true
+  }
+},
+{
+  "model": "hr.groupdept",
+  "pk": 2,
+  "fields": {
+    "kode": "PRD",
+    "nama": "Production",
+    "is_active": true
+  }
+},
+{
+  "model": "hr.groupdept",
+  "pk": 3,
+  "fields": {
+    "kode": "WH",
+    "nama": "Warehouse",
+    "is_active": true
+  }
+},
+{
+  "model": "hr.groupdept",
+  "pk": 4,
+  "fields": {
+    "kode": "JST",
+    "nama": "JST",
+    "is_active": true
+  }
+},
+{
+  "model": "hr.groupdept",
+  "pk": 5,
+  "fields": {
+    "kode": "DSA",
+    "nama": "DSA",
+    "is_active": true
+  }
+}
+]

@@ -1,0 +1,231 @@
+[
+{
+  "model": "modules.module",
+  "pk": 1,
+  "fields": {
+    "name": "hr",
+    "display_name": "HR Management",
+    "icon": "bi-people",
+    "is_enabled": true,
+    "is_system": false,
+    "order": 1,
+    "description": "Human resources management module",
+    "submodules": [
+      {
+        "url": "/hr/employees/",
+        "icon": "fa-address-card",
+        "name": "employees",
+        "order": 1,
+        "is_enabled": true,
+        "display_name": "Employees"
+      },
+      {
+        "url": "/hr/attendance/",
+        "icon": "fa-clock",
+        "name": "attendance",
+        "order": 2,
+        "is_enabled": true,
+        "display_name": "Attendance"
+      },
+      {
+        "url": "/hr/payroll/",
+        "icon": "fa-money-bill-wave",
+        "name": "payroll",
+        "order": 3,
+        "is_enabled": true,
+        "display_name": "Payroll"
+      }
+    ],
+    "created_at": "2026-03-28T05:31:25.153Z",
+    "updated_at": "2026-03-28T16:14:58.277Z"
+  }
+},
+{
+  "model": "modules.module",
+  "pk": 2,
+  "fields": {
+    "name": "finance",
+    "display_name": "Finance",
+    "icon": "bi-calculator",
+    "is_enabled": true,
+    "is_system": false,
+    "order": 2,
+    "description": "Financial management module",
+    "submodules": [
+      {
+        "url": "/finance/accounts/",
+        "icon": "fa-list",
+        "name": "chart_of_accounts",
+        "order": 1,
+        "is_enabled": true,
+        "display_name": "Chart of Accounts"
+      },
+      {
+        "url": "/finance/journal/",
+        "icon": "fa-pen-to-square",
+        "name": "journal_entries",
+        "order": 2,
+        "is_enabled": true,
+        "display_name": "Journal Entries"
+      },
+      {
+        "url": "/finance/reports/",
+        "icon": "fa-chart-simple",
+        "name": "financial_reports",
+        "order": 3,
+        "is_enabled": true,
+        "display_name": "Financial Reports"
+      }
+    ],
+    "created_at": "2026-03-28T05:31:25.164Z",
+    "updated_at": "2026-03-28T16:14:58.283Z"
+  }
+},
+{
+  "model": "modules.module",
+  "pk": 3,
+  "fields": {
+    "name": "production",
+    "display_name": "Production",
+    "icon": "bi-gear",
+    "is_enabled": true,
+    "is_system": false,
+    "order": 3,
+    "description": "Production management module",
+    "submodules": [
+      {
+        "url": "/production/orders/",
+        "icon": "fa-clipboard-list",
+        "name": "production_orders",
+        "order": 1,
+        "is_enabled": true,
+        "display_name": "Production Orders"
+      },
+      {
+        "url": "/production/bom/",
+        "icon": "fa-diagram-project",
+        "name": "bill_of_materials",
+        "order": 2,
+        "is_enabled": true,
+        "display_name": "Bill of Materials"
+      },
+      {
+        "url": "/production/quality/",
+        "icon": "fa-check-double",
+        "name": "quality_control",
+        "order": 3,
+        "is_enabled": true,
+        "display_name": "Quality Control"
+      }
+    ],
+    "created_at": "2026-03-28T05:31:25.174Z",
+    "updated_at": "2026-03-28T16:14:58.286Z"
+  }
+},
+{
+  "model": "modules.module",
+  "pk": 4,
+  "fields": {
+    "name": "warehouse",
+    "display_name": "Warehouse",
+    "icon": "bi-box",
+    "is_enabled": true,
+    "is_system": false,
+    "order": 4,
+    "description": "Warehouse management module",
+    "submodules": [
+      {
+        "url": "/warehouse/inventory/",
+        "icon": "fa-boxes",
+        "name": "inventory",
+        "order": 1,
+        "is_enabled": true,
+        "display_name": "Inventory"
+      },
+      {
+        "url": "/warehouse/movement/",
+        "icon": "fa-arrows-spin",
+        "name": "stock_movement",
+        "order": 2,
+        "is_enabled": true,
+        "display_name": "Stock Movement"
+      },
+      {
+        "url": "/warehouse/receiving/",
+        "icon": "fa-truck-ramp-box",
+        "name": "receiving",
+        "order": 3,
+        "is_enabled": true,
+        "display_name": "Receiving"
+      }
+    ],
+    "created_at": "2026-03-28T05:31:25.198Z",
+    "updated_at": "2026-03-28T16:14:58.289Z"
+  }
+},
+{
+  "model": "modules.module",
+  "pk": 5,
+  "fields": {
+    "name": "admin",
+    "display_name": "Administration",
+    "icon": "bi-shield-lock",
+    "is_enabled": true,
+    "is_system": true,
+    "order": 6,
+    "description": "System administration module",
+    "submodules": [
+      {
+        "url": "/sysadmin/users/",
+        "icon": "fa-users",
+        "name": "users",
+        "order": 1,
+        "is_enabled": true,
+        "display_name": "User Management"
+      },
+      {
+        "url": "/sysadmin/company/",
+        "icon": "fa-building",
+        "name": "company",
+        "order": 2,
+        "is_enabled": true,
+        "display_name": "Company"
+      },
+      {
+        "url": "/sysadmin/modules/",
+        "icon": "fa-puzzle-piece",
+        "name": "modules",
+        "order": 3,
+        "is_enabled": true,
+        "display_name": "Modules"
+      },
+      {
+        "url": "/sysadmin/system/",
+        "icon": "fa-server",
+        "name": "system",
+        "order": 4,
+        "is_enabled": true,
+        "display_name": "System"
+      },
+      {
+        "url": "/sysadmin/audit/",
+        "icon": "fa-history",
+        "name": "audit",
+        "order": 5,
+        "is_enabled": true,
+        "display_name": "Audit"
+      },
+      {
+        "url": "/sysadmin/data_manager/",
+        "icon": "fa-users",
+        "name": "data_manager",
+        "order": 6,
+        "is_enabled": true,
+        "display_name": "Data Manager"
+      }
+    ],
+    "created_at": "2026-03-28T05:31:25.206Z",
+    "updated_at": "2026-03-28T16:14:58.296Z"
+  }
+}
+]

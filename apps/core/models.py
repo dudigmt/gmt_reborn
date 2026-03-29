@@ -2,10 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Loginhistory(models.Model):
-    login_time = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_history')
+    login_time = models.DateTimeField(auto_now_add=True)
     ip_address = models.CharField(max_length=45, blank=True, null=True)
     user_agent = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_history')
 
     class Meta:
         db_table = 'core_loginhistory'

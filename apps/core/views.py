@@ -41,7 +41,7 @@ def login_view(request):
             
             user_agent = request.META.get('HTTP_USER_AGENT', '')
             
-            LoginHistory.objects.create(
+            Loginhistory.objects.create(
                 user=user,
                 ip_address=ip,
                 user_agent=user_agent
