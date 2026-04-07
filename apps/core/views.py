@@ -15,6 +15,9 @@ from modules.models import Module
 import json
 import re
 import os
+import pandas as pd
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 # ============================================================================
@@ -1001,6 +1004,9 @@ def data_manager_add_table(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+
+
 @staff_member_required
 def sync_django_table(request, table_name):
     if request.method != 'POST':
@@ -1092,3 +1098,200 @@ def check_table_sync_status(request, table_name):
     
     except Exception as e:
         return JsonResponse({'needs_sync': False, 'message': str(e)})
+
+@staff_member_required
+@csrf_exempt
+def import_employee_excel(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    file = request.FILES.get('file')
+    if not file:
+        return JsonResponse({'error': 'No file uploaded'}, status=400)
+    
+    file_path = f'/tmp/{file.name}'
+    with open(file_path, 'wb+') as f:
+        for chunk in file.chunks():
+            f.write(chunk)
+    
+    try:
+        df = pd.read_excel(file_path)
+
+        # Helper function untuk bersihin nomor
+        def clean_number_field(val):
+            if pd.notna(val):
+                val = str(val).strip()
+                if '.' in val:
+                    val = val.split('.')[0]
+                return val
+            return None
+        
+        from apps.hr.models import Employee, GroupDept, Dept, Jabatan, Agama, Pendidikan, StatusKaryawan, PosisiKaryawan
+        
+        success = 0
+        updated = 0
+        errors = []
+        
+        for idx, row in df.iterrows():
+            try:
+                nik = str(row.get('nik', '')).strip()
+                if not nik:
+                    errors.append(f"Baris {idx+2}: NIK kosong")
+                    continue
+                
+                nama = str(row.get('nama', '')).strip()
+                if not nama:
+                    errors.append(f"Baris {idx+2}: Nama kosong")
+                    continue
+                
+                employee, is_new = Employee.objects.get_or_create(nik=nik, defaults={'nama': nama})
+                
+                if not is_new:
+                    employee.nama = nama
+                    updated += 1
+                else:
+                    success += 1
+                
+                # Mapping sesuai kolom Excel
+                if 'sex' in df.columns and pd.notna(row.get('sex')):
+                    employee.sex = str(row['sex'])
+                if 'tgl_lahir' in df.columns and pd.notna(row.get('tgl_lahir')):
+                    employee.tgl_lahir = pd.to_datetime(row['tgl_lahir']).date()
+                if 'tempat_lahir' in df.columns and pd.notna(row.get('tempat_lahir')):
+                    employee.tempat_lahir = str(row['tempat_lahir'])
+                if 'no_ktp' in df.columns and pd.notna(row.get('no_ktp')):
+                    employee.no_ktp = clean_number_field(row['no_ktp'])
+                if 'no_kk' in df.columns and pd.notna(row.get('no_kk')):
+                    employee.no_kk = clean_number_field(row['no_kk'])
+                if 'no_hp' in df.columns and pd.notna(row.get('no_hp')):
+                    employee.no_hp = clean_number_field(row['no_hp'])
+                if 'alamat' in df.columns and pd.notna(row.get('alamat')):
+                    employee.alamat = str(row['alamat'])
+                if 'kelurahan' in df.columns and pd.notna(row.get('kelurahan')):
+                    employee.kelurahan = str(row['kelurahan'])
+                if 'kecamatan' in df.columns and pd.notna(row.get('kecamatan')):
+                    employee.kecamatan = str(row['kecamatan'])
+                if 'kabupaten_kota' in df.columns and pd.notna(row.get('kabupaten_kota')):
+                    employee.kabupaten_kota = str(row['kabupaten_kota'])
+                if 'kode_pos' in df.columns and pd.notna(row.get('kode_pos')):
+                    employee.kode_pos = clean_number_field(row['kode_pos'])
+                if 'provinsi' in df.columns and pd.notna(row.get('provinsi')):
+                    employee.provinsi = str(row['provinsi'])
+                if 'status_kawin' in df.columns and pd.notna(row.get('status_kawin')):
+                    employee.status_kawin = str(row['status_kawin'])
+                if 'tanggungan' in df.columns and pd.notna(row.get('tanggungan')):
+                    employee.tanggungan = int(row['tanggungan'])
+                if 'tinggi_badan' in df.columns and pd.notna(row.get('tinggi_badan')):
+                    employee.tinggi_badan = int(row['tinggi_badan']) if str(row['tinggi_badan']).isdigit() else None
+                if 'berat_badan' in df.columns and pd.notna(row.get('berat_badan')):
+                    employee.berat_badan = int(row['berat_badan']) if str(row['berat_badan']).isdigit() else None
+                if 'gol_darah' in df.columns and pd.notna(row.get('gol_darah')):
+                    employee.gol_darah = str(row['gol_darah'])
+                if 'tgl_rekrut' in df.columns and pd.notna(row.get('tgl_rekrut')):
+                    employee.tgl_rekrut = pd.to_datetime(row['tgl_rekrut']).date()
+                if 'tgl_kartetap' in df.columns and pd.notna(row.get('tgl_kartetap')):
+                    employee.tgl_kartetap = pd.to_datetime(row['tgl_kartetap']).date()
+                if 'no_kartu_kpk' in df.columns and pd.notna(row.get('no_kartu_kpk')):
+                    employee.no_kartu_kpk = str(row['no_kartu_kpk'])
+                if 'kontrak_ke' in df.columns and pd.notna(row.get('kontrak_ke')):
+                    employee.kontrak_ke = int(row['kontrak_ke']) if str(row['kontrak_ke']).isdigit() else 1
+                if 'kontrak_berakhir' in df.columns and pd.notna(row.get('kontrak_berakhir')):
+                    employee.kontrak_berakhir = pd.to_datetime(row['kontrak_berakhir']).date()
+                if 'kode_gaji' in df.columns and pd.notna(row.get('kode_gaji')):
+                    employee.kode_gaji = str(row['kode_gaji'])
+                if 'no_rek_bank' in df.columns and pd.notna(row.get('no_rek_bank')):
+                    employee.no_rek_bank = str(row['no_rek_bank'])
+                if 'kode_bank' in df.columns and pd.notna(row.get('kode_bank')):
+                    employee.kode_bank = str(row['kode_bank'])
+                if 'nama_bank' in df.columns and pd.notna(row.get('nama_bank')):
+                    employee.nama_bank = str(row['nama_bank'])
+                if 'status_ptkp' in df.columns and pd.notna(row.get('status_ptkp')):
+                    employee.status_ptkp = str(row['status_ptkp'])
+                if 'no_npwp' in df.columns and pd.notna(row.get('no_npwp')):
+                    employee.no_npwp = str(row['no_npwp'])
+                if 'status_pajak' in df.columns and pd.notna(row.get('status_pajak')):
+                    employee.status_pajak = str(row['status_pajak'])
+                if 'bpjs_tk' in df.columns and pd.notna(row.get('bpjs_tk')):
+                    employee.bpjs_tk = str(row['bpjs_tk']).lower() in ['ya', 'true', '1', 'y']
+                if 'bpjs_tk_ditanggung' in df.columns:
+                    val = row.get('bpjs_tk_ditanggung')
+                    if pd.notna(val):
+                        str_val = str(val).strip()
+                        employee.bpjs_tk_ditanggung = str_val in ['1', '1.0', 'Ya', 'ya', 'YES', 'yes', 'True', 'true', True]
+                    else:
+                        employee.bpjs_tk_ditanggung = False
+                if 'bpjs_tk_no' in df.columns and pd.notna(row.get('bpjs_tk_no')):
+                    employee.bpjs_tk_no = clean_number_field(row['bpjs_tk_no'])
+                if 'bpjs_kes' in df.columns and pd.notna(row.get('bpjs_kes')):
+                    employee.bpjs_kes = str(row['bpjs_kes']).lower() in ['ya', 'true', '1', 'y']
+                if 'bpjs_kes_ditanggung' in df.columns:
+                    val = row.get('bpjs_kes_ditanggung')
+                    if pd.notna(val):
+                        str_val = str(val).strip()
+                        employee.bpjs_kes_ditanggung = str_val in ['1', '1.0', 'Ya', 'ya', 'YES', 'yes', 'True', 'true', True]
+                    else:
+                        employee.bpjs_kes_ditanggung = False
+                if 'bpjs_kes_no' in df.columns and pd.notna(row.get('bpjs_kes_no')):
+                    employee.bpjs_kes_no = clean_number_field(row['bpjs_kes_no'])
+                if 'faskes' in df.columns and pd.notna(row.get('faskes')):
+                    employee.faskes = str(row['faskes'])
+                if 'placement' in df.columns and pd.notna(row.get('placement')):
+                    employee.placement = str(row['placement'])
+                if 'tgl_out' in df.columns and pd.notna(row.get('tgl_out')):
+                    employee.tgl_out = pd.to_datetime(row['tgl_out']).date()
+                if 'status_kerja' in df.columns and pd.notna(row.get('status_kerja')):
+                    employee.status_kerja = str(row['status_kerja'])
+                
+                # Foreign Keys (sesuai kolom di Excel)
+                if 'agama' in df.columns and pd.notna(row.get('agama')):
+                    agama = Agama.objects.filter(kode=str(row['agama'])).first()
+                    if agama:
+                        employee.agama = agama
+                
+                if 'pendidikan' in df.columns and pd.notna(row.get('pendidikan')):
+                    pendidikan = Pendidikan.objects.filter(kode=str(row['pendidikan'])).first()
+                    if pendidikan:
+                        employee.pendidikan = pendidikan
+                
+                if 'status_karyawan' in df.columns and pd.notna(row.get('status_karyawan')):
+                    status = StatusKaryawan.objects.filter(kode=str(row['status_karyawan'])).first()
+                    if status:
+                        employee.status_karyawan = status
+                
+                if 'posisi_karyawan' in df.columns and pd.notna(row.get('posisi_karyawan')):
+                    posisi = PosisiKaryawan.objects.filter(kode=str(row['posisi_karyawan'])).first()
+                    if posisi:
+                        employee.posisi_karyawan = posisi
+                
+                if 'group' in df.columns and pd.notna(row.get('group')):
+                    group = GroupDept.objects.filter(kode=str(row['group'])).first()
+                    if group:
+                        employee.group = group
+                
+                if 'dept' in df.columns and pd.notna(row.get('dept')):
+                    dept = Dept.objects.filter(kode=str(row['dept'])).first()
+                    if dept:
+                        employee.dept = dept
+                
+                if 'jabatan' in df.columns and pd.notna(row.get('jabatan')):
+                    jabatan = Jabatan.objects.filter(kode=str(row['jabatan'])).first()
+                    if jabatan:
+                        employee.jabatan = jabatan
+                
+                employee.save()
+                
+            except Exception as e:
+                errors.append(f"Baris {idx+2}: {str(e)}")
+        
+        os.remove(file_path)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Import selesai. Baru: {success}, Update: {updated}, Gagal: {len(errors)}',
+            'errors': errors[:10]
+        })
+    
+    except Exception as e:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return JsonResponse({'error': str(e)}, status=500)

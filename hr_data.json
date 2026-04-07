@@ -5,7 +5,7 @@
   "fields": {
     "kode": "HRD",
     "nama": "Office | HRD",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -15,7 +15,7 @@
   "fields": {
     "kode": "FIN",
     "nama": "Office | Accounting & Finance",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -25,7 +25,7 @@
   "fields": {
     "kode": "ADM",
     "nama": "Office | Admin Produksi",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -35,7 +35,7 @@
   "fields": {
     "kode": "MKT",
     "nama": "Office | Marketing",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -45,7 +45,7 @@
   "fields": {
     "kode": "LEG",
     "nama": "Office | Legal",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -55,7 +55,7 @@
   "fields": {
     "kode": "ENG",
     "nama": "Office | Mekanik",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -65,7 +65,7 @@
   "fields": {
     "kode": "PUR",
     "nama": "Office | Purchasing",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -75,7 +75,7 @@
   "fields": {
     "kode": "DEV",
     "nama": "Office | Sample & Development",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -85,7 +85,7 @@
   "fields": {
     "kode": "PPC",
     "nama": "Office | PPIC",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -95,7 +95,7 @@
   "fields": {
     "kode": "EXI",
     "nama": "Office | EX-IM",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -105,7 +105,7 @@
   "fields": {
     "kode": "GB",
     "nama": "Office | Gudang Berikat",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -115,7 +115,7 @@
   "fields": {
     "kode": "GA",
     "nama": "Office | General Affair",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -125,7 +125,7 @@
   "fields": {
     "kode": "SBO",
     "nama": "Office | Sablon",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -135,7 +135,7 @@
   "fields": {
     "kode": "DRV",
     "nama": "Office | Driver",
-    "parent": 1,
+    "parent_group": 1,
     "is_active": true
   }
 },
@@ -145,7 +145,7 @@
   "fields": {
     "kode": "JST",
     "nama": "Office | JST",
-    "parent": 4,
+    "parent_group": 4,
     "is_active": true
   }
 },
@@ -155,7 +155,7 @@
   "fields": {
     "kode": "DSA",
     "nama": "Office | DSA",
-    "parent": 5,
+    "parent_group": 5,
     "is_active": true
   }
 },
@@ -165,7 +165,7 @@
   "fields": {
     "kode": "WHM",
     "nama": "Gudang Material",
-    "parent": 3,
+    "parent_group": 3,
     "is_active": true
   }
 },
@@ -175,7 +175,7 @@
   "fields": {
     "kode": "SWG",
     "nama": "Sewing",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -185,7 +185,7 @@
   "fields": {
     "kode": "BRD",
     "nama": "Bordir",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -195,7 +195,7 @@
   "fields": {
     "kode": "ASB",
     "nama": "Assembling",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -205,7 +205,7 @@
   "fields": {
     "kode": "SBL",
     "nama": "Sablon",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -215,7 +215,7 @@
   "fields": {
     "kode": "SBF",
     "nama": "Sablon | Film",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -225,7 +225,7 @@
   "fields": {
     "kode": "SBM",
     "nama": "Sablon | Mixing",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -235,7 +235,7 @@
   "fields": {
     "kode": "SBA",
     "nama": "Sablon | Gudang Chemical / ATK",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -245,7 +245,7 @@
   "fields": {
     "kode": "QC",
     "nama": "QC",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -255,7 +255,7 @@
   "fields": {
     "kode": "IOP",
     "nama": "In/Out Put",
-    "parent": 3,
+    "parent_group": 3,
     "is_active": true
   }
 },
@@ -265,7 +265,7 @@
   "fields": {
     "kode": "NSW",
     "nama": "Nosew",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -275,7 +275,7 @@
   "fields": {
     "kode": "HPR",
     "nama": "Hot Press",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -285,7 +285,7 @@
   "fields": {
     "kode": "CUT",
     "nama": "Cutting",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -295,7 +295,7 @@
   "fields": {
     "kode": "EMB",
     "nama": "Emboss",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },
@@ -305,7 +305,7 @@
   "fields": {
     "kode": "LAM",
     "nama": "Laminating",
-    "parent": 2,
+    "parent_group": 2,
     "is_active": true
   }
 },

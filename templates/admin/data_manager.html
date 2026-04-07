@@ -56,6 +56,9 @@
                 <button class="btn btn-primary btn-sm" onclick="openAddRecordModal()">
                     <i class="fa-solid fa-plus"></i> Add Record
                 </button>
+                <button class="btn btn-secondary btn-sm ml-2" onclick="openImportModal()">
+                    <i class="fa-solid fa-upload"></i> Import Excel
+                </button>
             </div>
             <div class="divider my-2"></div>
             <div class="overflow-x-auto">
@@ -255,6 +258,26 @@
         </form>
     </div>
 </dialog>
+
+<dialog id="importModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Import Karyawan dari Excel</h3>
+        <form id="importForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Pilih File Excel</span>
+                </label>
+                <input type="file" name="file" accept=".xlsx, .xls" class="file-input file-input-bordered" required>
+            </div>
+            <div class="modal-action">
+                <button type="button" class="btn" onclick="closeImportModal()">Batal</button>
+                <button type="submit" class="btn btn-primary">Import</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
 
 <script>
 let currentTable = '{{ selected_table }}';
@@ -794,6 +817,39 @@ function openEditTableModal(tableName) {
             }
         });
 }
+
+function openImportModal() {
+    document.getElementById('importModal').showModal();
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').close();
+    document.getElementById('importForm').reset();
+}
+
+document.getElementById('importForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('/sysadmin/data_manager/import-employee/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            if (data.errors && data.errors.length) {
+                alert('Error detail:\n' + data.errors.join('\n'));
+            }
+            closeImportModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+});
 
 </script>
 {% endblock %}

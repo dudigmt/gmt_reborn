@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Custom apps
     'core',
-    'hr',
+    'apps.hr',
     'finance',
     'warehouse',
     'modules',
