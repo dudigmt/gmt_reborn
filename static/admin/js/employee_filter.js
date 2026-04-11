@@ -5,6 +5,7 @@
         var divisionSelect = document.getElementById('id_division');
         var deptSelect = document.getElementById('id_dept');
         var sectionSelect = document.getElementById('id_section');
+        var jabatanSelect = document.getElementById('id_jabatan');
         
         function filterDept() {
             var divisionId = divisionSelect.value;
@@ -19,11 +20,13 @@
                             option.textContent = dept.nama;
                             deptSelect.appendChild(option);
                         });
-                        filterSection(); // reset section
+                        filterSection();
+                        filterJabatan();
                     });
             } else {
                 deptSelect.innerHTML = '<option value="">---------</option>';
                 sectionSelect.innerHTML = '<option value="">---------</option>';
+                jabatanSelect.innerHTML = '<option value="">---------</option>';
             }
         }
         
@@ -46,8 +49,31 @@
             }
         }
         
+        function filterJabatan() {
+            var deptId = deptSelect.value;
+            if (deptId) {
+                fetch('/hr/api/jabatan-by-dept/?dept_id=' + deptId)
+                    .then(response => response.json())
+                    .then(data => {
+                        jabatanSelect.innerHTML = '<option value="">---------</option>';
+                        data.forEach(function(jabatan) {
+                            var option = document.createElement('option');
+                            option.value = jabatan.id;
+                            option.textContent = jabatan.nama;
+                            jabatanSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                jabatanSelect.innerHTML = '<option value="">---------</option>';
+            }
+        }
+        
         divisionSelect.addEventListener('change', filterDept);
-        deptSelect.addEventListener('change', filterSection);
+        deptSelect.addEventListener('change', function() {
+            filterSection();
+            filterJabatan();
+        });
+        
         filterDept();
     });
 })();

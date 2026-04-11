@@ -30,6 +30,7 @@ class DivisionAdmin(admin.ModelAdmin):
 @admin.register(Jabatan)
 class JabatanAdmin(admin.ModelAdmin):
     list_display = ['kode', 'nama', 'level', 'tugas_utama', 'is_active']
+    list_filter = ['dept', 'level']
     search_fields = ['kode', 'nama']
 
 @admin.register(Employee)

@@ -1126,7 +1126,7 @@ def import_employee_excel(request):
                 return val
             return None
         
-        from apps.hr.models import Employee, GroupDept, Dept, Jabatan, Agama, Pendidikan, StatusKaryawan, PosisiKaryawan
+        from apps.hr.models import Employee, Division, Dept, Section, Jabatan, Agama, Pendidikan, StatusKaryawan, PosisiKaryawan
         
         success = 0
         updated = 0
@@ -1263,15 +1263,24 @@ def import_employee_excel(request):
                     if posisi:
                         employee.posisi_karyawan = posisi
                 
-                if 'group' in df.columns and pd.notna(row.get('group')):
-                    group = GroupDept.objects.filter(kode=str(row['group'])).first()
-                    if group:
-                        employee.group = group
+                if 'division' in df.columns and pd.notna(row.get('division')):
+                    division = Division.objects.filter(kode=str(row['division'])).first()
+                    if division:
+                        employee.division = division
+                    else:
+                        errors.append(f"Baris {idx+2}: Division dengan kode {row['division']} tidak ditemukan")
                 
                 if 'dept' in df.columns and pd.notna(row.get('dept')):
                     dept = Dept.objects.filter(kode=str(row['dept'])).first()
                     if dept:
                         employee.dept = dept
+                
+                if 'section' in df.columns and pd.notna(row.get('section')):
+                    section = Section.objects.filter(kode=str(row['section'])).first()
+                    if section:
+                        employee.section = section
+                    else:
+                        errors.append(f"Baris {idx+2}: Section dengan kode {row['section']} tidak ditemukan")
                 
                 if 'jabatan' in df.columns and pd.notna(row.get('jabatan')):
                     jabatan = Jabatan.objects.filter(kode=str(row['jabatan'])).first()
@@ -1295,3 +1304,92 @@ def import_employee_excel(request):
         if os.path.exists(file_path):
             os.remove(file_path)
         return JsonResponse({'error': str(e)}, status=500)
+
+import pandas as pd
+from django.http import HttpResponse
+
+@staff_member_required
+def export_employee_excel(request):
+    from apps.hr.models import Employee
+    import pandas as pd
+    from django.http import HttpResponse
+    
+    employees = Employee.objects.select_related('division', 'dept', 'section', 'jabatan').all()
+    
+    column_order = [
+        'NIK', 'Nama', 'Jenis Kelamin', 'Tgl Lahir', 'Tempat Lahir', 'No KTP', 'No KK', 'No HP',
+        'Alamat', 'Kelurahan', 'Kecamatan', 'Kab/Kota', 'Kode Pos', 'Provinsi', 'Status Kawin',
+        'Tanggungan', 'Agama', 'Tinggi Badan', 'Berat Badan', 'Gol Darah', 'Pendidikan',
+        'Tgl Rekrut', 'Status Karyawan', 'Tgl Karyawan Tetap', 'Posisi Karyawan', 'No Kartu KPK',
+        'Divisi', 'Departemen', 'Section', 'Jabatan', 'Kontrak Ke', 'Kontrak Berakhir',
+        'Kode Gaji', 'No Rek Bank', 'Kode Bank', 'Nama Bank', 'Status PTKP', 'No NPWP',
+        'Status Pajak', 'BPJS TK', 'BPJS TK Ditanggung', 'No BPJS TK', 'BPJS Kesehatan',
+        'BPJS Kesehatan Ditanggung', 'No BPJS Kesehatan', 'Faskes', 'Penempatan',
+        'Tgl Keluar', 'Status Kerja'
+    ]
+    
+    data = []
+    for emp in employees:
+        data.append({
+            'NIK': emp.nik,
+            'Nama': emp.nama,
+            'Jenis Kelamin': emp.sex or '',
+            'Tgl Lahir': emp.tgl_lahir,
+            'Tempat Lahir': emp.tempat_lahir or '',
+            'No KTP': emp.no_ktp or '',
+            'No KK': emp.no_kk or '',
+            'No HP': emp.no_hp or '',
+            'Alamat': emp.alamat or '',
+            'Kelurahan': emp.kelurahan or '',
+            'Kecamatan': emp.kecamatan or '',
+            'Kab/Kota': emp.kabupaten_kota or '',
+            'Kode Pos': emp.kode_pos or '',
+            'Provinsi': emp.provinsi or '',
+            'Status Kawin': emp.status_kawin or '',
+            'Tanggungan': emp.tanggungan or '',
+            'Agama': emp.agama.nama if emp.agama else '',
+            'Tinggi Badan': emp.tinggi_badan or '',
+            'Berat Badan': emp.berat_badan or '',
+            'Gol Darah': emp.gol_darah or '',
+            'Pendidikan': emp.pendidikan.nama if emp.pendidikan else '',
+            'Tgl Rekrut': emp.tgl_rekrut,
+            'Status Karyawan': emp.status_karyawan.nama if emp.status_karyawan else '',
+            'Tgl Karyawan Tetap': emp.tgl_kartetap,
+            'Posisi Karyawan': emp.posisi_karyawan.nama if emp.posisi_karyawan else '',
+            'No Kartu KPK': emp.no_kartu_kpk or '',
+            'Divisi': emp.division.nama if emp.division else '',
+            'Departemen': emp.dept.nama if emp.dept else '',
+            'Section': emp.section.nama if emp.section else '',
+            'Jabatan': emp.jabatan.nama if emp.jabatan else '',
+            'Kontrak Ke': emp.kontrak_ke or '',
+            'Kontrak Berakhir': emp.kontrak_berakhir,
+            'Kode Gaji': emp.kode_gaji or '',
+            'No Rek Bank': emp.no_rek_bank or '',
+            'Kode Bank': emp.kode_bank or '',
+            'Nama Bank': emp.nama_bank or '',
+            'Status PTKP': emp.status_ptkp or '',
+            'No NPWP': emp.no_npwp or '',
+            'Status Pajak': emp.status_pajak or '',
+            'BPJS TK': 'Ya' if emp.bpjs_tk else 'Tidak',
+            'BPJS TK Ditanggung': 'Ya' if emp.bpjs_tk_ditanggung else 'Tidak',
+            'No BPJS TK': emp.bpjs_tk_no or '',
+            'BPJS Kesehatan': 'Ya' if emp.bpjs_kes else 'Tidak',
+            'BPJS Kesehatan Ditanggung': 'Ya' if emp.bpjs_kes_ditanggung else 'Tidak',
+            'No BPJS Kesehatan': emp.bpjs_kes_no or '',
+            'Faskes': emp.faskes or '',
+            'Penempatan': emp.placement or '',
+            'Tgl Keluar': emp.tgl_out,
+            'Status Kerja': emp.status_kerja or '',
+        })
+    
+    if data:
+        df = pd.DataFrame(data)
+        df = df[column_order]
+    else:
+        # Buat DataFrame kosong dengan header
+        df = pd.DataFrame(columns=column_order)
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="employee_export.xlsx"'
+    df.to_excel(response, index=False)
+    return response

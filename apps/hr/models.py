@@ -45,6 +45,7 @@ class Section(models.Model):
 
 class Jabatan(models.Model):
     kode = models.CharField(max_length=20, unique=True)
+    dept = models.ForeignKey('Dept', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Departemen (khusus)')
     nama = models.CharField(max_length=100)
     tugas_utama = models.TextField(blank=True, null=True, verbose_name='Tugas Utama')
     level = models.IntegerField(default=1)

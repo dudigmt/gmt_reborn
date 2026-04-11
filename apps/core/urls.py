@@ -47,6 +47,7 @@ urlpatterns = [
     path('sysadmin/data_manager/table/<str:table_name>/delete/', views.data_manager_delete_table, name='data_manager_delete_table'),
     path('sysadmin/data_manager/table/add/', views.data_manager_add_table, name='data_manager_add_table'),
     path('sysadmin/data_manager/import-employee/', views.import_employee_excel, name='import_employee_excel'),
+    path('sysadmin/data_manager/export-employee/', views.export_employee_excel, name='export_employee_excel'),
         
     # Invoice
     path('invoice/', views.invoice_dashboard, name='invoice_dashboard'),
